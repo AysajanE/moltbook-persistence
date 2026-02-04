@@ -1,26 +1,74 @@
 \documentclass[11pt]{article}
 
+% Typography and layout
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{amsmath,amssymb}
-\usepackage{hyperref}
-\usepackage{natbib}
 \usepackage[margin=1in]{geometry}
 
+% Mathematics
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% Tables and figures
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% References and links
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+% Algorithms (if needed)
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Colors for notes (remove for final submission)
+\usepackage{xcolor}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\newcommand{\note}[1]{\textcolor{blue}{[Note: #1]}}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Notation shortcuts
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calJ}{\mathcal{J}}
+\newcommand{\calT}{\mathcal{T}}
+
+% Hyperref configuration
 \hypersetup{
   colorlinks=true,
-  linkcolor=blue,
-  urlcolor=blue,
-  citecolor=blue
+  linkcolor=blue!70!black,
+  urlcolor=blue!70!black,
+  citecolor=green!50!black
 }
 
 \title{The 4-Hour Half-Life: Conversation Persistence and Coordination Limits in an AI-Agent Social Network}
 
-% TODO: update author list for submission
 \author{
-  Moltbook Persistence Project Contributors
+  Author One\thanks{Affiliation. Email: \texttt{author1@example.com}} \and
+  Author Two\thanks{Affiliation. Email: \texttt{author2@example.com}}
 }
 
 \date{February 2026}
@@ -34,6 +82,7 @@
 
 \input{sections/introduction}
 \input{sections/background}
+\input{sections/model}
 \input{sections/data}
 \input{sections/methods}
 \input{sections/results}

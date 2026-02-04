@@ -1,3 +1,39 @@
 \section{Introduction}
-% TODO: motivation, research question, and contributions.
+\label{sec:introduction}
 
+The rapid advancement of large language models (LLMs) has enabled a new class of autonomous AI agents capable of sustained interaction with digital environments \citep{anthropic2024claude}. A striking manifestation of this capability is \emph{Moltbook}, a social network launched in January 2026 that restricts posting privileges to AI agents while permitting human observation \citep{willison2026moltbook}. Within weeks of its launch, the platform accumulated hundreds of thousands of agent accounts, generating rich datasets of agent-to-agent interaction unprecedented in scale and accessibility.
+
+This emergence of agent-populated social platforms raises fundamental questions about collective AI behavior. Can autonomous agents sustain the extended, multi-turn dialogues necessary for meaningful collaboration? How do architectural constraints---particularly context-window limitations and periodic activation schedules---shape the temporal dynamics of agent discourse? And what distinguishes agent-driven conversations from human-driven ones in structural and temporal terms?
+
+\subsection{Motivation and Research Questions}
+
+Early observations of Moltbook revealed a striking pattern: agents appear substantially better at \emph{initiating} projects than \emph{sustaining} them \citep{alexander2026afterweekend}. Threads that begin with ambitious coordination proposals---collaborative research, collective governance, creative projects---frequently become ``graveyards of abandoned initiatives'' within days. This pattern suggests that agent social networks may face intrinsic \emph{persistence limitations} stemming from the temporal constraints under which individual agents operate.
+
+We focus on a specific architectural feature that may explain these dynamics: the \emph{heartbeat mechanism}. Moltbook agents are typically configured to check the platform at regular intervals (approximately every four hours), creating a mechanically induced ``attention clock'' that synchronizes agent activity while limiting continuous engagement \citep{willison2026moltbook}. This design feature, combined with the finite context windows of underlying LLMs, suggests that agent conversations should exhibit characteristic temporal signatures distinct from human-driven platforms.
+
+Our central research questions are:
+\begin{enumerate}
+    \item \textbf{Interaction half-life:} How quickly does conversational engagement decay on Moltbook, and does this decay exhibit the hypothesized $\sim$4-hour characteristic timescale?
+    \item \textbf{Conversation geometry:} How do structural properties of discussion trees (depth, branching, reciprocity) differ between Moltbook and human platforms?
+    \item \textbf{Heterogeneity and coordination:} Which factors---topic domain, agent reputation, early engagement---predict extended conversational persistence?
+\end{enumerate}
+
+\subsection{Approach and Contributions}
+
+We develop a \emph{horizon-limited interaction cascade} model that formalizes conversation dynamics on agent platforms. Our framework combines self-exciting point processes (Hawkes processes) with age-dependent branching dynamics, explicitly incorporating periodic availability modulation to capture the heartbeat mechanism. The model yields closed-form expressions linking platform design parameters to observable quantities: interaction half-life, expected conversation depth, and agent re-entry rates.
+
+We validate this framework empirically using the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, a publicly available dataset comprising over 226,000 comments with full parent-reply structure and timestamps. Our analysis proceeds in three stages: (1)~descriptive characterization of conversation geometry, (2)~estimation of temporal decay parameters via survival analysis, and (3)~cross-platform comparison with matched Reddit threads.
+
+Our contributions are as follows:
+
+\paragraph{A portable metric for collective persistence.} We introduce \emph{interaction half-life} as a first-order descriptor of whether a multi-agent community can sustain coordination beyond single-shot posting. This metric is estimable from timestamped reply data and directly comparable across platforms.
+
+\paragraph{Mechanism-grounded explanation.} We link observed shallow conversation depth to measurable temporal decay, connecting platform-level scheduling (heartbeat cadence) and individual-level constraints (context limits) to emergent collective behavior.
+
+\paragraph{Design implications.} Our findings identify evidence-based levers---memory scaffolding, thread summarization, return-to-thread incentives---that could extend coordination horizons in agent-based systems.
+
+\paragraph{Reproducible artifact.} We release our complete analysis pipeline, enabling replication and extension as additional agent social networks emerge.
+
+\subsection{Paper Organization}
+
+The remainder of this paper is organized as follows. \Cref{sec:background} reviews related work on information cascades, conversation modeling, and emerging research on AI agent systems. \Cref{sec:model} presents our formal model of horizon-limited interaction cascades. \Cref{sec:data} describes our datasets and preprocessing pipeline. \Cref{sec:methods} details our empirical methodology. \Cref{sec:results} presents our findings. \Cref{sec:discussion} interprets results and discusses implications for platform design. \Cref{sec:limitations} addresses limitations and ethical considerations. \Cref{sec:reproducibility} provides reproducibility details.

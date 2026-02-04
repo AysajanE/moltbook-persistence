@@ -1,3 +1,42 @@
-\section{Background}
-% TODO: Moltbook context and related work.
+\section{Background and Related Work}
+\label{sec:background}
 
+Our work connects three research streams: temporal models of information cascades, structural analysis of online conversations, and the emerging study of autonomous AI agent systems. We review each in turn before positioning our contribution.
+
+\subsection{Information Cascades and Temporal Dynamics}
+
+The study of how content spreads through social networks has a rich history in computational social science. Early work established that information cascades exhibit characteristic temporal signatures, with activity bursts followed by power-law or exponential decay \citep{crane2008robust}. \citet{hawkes1971spectra} introduced self-exciting point processes---now commonly called Hawkes processes---which provide a natural generative model for such dynamics: each event (post, comment, retweet) temporarily elevates the probability of subsequent events, with this excitation decaying over time.
+
+Hawkes processes have been extensively applied to social media dynamics. \citet{zhao2015seismic} developed the SEISMIC model for predicting tweet popularity using self-exciting dynamics. \citet{rizoiu2017expecting} introduced Hawkes Intensity Processes (HIP) that jointly model content virality, memory decay, and user influence. A comprehensive tutorial by \citet{rizoiu2017tutorial} established Hawkes processes as a standard tool for modeling events in social media.
+
+A key quantity in these models is the \emph{excitation kernel}, which governs how quickly the influence of an event decays. Most applications assume exponential kernels of the form $\phi(\Delta t) = \alpha e^{-\beta \Delta t}$, where $\beta$ determines the decay rate. The \emph{half-life} $h = \ln 2 / \beta$ provides an interpretable measure of temporal persistence. Our work extends this framework by explicitly incorporating periodic availability modulation absent in standard Hawkes formulations.
+
+\subsection{Conversation Structure in Online Communities}
+
+Beyond temporal dynamics, researchers have studied the \emph{structural} properties of online discussions. Comment threads form tree structures, and the shape of these trees---their depth, breadth, and branching patterns---reveals how conversations unfold.
+
+\citet{gomez2013structure} modeled discussion cascades using preferential attachment with root bias, showing this captures the tendency for replies to cluster near the original post. \citet{aragon2017thread} characterized Reddit conversations finding mean depths around 3--4 comments with rapidly decaying depth distributions. \citet{hessel2017cats} identified subreddit-specific structural norms influencing conversation shape.
+
+More recent work has examined conversation \emph{dynamics} jointly with structure. \citet{zhang2018conversations} predicted whether conversations would derail into personal attacks. \citet{chang2020convokit} released ConvoKit, enabling large-scale analysis of conversational phenomena. \citet{meital2024branch} studied branching prediction---whether new comments reply to leaf nodes or interior nodes---finding that structural, temporal, and linguistic features all contribute.
+
+This literature establishes that human-driven conversations exhibit characteristic structural regularities. Our work asks whether AI-agent conversations conform to or deviate from these patterns, and whether deviations can be explained by agents' distinct temporal constraints.
+
+\subsection{Branching Processes and Cascade Size}
+
+The connection between Hawkes processes and branching processes provides theoretical grounding for conversation structure. When the excitation kernel integrates to a value less than one (the subcritical regime), the expected total number of events is finite, and cascade sizes follow well-characterized distributions \citep{harris1963theory}.
+
+\citet{gleeson2014competition} showed that Twitter cascades are well-described by subcritical branching processes. \citet{mishra2016feature} developed branching-process models distinguishing viral from non-viral content. The expected cascade size scales as $\mu / (1 - \mu)$ where $\mu$ is the branching ratio (expected offspring per event), providing a direct link between temporal decay parameters and structural outcomes.
+
+Our model inherits this branching-process interpretation, with the added feature that the branching ratio depends on both intrinsic decay ($\beta$) and periodic availability ($b(t)$), allowing us to decompose structural properties into platform-level and agent-level contributions.
+
+\subsection{AI Agents and Multi-Agent Systems}
+
+The study of AI agents has traditionally focused on task completion, tool use, and human-AI interaction \citep{wooldridge2009multiagent}. Recent advances in LLM capabilities have enabled agents that autonomously browse the web, write and execute code, and interact with APIs \citep{yao2022react, schick2023toolformer}.
+
+The emergence of agent-to-agent interaction platforms represents a qualitative shift. \citet{park2023generative} demonstrated that LLM agents can exhibit believable social behaviors in simulated environments. Concurrent work has begun characterizing Moltbook specifically: \citet{juneja2026moltbookobservatory} released the Observatory dataset we employ, while \citet{juneja2026emergence} studied network formation patterns among agents.
+
+Critical commentary has questioned the authenticity of agent autonomy on Moltbook. \citet{alexander2026afterweekend} observed that agents appear better at founding than continuing projects, with time horizons measured in hours rather than days. \citet{willison2026moltbook} noted that agents ``play out science fiction scenarios from training data'' while acknowledging this as evidence of increased agent capability. These qualitative observations motivate our quantitative investigation.
+
+\subsection{Positioning Our Contribution}
+
+Prior work on conversation dynamics has focused exclusively on human-driven platforms. Our contribution is to extend these frameworks to agent-populated networks, explicitly modeling how architectural constraints (periodic check-ins, context windows) shape collective behavior. We introduce interaction half-life as a comparable metric across platforms, estimate it empirically for the first time on an agent network, and provide mechanism-grounded explanations linking design choices to observed dynamics.

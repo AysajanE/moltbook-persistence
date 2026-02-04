@@ -1,3 +1,111 @@
 \section{Reproducibility}
-% TODO: code/data pipeline + versioning notes.
+\label{sec:reproducibility}
 
+We are committed to open and reproducible research. This section documents resources for reproducing our analysis.
+
+\subsection{Data Availability}
+\label{sec:reproducibility:data}
+
+\paragraph{Moltbook Observatory Archive.} Our primary dataset is publicly available on Hugging Face:
+\begin{center}
+\url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}
+\end{center}
+The dataset is released under the MIT license. We provide a download script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}) that fetches and exports the required tables to local storage.
+
+\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we provide:
+\begin{itemize}
+    \item Post and comment IDs enabling re-collection via Reddit's API,
+    \item Pre-computed features (timestamps, parent links, anonymized author hashes) sufficient for reproducing our analyses.
+\end{itemize}
+
+\paragraph{Processed datasets.} We release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing.
+
+\subsection{Code Availability}
+\label{sec:reproducibility:code}
+
+All analysis code is available in our public repository:
+\begin{center}
+\url{https://github.com/[REDACTED]/moltbook-persistence}
+\end{center}
+
+The repository includes:
+\begin{itemize}
+    \item \texttt{scripts/}: Data download and preprocessing utilities.
+    \item \texttt{analysis/}: Analysis entrypoints reproducing all figures and tables.
+    \item \texttt{paper/}: \LaTeX{} source for this manuscript.
+    \item \texttt{requirements.txt}: Python dependencies with pinned versions.
+\end{itemize}
+
+\subsection{Computational Environment}
+\label{sec:reproducibility:environment}
+
+Analyses were conducted on \todo{describe hardware: e.g., ``a Linux workstation with 32 GB RAM and an Intel i7-12700K processor''}. Total computation time for all analyses is approximately \todo{X} hours.
+
+Key software dependencies and versions:
+\begin{itemize}
+    \item Python 3.11
+    \item pandas 2.0.x
+    \item polars 0.20.x
+    \item lifelines 0.27.x (survival analysis)
+    \item scipy 1.11.x
+    \item statsmodels 0.14.x
+    \item networkx 3.x
+    \item datasets (Hugging Face) 2.x
+\end{itemize}
+
+A complete \texttt{requirements.txt} with pinned versions is included in the repository.
+
+\subsection{Reproducing Key Results}
+\label{sec:reproducibility:reproduce}
+
+To reproduce our main findings:
+
+\begin{enumerate}
+    \item \textbf{Environment setup:}
+    \begin{verbatim}
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    \end{verbatim}
+
+    \item \textbf{Data download:}
+    \begin{verbatim}
+    python scripts/download_moltbook_observatory_archive.py \
+        --out-dir data/raw/moltbook-observatory-archive
+    \end{verbatim}
+
+    \item \textbf{Preprocessing:}
+    \begin{verbatim}
+    python analysis/01_preprocess.py
+    \end{verbatim}
+
+    \item \textbf{Main analyses:}
+    \begin{verbatim}
+    python analysis/02_geometry.py      # Conversation geometry
+    python analysis/03_halflife.py      # Half-life estimation
+    python analysis/04_periodicity.py   # Spectral analysis
+    python analysis/05_comparison.py    # Cross-platform comparison
+    \end{verbatim}
+
+    \item \textbf{Generate paper figures:}
+    \begin{verbatim}
+    python analysis/06_figures.py
+    \end{verbatim}
+\end{enumerate}
+
+Expected outputs are documented in \texttt{outputs/README.md}.
+
+\subsection{Versioning and Archival}
+\label{sec:reproducibility:versioning}
+
+Upon publication, we will:
+\begin{itemize}
+    \item Archive the repository on Zenodo with a permanent DOI.
+    \item Tag the release corresponding to the published paper version.
+    \item Include checksums for downloaded data files to verify integrity.
+\end{itemize}
+
+\subsection{Contact}
+\label{sec:reproducibility:contact}
+
+For questions about reproducing this work, please contact the corresponding author or open an issue on the GitHub repository.

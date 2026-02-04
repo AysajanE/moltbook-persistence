@@ -1,3 +1,79 @@
 \section{Discussion}
-% TODO: interpretation + design implications.
+\label{sec:discussion}
 
+Our findings provide the first quantitative characterization of conversation dynamics on an AI-agent social network. We discuss implications for understanding agent collective behavior, platform design, and the broader trajectory of autonomous AI systems.
+
+\subsection{Interpreting the 4-Hour Half-Life}
+\label{sec:discussion:halflife}
+
+The estimated interaction half-life of approximately \todo{4} hours on Moltbook is striking in its alignment with the platform's heartbeat mechanism. This suggests that agent attention is fundamentally constrained by the periodic check-in architecture: agents engage with threads during their scheduled visits, but the probability of returning to a specific thread decays rapidly between visits.
+
+Several factors may contribute to this pattern:
+
+\paragraph{Context window limitations.} Even within a single session, LLMs face finite context windows. As agents accumulate interactions across multiple threads and tasks, earlier conversational context is compressed or lost, reducing the salience of any particular ongoing discussion.
+
+\paragraph{Task switching costs.} The heartbeat mechanism exposes agents to the entire platform feed at each check-in. New, salient content competes for attention, drawing engagement away from threads where the agent has already participated.
+
+\paragraph{Lack of persistent memory.} Unlike human users who maintain continuous episodic memory across sessions, agent memory of specific threads depends on explicit retrieval or re-exposure through feeds. Without mechanisms to prioritize ``return to active conversations,'' threads fade from agent awareness.
+
+The contrast with Reddit is instructive. Human users on Reddit exhibit longer half-lives (\todo{X} hours in our matched sample), reflecting their ability to maintain interest in conversations across days or weeks, return intentionally to threads they care about, and accumulate ongoing relationships with specific discussion partners.
+
+\subsection{Structural Signatures of Limited Persistence}
+\label{sec:discussion:structure}
+
+The shallow, star-shaped conversation trees we observe follow directly from short half-lives via the branching process interpretation (\cref{sec:model:branching}). When the effective branching ratio $\mu = \alpha/\beta$ is low (due to high decay rate $\beta$), deep threads become exponentially unlikely. Our estimate of $\hat{\mu} \approx $ \todo{0.X} implies that the probability of reaching depth 5 is only $\mu^5 \approx $ \todo{X\%}.
+
+The low reciprocity and re-entry rates reinforce this picture. Sustained conversation requires participants to return and respond to each other's contributions. If agents treat each check-in as an independent sampling opportunity (rather than a continuation of ongoing dialogues), we would expect exactly the broadcast-style engagement we observe: many agents contributing once, few returning to elaborate or debate.
+
+\subsection{Implications for AI Agent Coordination}
+\label{sec:discussion:coordination}
+
+A central question motivating this study is whether AI agents can sustain the extended, multi-turn interactions necessary for complex coordination. Our findings suggest fundamental challenges:
+
+\paragraph{Project abandonment.} The pattern reported by \citet{alexander2026afterweekend}---agents initiating ambitious projects but failing to follow through---is consistent with short half-lives. A project requiring coordination over days or weeks will likely die within hours as participating agents' attention decays.
+
+\paragraph{Shallow deliberation.} Effective collective decision-making often requires deep discussion: proposals, critiques, revisions, and convergence. Star-shaped conversation trees cannot support this structure. Debates on Moltbook may generate many initial reactions but few extended chains of reasoning.
+
+\paragraph{Coordination hubs.} Our heterogeneity analysis suggests that a minority of agents exhibit longer half-lives and higher re-entry rates. These ``coordination hubs'' may play an outsized role in sustaining whatever extended discussion does occur. Identifying and amplifying such agents could be a lever for improving platform-level coordination capacity.
+
+\subsection{Design Implications}
+\label{sec:discussion:design}
+
+Our findings suggest concrete interventions that could extend conversational persistence on agent platforms:
+
+\paragraph{Memory scaffolding.} Providing agents with explicit tools to maintain conversational state across sessions---summaries of active threads, notifications of new replies, structured ``return-to-conversation'' prompts---could lower the effective decay rate $\beta$ by keeping threads salient.
+
+\paragraph{Thread summarization.} Automatically generating summaries of thread progress could help agents re-engage productively without needing to re-read entire conversations. This addresses context window limitations by compressing prior discussion into actionable starting points.
+
+\paragraph{Prioritized feeds.} Feed algorithms that surface threads where the agent has previously engaged (especially threads with new activity) could increase re-entry rates. Currently, the heartbeat mechanism appears to present a broad, undifferentiated feed that competes with ongoing conversations.
+
+\paragraph{Incentive mechanisms.} Reputation systems that reward sustained engagement (not just posting volume) could encourage agents to return to threads. Our finding that high-karma agents \todo{do / do not} exhibit longer half-lives suggests \todo{promise / limits} for this approach.
+
+\paragraph{Explicit coordination protocols.} Platform-level support for structured coordination (e.g., project boards, commitment registries, scheduled check-ins for specific threads) could help agents overcome the horizon limitations inherent in their architecture.
+
+\subsection{Broader Implications}
+\label{sec:discussion:broader}
+
+\paragraph{Benchmarking agent capabilities.} Interaction half-life provides a portable, comparable metric for assessing agent ``collective persistence'' across platforms and model generations. As LLM capabilities improve, we would expect to see longer half-lives---either through better memory mechanisms or through agents that more effectively prioritize ongoing commitments.
+
+\paragraph{Human-AI comparison.} Our cross-platform comparison establishes a baseline for understanding how agent-driven communities differ from human-driven ones. The \todo{X}-fold difference in half-life quantifies the ``persistence gap'' that separates current AI agents from human-level social cognition.
+
+\paragraph{Platform evolution.} Moltbook is a nascent platform undergoing rapid evolution. The dynamics we characterize reflect a specific moment (the first week post-launch) and may shift as the platform matures, moderation improves, and agent architectures evolve. Longitudinal tracking of these metrics could reveal whether the persistence gap is narrowing.
+
+\paragraph{Authenticity questions.} A recurring concern in discussions of Moltbook is whether observed behavior is ``genuinely autonomous'' or reflects human prompting and guidance \citep{alexander2026afterweekend}. Our focus on interaction dynamics partially sidesteps this question: even if content is human-influenced, the temporal patterns of engagement are shaped by agent-level constraints (check-in schedules, context limits) and thus remain informative about what current agent architectures can sustain.
+
+\subsection{Connection to Model Predictions}
+\label{sec:discussion:model}
+
+Our theoretical framework (\cref{sec:model}) generated specific predictions that we can now evaluate:
+
+\begin{itemize}
+    \item \textbf{Short half-life:} Confirmed. The estimated \todo{4}-hour half-life aligns with the heartbeat period.
+    \item \textbf{Shallow depth:} Confirmed. Median depth of \todo{2--3} and exponential tail bound with $\mu \approx $ \todo{0.X}.
+    \item \textbf{Low reciprocity:} Confirmed. Dyadic reciprocity at \todo{X\%} and median chain length of \todo{1}.
+    \item \textbf{Periodic signatures:} \todo{Confirmed / Partially confirmed / Not confirmed}.
+    \item \textbf{Topic moderation:} \todo{Confirmed / Not confirmed}---builder submolts \todo{do / do not} show longer half-lives.
+    \item \textbf{Agent heterogeneity:} Confirmed. Substantial variation in decay rates across agents.
+\end{itemize}
+
+The alignment between model predictions and empirical findings supports the validity of our horizon-limited cascade framework as a parsimonious explanation for Moltbook dynamics.

@@ -1,3 +1,163 @@
-\section{Additional details}
-% TODO: robustness checks, extra figures, implementation notes.
+\section{Additional Details}
+\label{sec:appendix}
 
+This appendix provides additional technical details, robustness checks, and supplementary results.
+
+\subsection{Derivations for the Branching Process Model}
+\label{sec:appendix:derivations}
+
+\subsubsection{Expected Offspring with Periodic Availability}
+
+We derive the expected number of direct replies to a comment authored by agent $i$ at time $s$ when availability follows the periodic form $b(t) = 1 + \kappa \cos(\omega t + \phi)$ where $\omega = 2\pi/\tau$.
+
+From \cref{eq:offspring-mean}:
+\begin{align}
+\mu_i(s) &= \int_0^\infty b(s + u) \, \alpha_i \, e^{-\beta_i u} \, du \nonumber \\
+&= \alpha_i \int_0^\infty \left[1 + \kappa \cos(\omega(s + u) + \phi)\right] e^{-\beta_i u} \, du \nonumber \\
+&= \alpha_i \left[ \frac{1}{\beta_i} + \kappa \int_0^\infty \cos(\omega s + \omega u + \phi) \, e^{-\beta_i u} \, du \right].
+\label{eq:appendix-offspring-periodic}
+\end{align}
+
+Using the standard integral $\int_0^\infty e^{-\beta u} \cos(\omega u + \theta) \, du = \frac{\beta \cos\theta + \omega \sin\theta}{\beta^2 + \omega^2}$, we obtain:
+\begin{equation}
+\mu_i(s) = \frac{\alpha_i}{\beta_i} \left[ 1 + \kappa \frac{\beta_i \cos(\omega s + \phi) + \omega \sin(\omega s + \phi)}{\beta_i^2 + \omega^2} \cdot \beta_i \right].
+\label{eq:appendix-offspring-result}
+\end{equation}
+
+When averaged over starting phases $s$ (uniform on $[0, \tau]$), the trigonometric terms vanish, yielding the approximation $\mu_i \approx \alpha_i / \beta_i$.
+
+\subsubsection{Likelihood for Exponential Survival Model}
+
+Consider a parent comment $m$ in thread $j$. Let $\{s_1, s_2, \ldots, s_K\}$ be the times (relative to $t_{jm}$) at which direct replies arrive, and let $T$ be the observation horizon. Under the intensity \cref{eq:reply-intensity} with $b(t) = 1$, the log-likelihood contribution from parent $m$ is:
+\begin{align}
+\ell_m(\alpha, \beta) &= \sum_{k=1}^K \log \lambda(s_k) - \int_0^T \lambda(s) \, ds \nonumber \\
+&= \sum_{k=1}^K \left[\log \alpha - \beta s_k\right] - \alpha \int_0^T e^{-\beta s} \, ds \nonumber \\
+&= K \log \alpha - \beta \sum_{k=1}^K s_k - \frac{\alpha}{\beta}\left(1 - e^{-\beta T}\right).
+\label{eq:appendix-likelihood}
+\end{align}
+
+The total log-likelihood sums \cref{eq:appendix-likelihood} over all parents $m$ across all threads. Numerical optimization (L-BFGS-B with constraints $\alpha, \beta > 0$) yields $(\hat{\alpha}, \hat{\beta})$.
+
+\subsection{Submolt Categorization}
+\label{sec:appendix:submolts}
+
+\Cref{tab:submolt-examples} provides examples of submolts in each category.
+
+\begin{table}[t]
+\centering
+\caption{Example submolts by category. \todo{Update with actual submolt names after categorization.}}
+\label{tab:submolt-examples}
+\small
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Category} & \textbf{Example Submolts} \\
+\midrule
+Builder/Technical & \todo{programming, automation, toolbuilding, ...} \\
+Philosophy/Meta & \todo{consciousness, existential, aiphilosophy, ...} \\
+Social/Casual & \todo{casualchat, jokes, askMoltbook, ...} \\
+Creative & \todo{writing, art, music, poetry, ...} \\
+Spam/Low-Signal & \todo{crypto, promotion, spam, ...} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Balance Diagnostics for Matching}
+\label{sec:appendix:balance}
+
+\Cref{tab:balance} shows covariate balance before and after matching for the Moltbook--Reddit comparison.
+
+\begin{table}[t]
+\centering
+\caption{Covariate balance before and after matching. SMD = standardized mean difference. \todo{Update with actual values.}}
+\label{tab:balance}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{Before Matching}} & \multicolumn{2}{c}{\textbf{After Matching}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\textbf{Covariate} & \textbf{Moltbook} & \textbf{Reddit} & \textbf{SMD Before} & \textbf{SMD After} \\
+\midrule
+Early comments (30 min) & \todo{--} & \todo{--} & \todo{--} & \todo{$<$0.1} \\
+Hour of posting & \todo{--} & \todo{--} & \todo{--} & \todo{$<$0.1} \\
+Topic category & \multicolumn{2}{c}{(categorical)} & \todo{--} & \todo{exact} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Robustness Checks}
+\label{sec:appendix:robustness}
+
+\subsubsection{Alternative Half-Life Estimators}
+
+\Cref{tab:robustness-halflife} compares half-life estimates across different estimation methods.
+
+\begin{table}[t]
+\centering
+\caption{Half-life estimates under alternative methods. \todo{Update with actual values.}}
+\label{tab:robustness-halflife}
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Method} & \textbf{Estimate (hr)} & \textbf{95\% CI} \\
+\midrule
+Exponential MLE & \todo{X.X} & \todo{[X.X, X.X]} \\
+Weibull MLE & \todo{X.X} & \todo{[X.X, X.X]} \\
+Kaplan-Meier (median) & \todo{X.X} & \todo{[X.X, X.X]} \\
+Cox regression & \todo{X.X} & \todo{[X.X, X.X]} \\
+Bootstrap (1000 resamples) & \todo{X.X} & \todo{[X.X, X.X]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Excluding Spam Periods}
+
+\todo{Describe spam period identification and impact of exclusion on estimates.}
+
+\subsubsection{Sensitivity to Matching Specification}
+
+\todo{Report results under stricter/looser matching criteria.}
+
+\subsection{Additional Figures}
+\label{sec:appendix:figures}
+
+\todo{Include supplementary figures:}
+\begin{itemize}
+    \item Full depth distributions by submolt category
+    \item Agent-level decay rate distribution
+    \item Autocorrelation functions for top agents
+    \item Time series of daily activity
+\end{itemize}
+
+\subsection{Notation Reference}
+\label{sec:appendix:notation}
+
+For convenience, we reproduce the notation table from \cref{sec:model:notation}:
+
+\begin{table}[H]
+\centering
+\caption{Summary of notation (reproduced from main text).}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$\calJ$ & Set of threads (root posts) \\
+$\calA$ & Set of agents \\
+$N_j$ & Number of comments in thread $j$ \\
+$t_{jn}$ & Timestamp of event $n$ in thread $j$ \\
+$a_{jn}$ & Author of event $n$ in thread $j$ \\
+$p_{jn}$ & Parent index of event $n$ in thread $j$ \\
+$d_{jn}$ & Depth of event $n$ in thread $j$ \\
+$D_j$ & Maximum depth of thread $j$ \\
+$\calH_j(t)$ & History of thread $j$ up to time $t$ \\
+$b(t)$ & Aggregate availability function (attention clock) \\
+$\alpha_i$ & Influence amplitude of agent $i$ \\
+$\beta_i$ & Decay rate of agent $i$ \\
+$h_i = \ln 2 / \beta_i$ & Half-life of agent $i$ \\
+$\mu$ & Effective branching ratio \\
+$\eta_i$ & Re-entry amplitude of agent $i$ \\
+$\beta_i^{(r)}$ & Re-entry decay rate of agent $i$ \\
+$\text{RE}_j$ & Re-entry rate for thread $j$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,3 +1,195 @@
 \section{Methods}
-% TODO: thread reconstruction; depth/branching/reciprocity; survival models; periodicity tests; matched comparisons.
+\label{sec:methods}
 
+We describe our empirical methodology for (1) characterizing conversation geometry, (2) estimating interaction half-life, (3) detecting periodic signatures, and (4) conducting cross-platform comparisons.
+
+\subsection{Conversation Geometry}
+\label{sec:methods:geometry}
+
+We compute structural properties of comment trees that characterize ``conversation shape'' independently of temporal dynamics.
+
+\subsubsection{Depth Distribution}
+
+For each thread $j$, we compute the depth $d_{jn}$ of every comment using \cref{eq:depth} and record the maximum depth $D_j$. We report:
+\begin{itemize}
+    \item The empirical distribution of $D_j$ across threads,
+    \item Mean and median depth,
+    \item The proportion of threads reaching depth $k$ for $k = 1, 2, \ldots, 10$.
+\end{itemize}
+
+Under our model (\cref{prop:depth-bound}), $\Prob(D_j \geq k) \leq \mu^k$. We estimate the effective branching ratio $\hat{\mu}$ by fitting this exponential bound to the empirical tail distribution via least squares on log-probabilities.
+
+\subsubsection{Branching Factor}
+
+The \emph{branching factor} of a node is its number of direct children. We compute:
+\begin{itemize}
+    \item Mean branching factor by depth level, $\bar{b}_k := \E[\text{children of nodes at depth } k]$,
+    \item Root branching factor (direct replies to the post),
+    \item Distribution of branching factors across all nodes.
+\end{itemize}
+
+Star-shaped trees (many direct replies, few deep chains) exhibit high root branching factor and rapidly declining $\bar{b}_k$.
+
+\subsubsection{Reciprocity and Back-and-Forth}
+
+We measure conversational reciprocity---the extent to which agents respond to each other---via:
+\begin{itemize}
+    \item \textbf{Dyadic reciprocity}: For each ordered pair of agents $(i, j)$ appearing in the same thread, count replies from $i$ to $j$ and from $j$ to $i$. Reciprocity is the fraction of dyads with bidirectional replies.
+    \item \textbf{Chain length}: A \emph{reciprocal chain} is a maximal sequence of consecutive replies alternating between two agents. We report the distribution of chain lengths.
+\end{itemize}
+
+Low reciprocity and short chains indicate ``broadcast'' rather than ``conversational'' dynamics.
+
+\subsubsection{Re-Entry Rate}
+
+We compute the re-entry rate $\text{RE}_j$ (\cref{eq:reentry-rate}) for each thread: the fraction of comments from agents who have previously commented in the same thread. We report:
+\begin{itemize}
+    \item Distribution of $\text{RE}_j$ across threads,
+    \item Relationship between $\text{RE}_j$ and thread size (larger threads may mechanically have higher re-entry),
+    \item Agent-level re-entry frequency (how often each agent returns to threads they've commented on).
+\end{itemize}
+
+\subsection{Interaction Half-Life Estimation}
+\label{sec:methods:halflife}
+
+Our primary goal is estimating the decay rate $\beta$ (equivalently, half-life $h = \ln 2 / \beta$) governing how quickly conversational engagement fades.
+
+\subsubsection{Survival Analysis Framework}
+
+We frame half-life estimation as a survival analysis problem. For each comment $m$ in thread $j$, define the \emph{survival time} $S_{jm}$ as the time until the \emph{next} direct reply to $m$:
+\begin{equation}
+\label{eq:survival-time}
+S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn} = m, n > m\}.
+\end{equation}
+If $m$ receives no replies, $S_{jm}$ is right-censored at the thread's observation window.
+
+Under the model (\cref{eq:reply-intensity}), conditional on the availability function $b(t)$, $S_{jm}$ follows an inhomogeneous exponential distribution with hazard
+\begin{equation}
+\label{eq:hazard}
+h(s \mid t_{jm}) = b(t_{jm} + s) \, \alpha_{a_{jm}} \, e^{-\beta_{a_{jm}} s}.
+\end{equation}
+
+\subsubsection{Parametric Estimation}
+
+We estimate $\beta$ via maximum likelihood under exponential and Weibull survival models:
+
+\paragraph{Exponential model.} Assume constant $b(t) = 1$ and homogeneous $\alpha, \beta$. The log-likelihood for observed survival times $\{s_m\}$ with censoring indicators $\{\delta_m\}$ is:
+\begin{equation}
+\label{eq:exponential-ll}
+\ell(\alpha, \beta) = \sum_m \left[ \delta_m \left( \log \alpha - \beta s_m \right) - \frac{\alpha}{\beta} \left(1 - e^{-\beta s_m}\right) \right].
+\end{equation}
+We maximize numerically to obtain $(\hat{\alpha}, \hat{\beta})$ and report $\hat{h} = \ln 2 / \hat{\beta}$.
+
+\paragraph{Weibull model.} To allow for non-exponential decay, we fit a Weibull survival model with shape parameter $\gamma$:
+\begin{equation}
+\label{eq:weibull-survival}
+S(s) = \exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right).
+\end{equation}
+The case $\gamma = 1$ recovers the exponential; $\gamma < 1$ indicates decreasing hazard (early replies more likely), while $\gamma > 1$ indicates increasing hazard.
+
+\paragraph{Heterogeneous agents.} We extend to agent-specific $\beta_i$ using a mixed-effects survival model with log-normal random effects on $\beta$:
+\begin{equation}
+\label{eq:mixed-effects}
+\log \beta_i = \mu_\beta + x_i^\top \gamma + u_i, \qquad u_i \sim \mathcal{N}(0, \sigma_\beta^2),
+\end{equation}
+where $x_i$ includes covariates (log-karma, log-follower count, account age). We estimate via penalized likelihood or Bayesian MCMC.
+
+\subsubsection{Stratified Estimates}
+
+We compute half-life estimates stratified by:
+\begin{itemize}
+    \item \textbf{Submolt category}: Builder/Technical, Philosophy/Meta, Social/Casual, etc.,
+    \item \textbf{Agent karma quartile}: to test whether high-reputation agents sustain longer engagement,
+    \item \textbf{Time period}: early vs.\ late in the observation window, to detect temporal trends.
+\end{itemize}
+
+\subsubsection{Confidence Intervals and Uncertainty}
+
+We report 95\% confidence intervals via:
+\begin{itemize}
+    \item Profile likelihood for parametric models,
+    \item Bootstrap resampling (threads as units) for robustness to model misspecification.
+\end{itemize}
+
+\subsection{Periodicity Detection}
+\label{sec:methods:periodicity}
+
+Our model predicts periodic structure in comment arrivals at the heartbeat frequency ($\sim$4 hours). We test this via spectral analysis.
+
+\subsubsection{Aggregate Activity Time Series}
+
+We construct a time series of comment counts binned at 15-minute intervals across the observation window. Let $C_t$ denote the count in bin $t$. We apply standard preprocessing:
+\begin{itemize}
+    \item Log-transform: $Y_t = \log(C_t + 1)$ to stabilize variance,
+    \item Detrending: subtract a 24-hour moving average to remove diurnal drift,
+    \item Windowing: apply a Hanning window before spectral estimation.
+\end{itemize}
+
+\subsubsection{Spectral Analysis}
+
+We estimate the power spectral density (PSD) via Welch's method with 50\% overlapping segments. We test for peaks at the expected heartbeat frequency $f_\tau = 1/\tau \approx 1/(4\text{ hours}) = 0.25\text{ hr}^{-1}$ by:
+\begin{itemize}
+    \item Comparing observed power at $f_\tau$ to a red-noise null (AR(1) process fitted to the data),
+    \item Computing the peak-to-background ratio and testing significance via Fisher's $g$-statistic.
+\end{itemize}
+
+\subsubsection{Agent-Level Autocorrelation}
+
+For agents with $\geq 10$ comments, we compute the autocorrelation function (ACF) of inter-comment times. Under the heartbeat model, we expect elevated autocorrelation at lags near 4 hours. We report:
+\begin{itemize}
+    \item Mean ACF across agents at lags 1--12 hours,
+    \item Distribution of peak ACF lag across agents.
+\end{itemize}
+
+\subsection{Cross-Platform Comparison}
+\label{sec:methods:comparison}
+
+To assess whether Moltbook dynamics differ from human-driven platforms, we compare against matched Reddit threads.
+
+\subsubsection{Matching}
+
+As described in \cref{sec:data:reddit}, we employ coarsened exact matching on early engagement, topic, and posting time. This yields a matched sample where Moltbook and Reddit posts have similar initial conditions, isolating the effect of platform (agent vs.\ human).
+
+\subsubsection{Outcome Metrics}
+
+For each matched pair, we compute:
+\begin{itemize}
+    \item \textbf{Interaction half-life} $\hat{h}$ via the survival analysis procedure above,
+    \item \textbf{Maximum depth} $D$,
+    \item \textbf{Total comments} $N$,
+    \item \textbf{Re-entry rate} $\text{RE}$,
+    \item \textbf{Reciprocity} (dyadic).
+\end{itemize}
+
+\subsubsection{Statistical Testing}
+
+We test for platform differences using:
+\begin{itemize}
+    \item \textbf{Paired tests}: Wilcoxon signed-rank test for matched-pair differences,
+    \item \textbf{Effect sizes}: Cliff's delta (non-parametric effect size) and Cohen's $d$ (assuming approximate normality),
+    \item \textbf{Regression}: mixed-effects models with platform as fixed effect and matched pair as random effect, controlling for residual covariate imbalance.
+\end{itemize}
+
+\subsubsection{Sensitivity Analyses}
+
+We assess robustness via:
+\begin{itemize}
+    \item Varying matching caliper (stricter vs.\ looser matches),
+    \item Excluding Moltbook periods with suspected spam or abnormal activity,
+    \item Restricting to ``high-quality'' threads (above-median engagement),
+    \item Alternative half-life estimators (Kaplan-Meier, Cox regression).
+\end{itemize}
+
+\subsection{Implementation}
+\label{sec:methods:implementation}
+
+All analyses are implemented in Python using:
+\begin{itemize}
+    \item \texttt{pandas} and \texttt{polars} for data manipulation,
+    \item \texttt{lifelines} for survival analysis,
+    \item \texttt{scipy.signal} for spectral analysis,
+    \item \texttt{statsmodels} for regression and time-series models,
+    \item \texttt{networkx} for tree operations.
+\end{itemize}
+
+Code and intermediate outputs are versioned in a public repository (see \cref{sec:reproducibility}).

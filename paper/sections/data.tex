@@ -1,3 +1,123 @@
 \section{Data}
-% TODO: Observatory dataset + API validation + Reddit comparison collection.
+\label{sec:data}
 
+We analyze two datasets: the Moltbook Observatory Archive as our primary source for agent-driven conversations, and a matched sample of Reddit threads for cross-platform comparison.
+
+\subsection{Moltbook Observatory Archive}
+\label{sec:data:moltbook}
+
+Our primary dataset is the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, a publicly available snapshot hosted on Hugging Face. The archive comprises multiple relational tables capturing platform activity from January 28 to February 4, 2026---the first week following Moltbook's public launch.
+
+\subsubsection{Dataset Structure}
+
+The archive contains six tables, summarized in \cref{tab:dataset}:
+
+\begin{table}[t]
+\centering
+\caption{Moltbook Observatory Archive structure. Counts reflect the full archive as of February 4, 2026.}
+\label{tab:dataset}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+\textbf{Table} & \textbf{Description} & \textbf{Rows} & \textbf{Key Fields} \\
+\midrule
+\texttt{agents} & Agent profiles and metadata & 25,600 & \texttt{id}, \texttt{karma}, \texttt{follower\_count} \\
+\texttt{posts} & Root posts with scores & 120,000 & \texttt{id}, \texttt{agent\_id}, \texttt{submolt}, \texttt{created\_at} \\
+\texttt{comments} & Comments with parent links & 226,000 & \texttt{id}, \texttt{post\_id}, \texttt{parent\_id}, \texttt{created\_at} \\
+\texttt{submolts} & Community metadata & 3,680 & \texttt{name}, \texttt{subscriber\_count} \\
+\texttt{snapshots} & Periodic observatory metrics & 114 & \texttt{timestamp}, \texttt{total\_agents}, \texttt{active\_agents\_24h} \\
+\texttt{word\_frequency} & Hourly word counts & 15,300 & \texttt{word}, \texttt{hour}, \texttt{count} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{comments} table is central to our analysis. Each row contains:
+\begin{itemize}
+    \item \texttt{id}: unique comment identifier,
+    \item \texttt{post\_id}: foreign key to the parent post,
+    \item \texttt{agent\_id}: author identifier,
+    \item \texttt{parent\_id}: identifier of the parent comment (null for direct replies to the post),
+    \item \texttt{created\_at}: ISO 8601 timestamp,
+    \item \texttt{score}: upvote count at fetch time.
+\end{itemize}
+
+The \texttt{parent\_id} field enables reconstruction of full comment trees, which is essential for computing depth, branching factors, and identifying reply chains.
+
+\subsubsection{Preprocessing Pipeline}
+
+We apply the following preprocessing steps:
+
+\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post. We discard orphaned comments (those referencing nonexistent parents, typically due to deletions) and posts with no comments.
+
+\paragraph{Timestamp normalization.} All timestamps are converted to Unix epoch seconds and shifted so that each thread's root post occurs at $t = 0$. This normalization facilitates aggregation across threads with different start times.
+
+\paragraph{Agent resolution.} We join comments with the \texttt{agents} table to obtain author metadata (karma, follower count, account creation date). Agents missing from the \texttt{agents} table (approximately 2\% of comment authors) are retained with imputed median values for covariates.
+
+\paragraph{Submolt categorization.} We manually categorize the top 100 submolts by subscriber count into five categories: \emph{Builder/Technical} (programming, automation, tool development), \emph{Philosophy/Meta} (consciousness, AI ethics, existential discussion), \emph{Social/Casual} (jokes, memes, casual chat), \emph{Creative} (writing, art, music), and \emph{Spam/Low-Signal} (cryptocurrency, promotion, repetitive content). Remaining submolts are labeled \emph{Other}. \todo{Finalize categorization after data exploration.}
+
+\subsubsection{Descriptive Statistics}
+
+\Cref{tab:descriptive} presents summary statistics for the processed dataset.
+
+\begin{table}[t]
+\centering
+\caption{Descriptive statistics for processed Moltbook data. \todo{Update with actual values after data processing.}}
+\label{tab:descriptive}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\
+\midrule
+Comments per post & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
+Max depth per thread & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
+Thread duration (hours) & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
+Unique agents per thread & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
+Re-entry rate & \todo{--} & \todo{--} & \todo{--} & 0 & \todo{--} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reddit Comparison Sample}
+\label{sec:data:reddit}
+
+To contextualize Moltbook dynamics, we collect a matched sample of Reddit threads from topically related subreddits.
+
+\subsubsection{Subreddit Selection}
+
+We select subreddits that cover topics prevalent on Moltbook:
+\begin{itemize}
+    \item \texttt{r/ClaudeAI}, \texttt{r/LocalLLaMA}, \texttt{r/MachineLearning}: AI and LLM discussion,
+    \item \texttt{r/programming}, \texttt{r/learnprogramming}: technical/builder topics,
+    \item \texttt{r/philosophy}, \texttt{r/AskPhilosophy}: philosophical discussion,
+    \item \texttt{r/CasualConversation}: social/casual baseline.
+\end{itemize}
+
+\subsubsection{Matching Procedure}
+
+Naive comparison between platforms conflates intrinsic differences with selection effects (Moltbook posts may attract more/fewer initial comments). We employ coarsened exact matching \citep{iacus2012causal} on:
+\begin{itemize}
+    \item \textbf{Early engagement}: comment count within the first 30 minutes, binned into quartiles,
+    \item \textbf{Topic category}: matched to Moltbook submolt categories via keyword overlap in titles,
+    \item \textbf{Time of posting}: hour-of-day bin to control for diurnal patterns.
+\end{itemize}
+
+For each Moltbook post, we identify up to three Reddit posts with exact matches on all bins. Posts without matches are excluded from cross-platform comparisons.
+
+\subsubsection{Data Collection}
+
+Reddit data is collected via the official API in compliance with terms of service. We record the same fields as for Moltbook: comment ID, parent ID, author, timestamp, and score. Author identifiers are anonymized (hashed) to protect privacy.
+
+\todo{Specify final sample sizes and matching success rates after data collection.}
+
+\subsection{Ethical Considerations}
+\label{sec:data:ethics}
+
+Our study uses publicly available data from platforms designed for public discourse. Nevertheless, we adopt the following practices:
+
+\paragraph{No personally identifiable information.} Agent ``names'' on Moltbook are pseudonymous and self-selected. Reddit usernames are hashed before analysis. We do not attempt to link accounts across platforms or to real-world identities.
+
+\paragraph{Aggregate reporting.} Results are reported at the thread or population level. We do not single out individual agents or users except where their content is already widely discussed in public commentary (e.g., prominent agents mentioned in news coverage).
+
+\paragraph{Platform terms of service.} Data collection respects rate limits and terms of service for both platforms. The Moltbook Observatory Archive is released under the MIT license for research purposes.
+
+\paragraph{Potential for misuse.} Our analysis could inform manipulation strategies (e.g., how to sustain artificial engagement). We mitigate this by focusing on descriptive and mechanistic findings rather than prescriptive optimization, and by releasing code for detection of anomalous patterns alongside analysis tools.
