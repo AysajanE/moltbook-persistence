@@ -24,6 +24,16 @@ python scripts/pwj_pipeline.py --dry-run
 python scripts/pwj_pipeline.py --enable-worker-network
 ```
 
+## Recommended pilot run
+
+Pilot runs validate the loop mechanics (structured outputs → artifacts → judge PASS) before doing full-scale downloads/crawls.
+
+Recommended first pilot: **Item 2 (Hugging Face archive)** in `--pilot` mode because it exercises network + filesystem + basic validation without requiring Moltbook API credentials.
+
+```bash
+python scripts/pwj_pipeline.py --items 2 --pilot --enable-worker-network --reset-state
+```
+
 By default it runs items **1–5** (data architecture + the data sources).
 
 Common variations:

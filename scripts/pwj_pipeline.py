@@ -142,7 +142,15 @@ def git_status_porcelain() -> str:
     return (result.stdout or "").strip()
 
 
-def build_planner_prompt(item: PlanItem, iteration: int, prior_judge: dict[str, Any] | None) -> str:
+def build_planner_prompt(
+    item: PlanItem,
+    iteration: int,
+    prior_judge: dict[str, Any] | None,
+    *,
+    attempt_dir: str,
+    pilot: bool,
+    pilot_max_rows: int,
+) -> str:
     judge_feedback = ""
     if prior_judge is not None:
         judge_feedback = (
@@ -150,27 +158,73 @@ def build_planner_prompt(item: PlanItem, iteration: int, prior_judge: dict[str, 
             + json.dumps(prior_judge, indent=2, sort_keys=True)
         )
 
-    return f"""You are the PLANNER agent in a planner→worker→judge pipeline.
+    pilot_block = ""
+    if pilot:
+        pilot_block = f"""
+PILOT MODE (enabled):
+- Keep scope small and fast. The purpose is to validate the PWJ pipeline mechanics (structured outputs, artifact creation, and judge gating).
+- Avoid large downloads / long crawls. If sampling a dataset, cap exports to ~{pilot_max_rows} rows per split/table unless the item explicitly requires full coverage.
+- Avoid irreversible actions (account registration, posting, mass API crawling) unless explicitly required and clearly safe.
+"""
 
-Task: Create a detailed, executable plan to complete ONE item from the project's data collection plan.
+    return f"""You are the PLANNER in a planner→worker→judge pipeline.
 
-Hard rules:
-- Output MUST be valid JSON matching the provided JSON Schema.
-- Do NOT delete files.
-- Keep the plan minimal, idempotent, and auditable (manifests/logs).
-- Prefer writing data to: data_raw/, data_curated/, data_features/ (these are gitignored).
-- Prefer writing run logs/reports to: outputs/
-- If network access is needed for shell commands, assume it is allowed (workspace-write network enabled).
+You produce a plan for exactly ONE item from `docs/data_collection_plan.md`. Your output MUST be valid JSON that matches the provided JSON Schema exactly (no markdown, no extra keys).
 
-Item:
+You do not execute the plan. Assume the worker starts “fresh” with only this prompt + the repo contents (and any judge feedback).
+
+Non-negotiable standards (academic integrity):
+- Do NOT fabricate results, citations, schemas, or “it worked” claims. If unsure, specify what to check and how.
+- Keep the plan deterministic and auditable: every important output should be written to disk with a manifest and basic validation.
+
+Collaboration / safety rules:
+- Do NOT delete files (tracked or untracked).
+- Do NOT change unrelated code/docs. Plan should minimize code changes.
+- Do NOT assume credentials exist. If an item requires secrets/auth, plan a safe “no-auth pilot” sub-scope or explicitly call out the missing prerequisite.
+
+Execution model:
+- A WORKER agent will execute your plan in a `workspace-write` sandbox and can run commands + write files.
+- A JUDGE agent will audit: it will check that required artifacts exist and validations were run.
+
+Run context:
+- Write run-specific reports/manifests under: `{attempt_dir}/`
+
+Item to plan:
 - item_id: {item.item_id}
 - item_title: {item.title}
+- iteration: {iteration}
 
-Relevant excerpt from docs/data_collection_plan.md (this is the item scope):
+Item scope excerpt (treat this as the spec):
 \"\"\"\n{item.body}\n\"\"\"
 {judge_feedback}
+{pilot_block}
 
-Return JSON only. No markdown.
+Plan requirements:
+- Define a crisp `objective` that can be judged PASS/FAIL.
+- Provide 6–12 concrete `plan_steps` (imperative, testable; avoid vague steps). Each step should mention either:
+  - an exact command to run, OR
+  - an exact file to create/update, OR
+  - a measurable check to perform.
+- Include explicit `artifacts` the worker must create. For each artifact:
+  - Use repo-relative paths.
+  - Mark `must_exist=true` for artifacts required for PASS.
+  - Prefer per-run manifests/reports under `outputs/` and data under `data_raw/`, `data_curated/`, `data_features/`.
+- Use `suggested_commands` to give a minimal, copy-pastable command sequence when helpful (optional but recommended).
+- Include `checks`: exact validations the worker must run (row counts, schema discovery output, referential integrity, timestamp parse rate, etc).
+- Include `constraints`: key guardrails (no deletions, no secrets, no huge downloads if doing a pilot, etc). If an item requires auth, state the prerequisite explicitly.
+
+Minimum required artifacts (include these with `must_exist=true`):
+- `{attempt_dir}/run_manifest.json` (machine-readable: inputs, commands, versions, timestamps, row counts)
+- `{attempt_dir}/report.md` (human-readable: what was done, what was verified, and how to scale to full run)
+
+run_manifest.json guidance (for the worker; encode this expectation in your plan):
+- Include: item_id, item_title, iteration, started_at_utc, finished_at_utc
+- Record: git_commit, python_version (and any package versions you installed), and OS basics if available
+- Record: the exact commands run (or scripts invoked) and their key parameters (especially dataset identifiers and row caps)
+- Record: artifacts produced with paths + row counts when known
+- Record: validation results (pass/fail + notes)
+
+Return JSON only. No markdown. No commentary outside JSON.
 """
 
 
@@ -179,6 +233,10 @@ def build_worker_prompt(
     iteration: int,
     planner_output: dict[str, Any],
     prior_judge: dict[str, Any] | None,
+    *,
+    attempt_dir: str,
+    pilot: bool,
+    pilot_max_rows: int,
 ) -> str:
     judge_feedback = ""
     if prior_judge is not None:
@@ -187,30 +245,61 @@ def build_worker_prompt(
             + json.dumps(prior_judge, indent=2, sort_keys=True)
         )
 
-    return f"""You are the WORKER agent in a planner→worker→judge pipeline.
+    pilot_block = ""
+    if pilot:
+        pilot_block = f"""
+PILOT MODE (enabled):
+- Prefer a small, high-signal slice that proves the pipeline works end-to-end.
+- Cap exports to ~{pilot_max_rows} rows per split/table where applicable.
+- Focus on: artifact creation, schema discovery output, and at least one meaningful validation check.
+"""
 
-Goal: Execute the planner's plan for the given item and produce the required artifacts.
+    return f"""You are the WORKER in a planner→worker→judge pipeline.
 
-Hard rules:
-- Output MUST be valid JSON matching the provided JSON Schema.
+Your job: execute the planner’s plan for exactly ONE item. Your output MUST be valid JSON matching the provided JSON Schema exactly (no markdown, no extra keys).
+
+Assume you start “fresh” with only this prompt + the repository state (and any judge feedback below). Do not rely on unstated prior context.
+
+Non-negotiable standards (academic integrity):
+- Do NOT fabricate results or claim checks passed unless you actually ran them.
+- If something fails, report it plainly in `issues` and adjust with the smallest corrective step.
+
+Collaboration / safety rules:
 - Do NOT delete files (tracked or untracked).
-- Make changes only as needed for this item. Avoid refactors.
-- Put downloaded/derived data under data_raw/, data_curated/, data_features/.
-- Put logs/manifests/reports under outputs/.
-- Prefer idempotent snapshots (timestamped folders), do not overwrite prior outputs.
+- Keep changes tightly scoped to this item. Avoid refactors and formatting churn.
+- Do NOT commit, push, open PRs, or modify git history.
+- Do NOT add secrets to the repo; do not print tokens/keys in logs.
+
+Data handling:
+- Put downloaded/derived datasets under: `data_raw/`, `data_curated/`, `data_features/` (gitignored).
+- Put run manifests, schema manifests, and validation reports under: `outputs/` (commit is optional, but outputs should be saved to disk for audit).
+- Prefer timestamped snapshot folders; do not overwrite prior artifacts.
+
+Run context:
+- Write run-specific reports/manifests under: `{attempt_dir}/`
 
 Item:
 - item_id: {item.item_id}
 - item_title: {item.title}
+- iteration: {iteration}
 
-Planner output JSON:
+Planner output JSON (follow this exactly unless it is impossible; then explain why):
 {json.dumps(planner_output, indent=2, sort_keys=True)}
 
-Relevant excerpt from docs/data_collection_plan.md:
+Item scope excerpt:
 \"\"\"\n{item.body}\n\"\"\"
 {judge_feedback}
+{pilot_block}
 
-Return JSON only. No markdown.
+Implementation expectations:
+- Before writing new scripts, look for existing helpers in `scripts/` and reuse them when possible.
+- Produce all `must_exist=true` artifacts listed by the planner.
+- Ensure `{attempt_dir}/run_manifest.json` and `{attempt_dir}/report.md` exist and are coherent.
+- Run the planner’s `checks` and record what you ran in `checks_run` (include command names and what they validated).
+- Populate `artifacts_created` with accurate repo-relative paths and descriptions (include row counts when available).
+- If the work would take a long time or download large volumes, implement a small, verifiable slice first and document how to scale it up (but do not pretend it is complete).
+
+Return JSON only. No markdown. No commentary outside JSON.
 """
 
 
@@ -220,14 +309,36 @@ def build_judge_prompt(
     planner_output: dict[str, Any],
     worker_output: dict[str, Any],
     guardrails: dict[str, Any],
+    *,
+    attempt_dir: str,
+    pilot: bool,
 ) -> str:
-    return f"""You are the JUDGE agent in a planner→worker→judge pipeline.
+    pilot_block = ""
+    if pilot:
+        pilot_block = """
+PILOT MODE (enabled):
+- Judge against the *pilot objective* and required artifacts. Do not require full-scale collection if the planner scoped it explicitly as a pilot.
+- Still require real evidence: artifacts exist, checks ran, and outputs are interpretable/reproducible.
+"""
 
-You must audit the worker's work for the item. Output PASS only if the worker satisfied the planner's success criteria and produced the required artifacts with reasonable validation.
+    return f"""You are the JUDGE in a planner→worker→judge pipeline.
 
-Hard rules:
-- Output MUST be valid JSON matching the provided JSON Schema.
-- Be strict and concrete: list exactly what is missing if you FAIL.
+You must audit the worker’s work for exactly ONE item and decide PASS/FAIL. Your output MUST be valid JSON matching the provided JSON Schema exactly (no markdown, no extra keys).
+
+Decision rule:
+- PASS only if the worker met the planner’s objective, produced all required artifacts, and ran the required checks with credible evidence.
+- Otherwise FAIL and provide concrete, minimal required fixes.
+
+Audit standards (be strict):
+- Do NOT accept “should be fine” or unverifiable claims.
+- Prefer checking the filesystem and git status/diff directly (read-only is fine). If you do not verify, FAIL.
+
+Safety / collaboration:
+- If guardrails indicate protected file deletions, this is an automatic FAIL unless fully restored and explained.
+- If the worker changed many unrelated files, FAIL and request a narrower fix.
+
+Run context:
+- Attempt directory: `{attempt_dir}/`
 
 Item:
 - item_id: {item.item_id}
@@ -240,13 +351,27 @@ Planner output JSON:
 Worker output JSON:
 {json.dumps(worker_output, indent=2, sort_keys=True)}
 
-Guardrails report (file deletions, git status, etc):
+Guardrails report:
 {json.dumps(guardrails, indent=2, sort_keys=True)}
 
-Relevant excerpt from docs/data_collection_plan.md:
+Item scope excerpt:
 \"\"\"\n{item.body}\n\"\"\"
+{pilot_block}
 
-Return JSON only. No markdown.
+What to verify (minimum):
+1) All planner artifacts with `must_exist=true` exist at the specified paths and are non-empty where applicable.
+2) Worker’s `checks_run` plausibly correspond to the planner’s `checks` (and results are recorded somewhere on disk or inferable from artifacts/logs).
+3) Data landed in the intended directories (`data_raw/`, `data_curated/`, `data_features/`) and no raw data was added to git.
+4) Changes are scoped and reproducible (manifests, schema logs, timestamps, versions).
+5) `{attempt_dir}/run_manifest.json` and `{attempt_dir}/report.md` exist and contain sufficient detail to reproduce the run.
+
+Output requirements:
+- `decision`: PASS or FAIL
+- `checks`: include multiple checks with clear pass/fail and details (include paths you inspected and commands you ran).
+- `required_fixes`: if FAIL, list exact missing artifacts/commands/edits needed.
+- `suggested_worker_instructions`: if FAIL, give a ready-to-paste instruction for the next worker iteration.
+
+Return JSON only. No markdown. No commentary outside JSON.
 """
 
 
@@ -356,6 +481,18 @@ def main() -> None:
     parser.add_argument("--judge-model", type=str, default=None)
 
     parser.add_argument(
+        "--pilot",
+        action="store_true",
+        help="Pilot mode: instruct agents to do a small, fast slice to validate the pipeline.",
+    )
+    parser.add_argument(
+        "--pilot-max-rows",
+        type=int,
+        default=1000,
+        help="Row cap per split/table when in --pilot mode (default: 1000).",
+    )
+
+    parser.add_argument(
         "--enable-worker-network",
         action="store_true",
         help="Enable network access inside workspace-write sandbox for worker runs.",
@@ -412,6 +549,7 @@ def main() -> None:
         for attempt in range(1, args.max_attempts + 1):
             attempt_dir = runs_dir / f"item_{item_id}" / f"attempt_{attempt}_{utc_now_compact()}"
             attempt_dir.mkdir(parents=True, exist_ok=True)
+            attempt_rel = str(attempt_dir.relative_to(REPO_ROOT))
 
             # Backup protected paths before worker runs.
             backup_tar = attempt_dir / "backup_protected.tar.gz"
@@ -426,7 +564,14 @@ def main() -> None:
             worker_logs = attempt_dir / "worker_logs"
             judge_logs = attempt_dir / "judge_logs"
 
-            planner_prompt = build_planner_prompt(item, attempt, prior_judge)
+            planner_prompt = build_planner_prompt(
+                item,
+                attempt,
+                prior_judge,
+                attempt_dir=attempt_rel,
+                pilot=bool(args.pilot),
+                pilot_max_rows=int(args.pilot_max_rows),
+            )
             planner = run_codex_exec(
                 prompt=planner_prompt,
                 schema_path=PLANNER_SCHEMA,
@@ -438,7 +583,15 @@ def main() -> None:
                 full_auto=False,
             )
 
-            worker_prompt = build_worker_prompt(item, attempt, planner, prior_judge)
+            worker_prompt = build_worker_prompt(
+                item,
+                attempt,
+                planner,
+                prior_judge,
+                attempt_dir=attempt_rel,
+                pilot=bool(args.pilot),
+                pilot_max_rows=int(args.pilot_max_rows),
+            )
             worker = run_codex_exec(
                 prompt=worker_prompt,
                 schema_path=WORKER_SCHEMA,
@@ -464,7 +617,15 @@ def main() -> None:
             }
             write_json(attempt_dir / "guardrails.json", guardrails)
 
-            judge_prompt = build_judge_prompt(item, attempt, planner, worker, guardrails)
+            judge_prompt = build_judge_prompt(
+                item,
+                attempt,
+                planner,
+                worker,
+                guardrails,
+                attempt_dir=attempt_rel,
+                pilot=bool(args.pilot),
+            )
             judge = run_codex_exec(
                 prompt=judge_prompt,
                 schema_path=JUDGE_SCHEMA,
