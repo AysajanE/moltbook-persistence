@@ -32,6 +32,8 @@ make paper
 - `docs/`: background notes, data notes, and project checklists.
 - Key docs:
   - `docs/background.md`: web-sourced context + pointers.
+  - `docs/data_collection_plan.md`: detailed collection plan (source of truth for data work).
+  - `docs/pwj_pipeline.md`: how to run the planner→worker→judge Codex pipeline.
   - `docs/project_checklist.md`: week-by-week execution checklist.
 - `paper/`: LaTeX source for the arXiv submission.
 - `scripts/`: small CLIs (download/export data, packaging helpers).

@@ -24,6 +24,17 @@ data/processed/*
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 
+# Data collection plan layout (gitignored; keep docs)
+data_raw/*
+data_curated/*
+data_features/*
+!data_raw/README.md
+!data_curated/README.md
+!data_features/README.md
+!data_raw/.gitkeep
+!data_curated/.gitkeep
+!data_features/.gitkeep
+
 # Outputs (keep structure + docs)
 outputs/*
 !outputs/README.md

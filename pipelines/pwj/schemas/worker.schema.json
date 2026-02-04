@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PWJ worker output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "role",
+    "item_id",
+    "item_title",
+    "iteration",
+    "summary",
+    "actions_taken",
+    "artifacts_created",
+    "checks_run",
+    "issues"
+  ],
+  "properties": {
+    "role": { "type": "string", "const": "worker" },
+    "item_id": { "type": "string" },
+    "item_title": { "type": "string" },
+    "iteration": { "type": "integer", "minimum": 1 },
+    "summary": { "type": "string" },
+    "actions_taken": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artifacts_created": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "description"],
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string" },
+          "rows": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "checks_run": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "issues": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "next_steps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+

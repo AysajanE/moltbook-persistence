@@ -9,6 +9,12 @@ This repository is an **academic research** codebase. **Scientific rigor and aca
 - **No “fill-in” results:** do **not** replace `\todo{...}` placeholders in the paper unless you have generated the underlying values from this repo’s code and/or documented data, and you can point to the exact provenance (script + inputs + date + version).
 - When the user requests an estimate/forecast, only provide it if you can (a) justify it with explicit assumptions and (b) label it clearly as an estimate; otherwise, decline and propose how to compute it from data.
 
+## Collaboration safety (must follow)
+
+- **Do not delete files** (tracked or untracked) unless the user explicitly asks.
+- Keep edits narrowly scoped; avoid drive-by refactors and formatting churn.
+- Prefer additive, timestamped outputs (manifests/logs) over overwriting prior artifacts.
+
 ## Project context (source-of-truth docs)
 
 - Research scope and hypotheses: `docs/moltbook_research_proposal.md`
@@ -16,6 +22,7 @@ This repository is an **academic research** codebase. **Scientific rigor and aca
 - Data sources and norms: `docs/data_sources.md`, `docs/data_collection_plan.md`
 - Decision log (update when choices affect the study): `docs/decisions.md`
 - Execution checklist: `docs/project_checklist.md`
+- Codex automation workflow: `docs/pwj_pipeline.md`
 - Paper source: `paper/main.tex` and `paper/sections/`
 
 ## Reproducibility and provenance
@@ -23,16 +30,21 @@ This repository is an **academic research** codebase. **Scientific rigor and aca
 - Prefer **small, end-to-end scripts** over frameworks. Keep pipelines deterministic where possible.
 - For every derived artifact (tables/figures/metrics), ensure there is:
   - a generating script (prefer `analysis/NN_*.py`),
-  - a clear input path (`data/raw|interim|processed`),
+  - a clear input path (`data/raw|interim|processed` or `data_raw|data_curated|data_features`),
   - recorded dataset versioning info (download date + upstream identifier/version/hash when available).
 - If you introduce randomness (sampling, bootstraps), set and record seeds.
 
 ## Data handling (do not break)
 
-- **Do not commit raw data**. Follow `data/README.md`:
+- **Do not commit raw data**. Keep datasets out of git.
+- Legacy lightweight layout (used by early scripts): follow `data/README.md`:
   - `data/raw/` = immutable upstream exports
   - `data/interim/` = cleaned/merged intermediates
   - `data/processed/` = analysis-ready tables
+- Data-collection-plan layout (preferred for ongoing collection work):
+  - `data_raw/` = immutable upstream exports (raw)
+  - `data_curated/` = normalized tables
+  - `data_features/` = derived features
 - Keep sensitive/redistributable content out of git. For Reddit, store only IDs and/or anonymized derivatives as permitted.
 
 ## Paper-writing rules (LaTeX)

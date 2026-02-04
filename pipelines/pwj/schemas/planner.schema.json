@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PWJ planner output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "role",
+    "item_id",
+    "item_title",
+    "iteration",
+    "objective",
+    "constraints",
+    "plan_steps",
+    "artifacts",
+    "checks"
+  ],
+  "properties": {
+    "role": { "type": "string", "const": "planner" },
+    "item_id": { "type": "string" },
+    "item_title": { "type": "string" },
+    "iteration": { "type": "integer", "minimum": 1 },
+    "objective": { "type": "string" },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "plan_steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "description", "must_exist"],
+        "properties": {
+          "path": { "type": "string" },
+          "description": { "type": "string" },
+          "must_exist": { "type": "boolean" }
+        }
+      }
+    },
+    "suggested_commands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "checks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" }
+  }
+}
+

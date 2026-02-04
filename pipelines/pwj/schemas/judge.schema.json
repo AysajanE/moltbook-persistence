@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PWJ judge output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "role",
+    "item_id",
+    "item_title",
+    "iteration",
+    "decision",
+    "rationale",
+    "checks",
+    "required_fixes"
+  ],
+  "properties": {
+    "role": { "type": "string", "const": "judge" },
+    "item_id": { "type": "string" },
+    "item_title": { "type": "string" },
+    "iteration": { "type": "integer", "minimum": 1 },
+    "decision": { "type": "string", "enum": ["PASS", "FAIL"] },
+    "rationale": { "type": "string" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "passed", "details"],
+        "properties": {
+          "name": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "details": { "type": "string" }
+        }
+      }
+    },
+    "required_fixes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "suggested_worker_instructions": { "type": "string" }
+  }
+}
+
