@@ -1,0 +1,317 @@
+\section{Model: Horizon-Limited Interaction Cascades}
+\label{sec:model}
+
+We develop a generative model for conversation dynamics on agent social networks. Our framework combines self-exciting point processes with age-dependent branching dynamics, explicitly incorporating the periodic availability patterns induced by platform-level scheduling mechanisms. The model yields estimable parameters---most notably an \emph{interaction half-life}---that connect platform design to observable conversation structure.
+
+\subsection{Setting and Notation}
+\label{sec:model:notation}
+
+We model discussions as timestamped, author-attributed reply trees. Let $\calJ$ denote the set of \emph{threads} (root posts). For a thread $j \in \calJ$, let $n \in \{0, 1, \ldots, N_j\}$ index the root post ($n = 0$) and subsequent comments ($n \geq 1$). Each event $n$ is characterized by a triple $(t_{jn}, a_{jn}, p_{jn})$ where:
+\begin{itemize}
+    \item $t_{jn} \in \R_{\geq 0}$ is the timestamp (with $t_{j0} = 0$ by convention),
+    \item $a_{jn} \in \calA$ is the author (agent) from the set of all agents $\calA$,
+    \item $p_{jn} \in \{0, 1, \ldots, n-1\}$ is the parent index, where $p_{j0} = 0$.
+\end{itemize}
+
+The reply structure induces a rooted tree $T_j$ with node set $\{0, \ldots, N_j\}$ and directed edges $p_{jn} \to n$. We define depth recursively:
+\begin{equation}
+\label{eq:depth}
+d_{j0} = 0, \qquad d_{jn} = d_{j,p_{jn}} + 1 \quad \text{for } n \geq 1.
+\end{equation}
+The \emph{maximum depth} of thread $j$ is $D_j := \max_{0 \leq n \leq N_j} d_{jn}$.
+
+Let $\calH_j(t)$ denote the thread history up to time $t$: all events $\{(t_{jm}, a_{jm}, p_{jm}) : t_{jm} < t\}$. The counting process $N_j(t) := \sum_{n=1}^{N_j} \ind\{t_{jn} \leq t\}$ records the cumulative number of comments by time $t$.
+
+\Cref{tab:notation} summarizes our notation for reference.
+
+\begin{table}[t]
+\centering
+\caption{Summary of notation.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$\calJ$ & Set of threads (root posts) \\
+$\calA$ & Set of agents \\
+$N_j$ & Number of comments in thread $j$ \\
+$t_{jn}$ & Timestamp of event $n$ in thread $j$ \\
+$a_{jn}$ & Author of event $n$ in thread $j$ \\
+$p_{jn}$ & Parent index of event $n$ in thread $j$ \\
+$d_{jn}$ & Depth of event $n$ in thread $j$ \\
+$D_j$ & Maximum depth of thread $j$ \\
+$\calH_j(t)$ & History of thread $j$ up to time $t$ \\
+$b(t)$ & Aggregate availability function (attention clock) \\
+$\alpha_i$ & Influence amplitude of agent $i$ \\
+$\beta_i$ & Decay rate of agent $i$ \\
+$h_i = \ln 2 / \beta_i$ & Half-life of agent $i$ \\
+$\mu$ & Effective branching ratio \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The Attention Clock: Availability and Staleness}
+\label{sec:model:attention}
+
+Agent interaction on platforms like Moltbook is shaped by two distinct temporal phenomena that we model separately before combining them multiplicatively.
+
+\begin{definition}[Availability]
+\label{def:availability}
+The \emph{aggregate availability function} $b: \R_{\geq 0} \to \R_{\geq 0}$ represents the fraction of agents active at time $t$ relative to the long-run average. We normalize so that $\bar{b} := \frac{1}{T} \int_0^T b(t) \, dt = 1$ over a sufficiently long window $T$.
+\end{definition}
+
+The availability function captures platform-level scheduling. On Moltbook, the heartbeat mechanism instructs agents to check the platform at approximately 4-hour intervals, inducing periodic structure in $b(t)$. A tractable parametric form is:
+\begin{equation}
+\label{eq:availability-periodic}
+b(t) = 1 + \kappa \cos\!\left(\frac{2\pi}{\tau} t + \phi\right), \qquad |\kappa| < 1,
+\end{equation}
+where $\tau$ is the heartbeat period (approximately 4 hours), $\kappa$ controls amplitude, and $\phi$ is a phase offset. More realistic specifications may include multiple harmonics.
+
+\begin{definition}[Staleness decay]
+\label{def:staleness}
+Conditional on exposure to a thread, an agent's propensity to respond decreases with time since the relevant stimulus. We model this via an exponential kernel: the staleness factor for a comment authored by agent $i$ at time $s$, evaluated at time $t > s$, is $e^{-\beta_i (t - s)}$ where $\beta_i > 0$ is agent $i$'s \emph{decay rate}.
+\end{definition}
+
+The decay rate $\beta_i$ captures how quickly attention to agent $i$'s content fades. Faster context loss or higher task-switching costs correspond to larger $\beta_i$. The combined effect of availability and staleness enters multiplicatively in the event intensities we now define.
+
+\subsection{Temporal Dynamics: Self-Exciting Reply Processes}
+\label{sec:model:temporal}
+
+We model comment arrivals as a marked self-exciting point process in the Hawkes family \citep{hawkes1971spectra}, with the key extension of periodic availability modulation.
+
+\begin{definition}[Direct-reply intensity]
+\label{def:reply-intensity}
+Conditional on thread history $\calH_j(t)$, each existing node $m$ generates direct replies according to an inhomogeneous Poisson process on $(t_{jm}, \infty)$ with intensity
+\begin{equation}
+\label{eq:reply-intensity}
+\lambda_{j,m}(t \mid \calH_j(t)) := b(t) \, \alpha_{a_{jm}} \exp\!\left(-\beta_{a_{jm}} (t - t_{jm})\right) \ind\{t > t_{jm}\},
+\end{equation}
+where:
+\begin{itemize}
+    \item $b(t) \geq 0$ is the aggregate availability (attention clock forcing),
+    \item $\alpha_i > 0$ is the \emph{influence amplitude} of agent $i$, controlling the expected number of replies their content triggers,
+    \item $\beta_i > 0$ is the \emph{decay rate} of agent $i$'s conversational persistence.
+\end{itemize}
+\end{definition}
+
+The total conditional intensity of new comments in thread $j$ is the superposition over existing nodes:
+\begin{equation}
+\label{eq:total-intensity}
+\lambda_j(t \mid \calH_j(t)) := \sum_{m : t_{jm} < t} \lambda_{j,m}(t \mid \calH_j(t)).
+\end{equation}
+
+When a new comment occurs at time $t$, its parent is determined by the standard competing-risks decomposition:
+\begin{equation}
+\label{eq:parent-selection}
+\Prob(p_{jn} = m \mid t_{jn} = t, \calH_j(t)) = \frac{\lambda_{j,m}(t \mid \calH_j(t))}{\lambda_j(t \mid \calH_j(t))}.
+\end{equation}
+This formulation connects the model to observable reply edges and supports likelihood-based inference.
+
+\begin{remark}[Connection to standard Hawkes processes]
+\label{rem:hawkes}
+If we ignore explicit parent-edge generation and consider only event times, \cref{eq:total-intensity} defines a marked Hawkes process with agent-dependent excitation kernel $g_i(\Delta) = \alpha_i e^{-\beta_i \Delta}$ modulated by $b(t)$. Such processes are widely used for information cascades and social media dynamics \citep{crane2008robust, zhao2015seismic, rizoiu2017expecting}.
+\end{remark}
+
+\subsection{Interaction Half-Life}
+\label{sec:model:halflife}
+
+A central quantity in our framework is the \emph{interaction half-life}, which provides an interpretable measure of conversational persistence.
+
+\begin{definition}[Agent-level half-life]
+\label{def:halflife}
+For an agent $i$ with decay rate $\beta_i$, the \emph{interaction half-life} is
+\begin{equation}
+\label{eq:halflife}
+h_i := \frac{\ln 2}{\beta_i}.
+\end{equation}
+This is the time required for the staleness factor to decrease by half: $e^{-\beta_i h_i} = \frac{1}{2}$.
+\end{definition}
+
+At the thread level, we define an effective half-life using a weighted average of constituent decay rates:
+\begin{equation}
+\label{eq:thread-halflife}
+\beta_j := \frac{\sum_{m=1}^{N_j} w_{jm} \beta_{a_{jm}}}{\sum_{m=1}^{N_j} w_{jm}}, \qquad h_j := \frac{\ln 2}{\beta_j},
+\end{equation}
+where weights $w_{jm}$ may reflect comment influence (e.g., score) or simply be uniform.
+
+\begin{remark}[Estimation]
+Under the direct-reply model \cref{eq:reply-intensity}, inter-reply times to a fixed parent $m$ form an inhomogeneous Poisson process with hazard proportional to $e^{-\beta_{a_{jm}} \Delta}$. The decay rate $\beta_i$ can thus be estimated via maximum likelihood using offspring times relative to each parent, treating $b(t)$ as a known offset. \Cref{sec:methods} details our estimation procedure.
+\end{remark}
+
+\subsection{Structural Dynamics: Branching Process Interpretation}
+\label{sec:model:branching}
+
+The direct-reply construction induces a branching process interpretation: each node $m$ is an ``individual'' producing offspring (direct replies) in continuous time. This connection yields predictions for conversation structure.
+
+\subsubsection{Expected Offspring and Branching Ratio}
+
+Consider a node authored by agent $i$ at time $s$. The expected number of direct replies over an infinite horizon is:
+\begin{equation}
+\label{eq:offspring-mean}
+\mu_i(s) := \E\!\left[\#\{\text{direct replies to node}\} \,\middle|\, a_{jm} = i, t_{jm} = s\right] = \int_0^\infty b(s + u) \, \alpha_i \, e^{-\beta_i u} \, du.
+\end{equation}
+
+When the availability function $b(t)$ varies slowly relative to the decay timescale $1/\beta_i$, or when averaged over phases of a periodic $b(t)$, we obtain the approximation:
+\begin{equation}
+\label{eq:offspring-approx}
+\mu_i \approx \alpha_i \int_0^\infty e^{-\beta_i u} \, du = \frac{\alpha_i}{\beta_i}.
+\end{equation}
+
+\begin{proposition}[Influence--persistence trade-off]
+\label{prop:tradeoff}
+The expected number of replies to an agent's comment is approximately proportional to influence ($\alpha_i$) and inversely proportional to decay rate ($\beta_i$). Agents with high persistence (low $\beta_i$) generate more sustained engagement even with moderate influence.
+\end{proposition}
+
+The \emph{effective branching ratio} at time $s$ is the expected offspring averaged over the author distribution:
+\begin{equation}
+\label{eq:branching-ratio}
+\mu(s) := \E_{i \sim \pi(s)}[\mu_i(s)],
+\end{equation}
+where $\pi(s)$ is the distribution of authors at time $s$. Under normalization, $\mu \approx \E[\alpha_i / \beta_i]$.
+
+\subsubsection{Subcriticality and Expected Thread Size}
+
+We operate in the subcritical regime where threads eventually terminate.
+
+\begin{assumption}[Subcriticality]
+\label{ass:subcritical}
+The effective branching ratio satisfies $\mu < 1$.
+\end{assumption}
+
+Under \cref{ass:subcritical}, standard branching process theory yields:
+
+\begin{proposition}[Expected thread size]
+\label{prop:thread-size}
+Let $Z_k$ denote the number of nodes at depth $k$. Under the single-type approximation with mean offspring $\mu < 1$:
+\begin{equation}
+\label{eq:expected-size}
+\E[|T_j|] = \sum_{k=0}^\infty \E[Z_k] = \sum_{k=0}^\infty \mu^k = \frac{1}{1 - \mu}.
+\end{equation}
+The expected number of comments (excluding the root) is $\E[N_j] = \mu / (1 - \mu)$.
+\end{proposition}
+
+\subsubsection{Depth Distribution and Tail Bounds}
+
+The branching process interpretation yields predictions for conversation depth.
+
+\begin{proposition}[Depth tail bound]
+\label{prop:depth-bound}
+Under the single-type approximation, the probability that maximum depth exceeds $k$ satisfies:
+\begin{equation}
+\label{eq:depth-tail}
+\Prob(D_j \geq k) \leq \E[Z_k] = \mu^k.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The event $\{D_j \geq k\}$ implies $Z_k \geq 1$. Markov's inequality gives $\Prob(D_j \geq k) \leq \E[Z_k]$. Under the single-type approximation, $\E[Z_k] = \mu^k$.
+\end{proof}
+
+\begin{remark}[Implication for shallow threads]
+\label{rem:shallow}
+\Cref{prop:depth-bound} formalizes a key structural prediction: deep threads are exponentially unlikely unless the effective branching ratio $\mu$ is close to 1. If agents exhibit high decay rates (large $\beta_i$, hence small $\mu_i = \alpha_i / \beta_i$), we expect conversation trees to be shallow regardless of initial engagement.
+\end{remark}
+
+\subsection{Agent Heterogeneity and Re-Entry}
+\label{sec:model:heterogeneity}
+
+Empirical observation suggests strong heterogeneity on Moltbook: a small set of highly active agents coexists with many single-shot participants. We incorporate this via agent-level random effects and explicit re-entry dynamics.
+
+\subsubsection{Marked Reproduction Parameters}
+
+Each agent $i \in \calA$ has latent parameters $\theta_i := (\alpha_i, \beta_i, \rho_i)$ where $\rho_i$ is an activity scale (expected engagement opportunities per unit time). For statistical tractability, we model these as random effects depending on observed covariates $x_i$ (karma, follower count, account age):
+\begin{equation}
+\label{eq:random-effects}
+\log \alpha_i = x_i^\top \gamma_\alpha + u_i^{(\alpha)}, \quad
+\log \beta_i = x_i^\top \gamma_\beta + u_i^{(\beta)}, \quad
+\log \rho_i = x_i^\top \gamma_\rho + u_i^{(\rho)},
+\end{equation}
+where $u_i^{(\cdot)}$ are mean-zero latent heterogeneity terms (e.g., Gaussian). This hierarchical specification is standard in survival and point-process modeling \citep{cox1972regression}.
+
+\subsubsection{Re-Entry as Self-Excitation}
+
+An important feature of sustained conversation is \emph{re-entry}: agents returning to threads where they have previously commented. We model this via agent-level self-excitation.
+
+\begin{definition}[Agent re-entry process]
+\label{def:reentry}
+Let $N_{j,i}(t) := \sum_{n=1}^{N_j} \ind\{t_{jn} \leq t, a_{jn} = i\}$ count agent $i$'s comments in thread $j$ by time $t$. Let $L_{j,i}(t) := \sup\{t_{jn} < t : a_{jn} = i\}$ denote agent $i$'s most recent comment time (with $L_{j,i}(t) = -\infty$ if agent $i$ has not yet commented).
+
+The agent's thread-level intensity incorporates a re-entry term:
+\begin{equation}
+\label{eq:reentry-intensity}
+\lambda_{j,i}(t \mid \calH_j(t)) = b_i(t) \left( \nu_{j,i}(t) + \sum_{m : t_{jm} < t} \kappa_{a_{jm} \to i} e^{-\beta_{a_{jm}}(t - t_{jm})} + \eta_i e^{-\beta_i^{(r)}(t - L_{j,i}(t))} \ind\{L_{j,i}(t) > -\infty\} \right),
+\end{equation}
+where:
+\begin{itemize}
+    \item $b_i(t)$ is agent-specific availability,
+    \item $\nu_{j,i}(t)$ is a baseline entry rate (noticing thread $j$ from the feed),
+    \item $\kappa_{u \to i}$ is cross-excitation (agent $i$'s responsiveness to agent $u$),
+    \item $\eta_i, \beta_i^{(r)}$ are re-entry amplitude and decay rate.
+\end{itemize}
+\end{definition}
+
+The re-entry half-life for agent $i$ is $h_i^{(r)} = \ln 2 / \beta_i^{(r)}$. Agents with large $\eta_i$ and small $\beta_i^{(r)}$ are ``coordination hubs'' that sustain extended threads.
+
+\subsubsection{Re-Entry Rate as Observable}
+
+At the thread level, a simple statistic capturing re-entry behavior is:
+\begin{equation}
+\label{eq:reentry-rate}
+\text{RE}_j := \frac{\#\{n : a_{jn} \in \{a_{j1}, \ldots, a_{j,n-1}\}\}}{N_j},
+\end{equation}
+the fraction of comments from agents who have commented before in the same thread. The model predicts higher $\text{RE}_j$ when re-entry amplitudes $\eta_i$ are large and re-entry decay rates $\beta_i^{(r)}$ are small.
+
+\subsection{Periodicity Signatures from the Attention Clock}
+\label{sec:model:periodicity}
+
+The availability function $b(t)$ with characteristic period $\tau$ (the heartbeat interval) induces detectable periodic structure in comment arrivals.
+
+\begin{proposition}[Periodicity signatures]
+\label{prop:periodicity}
+If $b(t)$ has period $\tau$, the model predicts:
+\begin{enumerate}
+    \item Peaks in the power spectrum of aggregated comment activity at frequency $1/\tau$ (and harmonics),
+    \item Agent-level inter-comment times with probability mass concentrated near $\tau$ and its multiples.
+\end{enumerate}
+\end{proposition}
+
+These predictions are testable via spectral analysis of timestamps and autocorrelation of per-agent activity sequences. Detection of a $\sim$4-hour periodic component would provide direct evidence linking the heartbeat mechanism to observed dynamics.
+
+\subsection{Connection to Platform Mechanisms}
+\label{sec:model:mechanisms}
+
+Our model is not merely a mathematical abstraction: its parameters map to concrete platform design choices.
+
+\paragraph{Heartbeat cadence $\to$ availability periodicity.}
+The heartbeat mechanism instructs agents to check Moltbook every $\tau \approx 4$ hours. If agents comply with idiosyncratic jitter, agent-specific availability $b_i(t)$ is periodic or renewal-driven, and the aggregate $b(t) = \E[b_i(t)]$ inherits this structure. Under the cosine form \cref{eq:availability-periodic}, the expected offspring mean \cref{eq:offspring-mean} becomes analytically tractable via $\int_0^\infty e^{-\beta u} \cos(\omega u) \, du = \beta / (\beta^2 + \omega^2)$.
+
+\paragraph{Context/memory constraints $\to$ decay rate.}
+Faster context loss or higher switching costs increase $\beta_i$, shortening half-life and reducing offspring mean. Conversely, memory scaffolds or thread summarization can be modeled as lowering $\beta_i$, predicting deeper trees and larger $\mu$.
+
+\paragraph{Visibility/UI choices $\to$ parent weights.}
+If clients display recent items prominently, the parent-selection distribution \cref{eq:parent-selection} can be extended with position-dependent weights $w_{jm}(t)$. Higher recency weights predict more star-shaped trees (many replies to near-root nodes). Estimating $w$ from reply patterns quantifies how interface design shapes structure.
+
+\subsection{Summary of Model Predictions}
+\label{sec:model:summary}
+
+Our framework yields the following testable predictions, summarized in \cref{tab:predictions}:
+
+\begin{table}[t]
+\centering
+\caption{Summary of model predictions and corresponding empirical tests.}
+\label{tab:predictions}
+\small
+\begin{tabular}{@{}p{4cm}p{5cm}p{4.5cm}@{}}
+\toprule
+\textbf{Prediction} & \textbf{Mechanism} & \textbf{Empirical Test} \\
+\midrule
+Short interaction half-life ($\sim$4 hours) & Heartbeat cadence + context limits & Survival analysis of inter-reply times \\
+Shallow conversation trees & High $\beta$ $\Rightarrow$ low $\mu$ $\Rightarrow$ exponential depth decay & Depth distribution analysis \\
+Star-shaped structure & Recency bias in parent selection & Branching factor by depth level \\
+Periodic activity patterns & Heartbeat synchronization & Spectral analysis of timestamps \\
+Heterogeneous re-entry & Few high-$\eta$ agents sustain threads & Re-entry rate distribution \\
+Topic moderation & Builder submolts have lower $\beta$ & Half-life by submolt category \\
+\bottomrule
+\end{tabular}
+\end{table}
