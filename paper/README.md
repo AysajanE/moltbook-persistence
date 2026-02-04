@@ -22,3 +22,12 @@ latexmk -pdf main.tex
 - Draft figures: `outputs/figures/` (not committed)
 - Final paper figures: `paper/figures/` (commit)
 
+## Tables
+
+- Working tables: `paper/tables/` (commit; keep small and source-based)
+
+## Sections
+
+Main file: `paper/main.tex`
+
+Section files live in `paper/sections/` and are assembled via `\\input{...}`.
