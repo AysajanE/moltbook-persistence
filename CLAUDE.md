@@ -1,0 +1,1 @@
+Read `AGENTS.md` and follow it as the authoritative operating manual.
