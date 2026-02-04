@@ -42,6 +42,16 @@ python scripts/pwj_pipeline.py --enable-worker-network \
   --judge-model gpt-5.2-codex
 ```
 
+Re-running:
+
+```bash
+# Re-run items even if state says they're completed
+python scripts/pwj_pipeline.py --items 2 --enable-worker-network --force
+
+# Ignore any existing state and start fresh
+python scripts/pwj_pipeline.py --enable-worker-network --reset-state
+```
+
 ## Outputs and state
 
 - Runs: `outputs/pwj_pipeline/item_<id>/attempt_*/`
@@ -54,4 +64,3 @@ python scripts/pwj_pipeline.py --enable-worker-network \
 
 - Worker runs are audited by a judge agent and must PASS before moving on.
 - The orchestrator snapshots `docs/`, `paper/`, `scripts/`, `analysis/`, and `README.md` before worker runs; if any of these files are deleted, it restores them from a local backup in the attempt directory.
-

@@ -339,6 +339,16 @@ def main() -> None:
     parser.add_argument("--max-attempts", type=int, default=3, help="Max iterations per item.")
     parser.add_argument("--runs-dir", type=Path, default=DEFAULT_RUNS_DIR, help="Run output root.")
     parser.add_argument("--state", type=Path, default=DEFAULT_STATE_PATH, help="State JSON path.")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Run selected items even if state marks them completed.",
+    )
+    parser.add_argument(
+        "--reset-state",
+        action="store_true",
+        help="Ignore any existing state file and start fresh.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="List items and exit.")
 
     parser.add_argument("--planner-model", type=str, default=None)
@@ -381,7 +391,7 @@ def main() -> None:
     runs_dir.mkdir(parents=True, exist_ok=True)
 
     state: dict[str, Any] = {"version": 1, "plan_path": str(plan_path), "items": {}}
-    if state_path.exists():
+    if state_path.exists() and not args.reset_state:
         try:
             state = read_json(state_path)
         except Exception:
@@ -392,7 +402,7 @@ def main() -> None:
 
     for item_id in selected_ids:
         item_state = state.setdefault("items", {}).get(item_id, {})
-        if item_state.get("status") == "completed":
+        if item_state.get("status") == "completed" and not args.force:
             continue
 
         prior_judge: dict[str, Any] | None = None
@@ -490,4 +500,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
