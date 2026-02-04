@@ -30,6 +30,9 @@ make paper
 
 - `moltbook_research_proposal.md`: original research proposal (source of truth for scope).
 - `docs/`: background notes, data notes, and project checklists.
+- Key docs:
+  - `docs/background.md`: web-sourced context + pointers.
+  - `docs/project_checklist.md`: week-by-week execution checklist.
 - `paper/`: LaTeX source for the arXiv submission.
 - `scripts/`: small CLIs (download/export data, packaging helpers).
 - `analysis/`: analysis entrypoints (kept minimal; add as the project evolves).
@@ -41,4 +44,3 @@ make paper
 - Prefer small, end-to-end scripts over big frameworks.
 - Track “decisions” in `docs/decisions.md` so we don’t re-litigate.
 - Keep raw data out of git; export clean intermediates for reproducibility.
-
