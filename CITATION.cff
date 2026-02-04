@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the associated paper (forthcoming on arXiv)."
+title: "The 4-Hour Half-Life: Conversation Persistence and Coordination Limits in an AI-Agent Social Network"
+authors:
+  - name: "Moltbook Persistence Project Contributors"
+date-released: 2026-02-04
+license: "MIT"
+
