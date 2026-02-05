@@ -61,3 +61,6 @@ paper/*.pdf
 
 # Archives
 *.zip
+
+# Environment files
+.env
