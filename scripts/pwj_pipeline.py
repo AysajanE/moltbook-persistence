@@ -249,6 +249,11 @@ Secrets / credentials (critical):
 - Do NOT print, paste, or write any secret values to disk (including in `outputs/`, logs, manifests, or reports).
 - If you need to reference an authenticated request, use placeholders like `Authorization: Bearer $MOLTBOOK_API_KEY` (never the literal token).
 - Do NOT require the worker to `cat .env.local`. If needed, the worker may load env vars from `.env.local` without printing values.
+- Reddit note (item 5): If Reddit OAuth credentials are unavailable or delayed, you MAY use the credential-free Arctic Shift archive as the primary source (non-official). The download-tool uses:
+  - Base: `https://arctic-shift.photon-reddit.com/api/{posts,comments}/search`
+  - Params: `subreddit=<name>`, `after=<ms>`, `before=<ms>`, `sort=asc`, `limit=auto`
+  - Headers required to avoid 403: `User-Agent: ...` and `Referer: https://arctic-shift.photon-reddit.com/download-tool`
+  - No API key required. Still run QC and document provenance/limitations.
 
 Non-negotiable standards (academic integrity):
 - Do NOT fabricate results, citations, schemas, or “it worked” claims. If unsure, specify what to check and how.
@@ -345,6 +350,7 @@ Secrets / credentials (critical):
 - NEVER store auth headers in raw request logs. If you persist request metadata, exclude headers entirely or redact auth.
 - If you must verify a secret exists, only do non-printing checks (e.g., `test -n \"$MOLTBOOK_API_KEY\"`).
 - Prefer using `MOLTBOOK_API_KEY` if already available; do not call `/agents/register` unless explicitly required (it returns secrets).
+- Reddit note (item 5): If Reddit OAuth credentials are missing, prefer the credential-free Arctic Shift archive (non-official) rather than blocking. Use browser-like headers (`User-Agent` + `Referer: https://arctic-shift.photon-reddit.com/download-tool`) to avoid 403. Do not add any credentials for Arctic Shift (none required).
 
 Non-negotiable standards (academic integrity):
 - Do NOT fabricate results or claim checks passed unless you actually ran them.
