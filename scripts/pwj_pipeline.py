@@ -17,6 +17,7 @@ from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLAN_PATH = REPO_ROOT / "docs" / "data_collection_plan.md"
+DEFAULT_ENV_LOCAL_PATH = REPO_ROOT / ".env.local"
 
 SCHEMA_DIR = REPO_ROOT / "pipelines" / "pwj" / "schemas"
 PLANNER_SCHEMA = SCHEMA_DIR / "planner.schema.json"
@@ -38,6 +39,76 @@ class PlanItem:
 
 def utc_now_compact() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%SZ")
+
+
+def load_env_local(path: Path) -> dict[str, str]:
+    """Parse a lightweight .env file (dotenv style) without executing it as shell.
+
+    Supports:
+    - Blank lines and leading `#` comments
+    - Optional `export ` prefix
+    - Optional whitespace around `=`
+    - Single or double quoted values (quotes stripped)
+    """
+
+    if not path.exists():
+        return {}
+
+    env: dict[str, str] = {}
+    text = path.read_text(encoding="utf-8", errors="replace")
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export ") :].lstrip()
+        if "=" not in line:
+            # Ignore malformed lines quietly (do not print; may contain secrets).
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key:
+            continue
+
+        # Strip surrounding quotes if present.
+        if len(value) >= 2 and (
+            (value.startswith('"') and value.endswith('"'))
+            or (value.startswith("'") and value.endswith("'"))
+        ):
+            value = value[1:-1]
+
+        env[key] = value
+
+    return env
+
+
+def apply_env_aliases(dotenv: dict[str, str]) -> None:
+    """Populate expected uppercase env vars from common dotenv key variants.
+
+    Never prints values; only sets if missing in current environment.
+    """
+
+    aliases: dict[str, list[str]] = {
+        "MOLTBOOK_API_KEY": ["MOLTBOOK_API_KEY", "moltbook_api_key", "MOLTBOOK_APIKEY"],
+        "REDDIT_CLIENT_ID": ["REDDIT_CLIENT_ID", "reddit_client_id", "Reddit_client_id"],
+        "REDDIT_CLIENT_SECRET": [
+            "REDDIT_CLIENT_SECRET",
+            "reddit_client_secret",
+            "Reddit_client_secret",
+        ],
+        "REDDIT_USER_AGENT": ["REDDIT_USER_AGENT", "reddit_user_agent", "Reddit_user_agent"],
+    }
+
+    for target_key, candidates in aliases.items():
+        if os.environ.get(target_key):
+            continue
+        for candidate in candidates:
+            candidate_value = dotenv.get(candidate)
+            if candidate_value:
+                os.environ[target_key] = candidate_value
+                break
 
 
 def load_text(path: Path) -> str:
@@ -519,6 +590,9 @@ def main() -> None:
     )
 
     args = parser.parse_args()
+
+    # Load dotenv secrets locally (gitignored) without executing it as shell.
+    apply_env_aliases(load_env_local(DEFAULT_ENV_LOCAL_PATH))
 
     ensure_codex_on_path()
 
