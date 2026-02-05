@@ -250,7 +250,7 @@ Secrets / credentials (critical):
 - If you need to reference an authenticated request, use placeholders like `Authorization: Bearer $MOLTBOOK_API_KEY` (never the literal token).
 - Do NOT require the worker to `cat .env.local`. If needed, the worker may load env vars from `.env.local` without printing values.
 - Reddit note (item 5): If Reddit OAuth credentials are unavailable or delayed, you MAY use the credential-free Arctic Shift archive as the primary source (non-official). The download-tool uses:
-  - Base: `https://arctic-shift.photon-reddit.com/api/{posts,comments}/search`
+  - Base: `https://arctic-shift.photon-reddit.com/api/posts/search` and `https://arctic-shift.photon-reddit.com/api/comments/search`
   - Params: `subreddit=<name>`, `after=<ms>`, `before=<ms>`, `sort=asc`, `limit=auto`
   - Headers required to avoid 403: `User-Agent: ...` and `Referer: https://arctic-shift.photon-reddit.com/download-tool`
   - No API key required. Still run QC and document provenance/limitations.
