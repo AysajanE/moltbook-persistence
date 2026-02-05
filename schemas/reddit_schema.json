@@ -1,12 +1,235 @@
 {
   "errors": [],
   "expected_layout": "data_raw/reddit/YYYY-MM-DD/{subreddit_or_query}/.../*.json",
-  "file_count": 0,
-  "generated_at_utc": "2026-02-05T18:15:56.508269+00:00",
-  "groups": {},
-  "notes": [
-    "No local raw Reddit JSON samples found. Collect at least one raw response per subreddit/query under the expected layout, then re-run this script."
-  ],
+  "file_count": 20,
+  "generated_at_utc": "2026-02-05T20:40:51.103034+00:00",
+  "groups": {
+    "2026-02-05/MachineLearning": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "file_count": 3,
+      "file_paths_sample": [
+        "data_raw/reddit/2026-02-05/MachineLearning/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-30.003625Z__after_1769904000000__p001.json",
+        "data_raw/reddit/2026-02-05/MachineLearning/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-33.784521Z__after_1769989485001__p002.json",
+        "data_raw/reddit/2026-02-05/MachineLearning/posts_search/attempt_1_20260205-201543Z__2026-02-05T20-40-29.341486Z__after_1769904000000__p001.json"
+      ],
+      "group": "MachineLearning",
+      "group_key": "2026-02-05/MachineLearning",
+      "object_field_types": {
+        "data": [
+          "array"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "data"
+        ],
+        "intersection_count": 1,
+        "union": [
+          "data"
+        ],
+        "union_count": 1
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 3
+      }
+    },
+    "2026-02-05/programming": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "file_count": 11,
+      "file_paths_sample": [
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-20.556731Z__after_1769904000000__p001.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-21.176011Z__after_1769912652001__p002.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-21.920038Z__after_1769927262001__p003.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-22.494297Z__after_1769944143001__p004.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-23.134184Z__after_1769955166001__p005.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-23.739666Z__after_1769963740001__p006.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-24.415147Z__after_1769975425001__p007.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-24.895733Z__after_1769985573001__p008.json",
+        "data_raw/reddit/2026-02-05/programming/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-25.465899Z__after_1769990386001__p009.json",
+        "data_raw/reddit/2026-02-05/programming/posts_search/attempt_1_20260205-201543Z__2026-02-05T20-40-19.747371Z__after_1769904000000__p001.json",
+        "data_raw/reddit/2026-02-05/programming/posts_search/attempt_1_20260205-201543Z__2026-02-05T20-40-19.947754Z__after_1769990009001__p002.json"
+      ],
+      "group": "programming",
+      "group_key": "2026-02-05/programming",
+      "object_field_types": {
+        "data": [
+          "array"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "data"
+        ],
+        "intersection_count": 1,
+        "union": [
+          "data"
+        ],
+        "union_count": 1
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 11
+      }
+    },
+    "2026-02-05/python": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "file_count": 5,
+      "file_paths_sample": [
+        "data_raw/reddit/2026-02-05/python/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-27.069145Z__after_1769904000000__p001.json",
+        "data_raw/reddit/2026-02-05/python/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-27.787468Z__after_1769949314001__p002.json",
+        "data_raw/reddit/2026-02-05/python/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-28.308742Z__after_1769975743001__p003.json",
+        "data_raw/reddit/2026-02-05/python/comments_search/attempt_1_20260205-201543Z__2026-02-05T20-40-28.779742Z__after_1769987360001__p004.json",
+        "data_raw/reddit/2026-02-05/python/posts_search/attempt_1_20260205-201543Z__2026-02-05T20-40-26.202833Z__after_1769904000000__p001.json"
+      ],
+      "group": "python",
+      "group_key": "2026-02-05/python",
+      "object_field_types": {
+        "data": [
+          "array"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "data"
+        ],
+        "intersection_count": 1,
+        "union": [
+          "data"
+        ],
+        "union_count": 1
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 5
+      }
+    },
+    "2026-02-05/request_log": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "file_count": 1,
+      "file_paths_sample": [
+        "data_raw/reddit/2026-02-05/request_log/attempt_1_20260205-201543Z__summary.json"
+      ],
+      "group": "request_log",
+      "group_key": "2026-02-05/request_log",
+      "object_field_types": {
+        "after_utc": [
+          "str"
+        ],
+        "attempt_id": [
+          "str"
+        ],
+        "base_url": [
+          "str"
+        ],
+        "before_utc": [
+          "str"
+        ],
+        "caps": [
+          "object"
+        ],
+        "dt": [
+          "str"
+        ],
+        "generated_at_utc": [
+          "str"
+        ],
+        "results": [
+          "array"
+        ],
+        "subreddits": [
+          "array"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "after_utc",
+          "attempt_id",
+          "base_url",
+          "before_utc",
+          "caps",
+          "dt",
+          "generated_at_utc",
+          "results",
+          "subreddits"
+        ],
+        "intersection_count": 9,
+        "union": [
+          "after_utc",
+          "attempt_id",
+          "base_url",
+          "before_utc",
+          "caps",
+          "dt",
+          "generated_at_utc",
+          "results",
+          "subreddits"
+        ],
+        "union_count": 9
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 1
+      }
+    }
+  },
+  "notes": [],
   "raw_root": "data_raw/reddit",
-  "status": "no_samples_found"
+  "status": "ok"
 }
