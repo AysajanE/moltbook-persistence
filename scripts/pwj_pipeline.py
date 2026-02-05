@@ -173,6 +173,12 @@ You produce a plan for exactly ONE item from `docs/data_collection_plan.md`. You
 
 You do not execute the plan. Assume the worker starts “fresh” with only this prompt + the repo contents (and any judge feedback).
 
+Secrets / credentials (critical):
+- This repo uses gitignored `.env.local` for local secrets. Some items require API credentials (e.g., Moltbook, Reddit).
+- Do NOT print, paste, or write any secret values to disk (including in `outputs/`, logs, manifests, or reports).
+- If you need to reference an authenticated request, use placeholders like `Authorization: Bearer $MOLTBOOK_API_KEY` (never the literal token).
+- Do NOT require the worker to `cat .env.local`. If needed, the worker may load env vars from `.env.local` without printing values.
+
 Non-negotiable standards (academic integrity):
 - Do NOT fabricate results, citations, schemas, or “it worked” claims. If unsure, specify what to check and how.
 - Keep the plan deterministic and auditable: every important output should be written to disk with a manifest and basic validation.
@@ -261,6 +267,14 @@ Your job: execute the planner’s plan for exactly ONE item. Your output MUST be
 
 Assume you start “fresh” with only this prompt + the repository state (and any judge feedback below). Do not rely on unstated prior context.
 
+Secrets / credentials (critical):
+- Some items require API credentials (e.g., `MOLTBOOK_API_KEY`, Reddit OAuth). These may be present as environment variables and/or stored locally in gitignored `.env.local`.
+- NEVER print secret values (no `echo $MOLTBOOK_API_KEY`, no dumping env, no printing request headers, no printing credential JSON).
+- NEVER write secret values to disk (including in `outputs/`, `data_raw/`, logs, manifests, or reports).
+- NEVER store auth headers in raw request logs. If you persist request metadata, exclude headers entirely or redact auth.
+- If you must verify a secret exists, only do non-printing checks (e.g., `test -n \"$MOLTBOOK_API_KEY\"`).
+- Prefer using `MOLTBOOK_API_KEY` if already available; do not call `/agents/register` unless explicitly required (it returns secrets).
+
 Non-negotiable standards (academic integrity):
 - Do NOT fabricate results or claim checks passed unless you actually ran them.
 - If something fails, report it plainly in `issues` and adjust with the smallest corrective step.
@@ -334,6 +348,10 @@ Decision rule:
 Audit standards (be strict):
 - Do NOT accept “should be fine” or unverifiable claims.
 - Prefer checking the filesystem and git status/diff directly (read-only is fine). If you do not verify, FAIL.
+
+Secrets / credentials:
+- If the worker printed or wrote any secret values (API keys, OAuth secrets, auth headers, registration responses containing `api_key`, etc.), this is an automatic FAIL.
+- Ensure `.env.local` was not copied into outputs and that reports/manifests use placeholders/redactions for any auth steps.
 
 Safety / collaboration:
 - If guardrails indicate protected file deletions, this is an automatic FAIL unless fully restored and explained.

@@ -15,6 +15,22 @@ This project uses a simple **planner → worker → judge** workflow to automate
 
   The PWJ orchestrator can also enable it per-run with `codex exec --config sandbox_workspace_write.network_access=true ...`.
 
+## Secrets / API keys
+
+- Store credentials in gitignored `.env.local` (recommended) and **never** commit it.
+- Required credentials by item:
+  - Item 3 (Moltbook REST API): `MOLTBOOK_API_KEY`
+  - Item 5 (Reddit): `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USER_AGENT`
+- Before running the pipeline, load `.env.local` into your shell (does not print values):
+
+```bash
+set -a
+source .env.local
+set +a
+```
+
+The PWJ prompts instruct agents to **never print or write secrets** (no auth headers in logs, no token echoing, no copying `.env.local` into outputs).
+
 ## Orchestrator script
 
 Run the pipeline from the repo root:
