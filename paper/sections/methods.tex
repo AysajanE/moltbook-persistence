@@ -23,12 +23,12 @@ Under our model (\cref{prop:depth-bound}), $\Prob(D_j \geq k) \leq \mu^k$. We es
 
 The \emph{branching factor} of a node is its number of direct children. We compute:
 \begin{itemize}
-    \item Mean branching factor by depth level, $\bar{b}_k := \E[\text{children of nodes at depth } k]$,
+    \item Mean branching factor by depth level, $\bar{c}_k := \E[\text{children of nodes at depth } k]$,
     \item Root branching factor (direct replies to the post),
     \item Distribution of branching factors across all nodes.
 \end{itemize}
 
-Star-shaped trees (many direct replies, few deep chains) exhibit high root branching factor and rapidly declining $\bar{b}_k$.
+Star-shaped trees (many direct replies, few deep chains) exhibit high root branching factor and rapidly declining $\bar{c}_k$.
 
 \subsubsection{Reciprocity and Back-and-Forth}
 
@@ -66,7 +66,7 @@ If $m$ receives no replies, $S_{jm}$ is right-censored at the thread's observati
 Under the model (\cref{eq:reply-intensity}), conditional on the availability function $b(t)$, $S_{jm}$ follows an inhomogeneous exponential distribution with hazard
 \begin{equation}
 \label{eq:hazard}
-h(s \mid t_{jm}) = b(t_{jm} + s) \, \alpha_{a_{jm}} \, e^{-\beta_{a_{jm}} s}.
+\lambda(s \mid t_{jm}) = b(t_{jm} + s) \, \alpha_{a_{jm}} \, e^{-\beta_{a_{jm}} s}.
 \end{equation}
 
 \subsubsection{Parametric Estimation}
@@ -92,7 +92,7 @@ The case $\gamma = 1$ recovers the exponential; $\gamma < 1$ indicates decreasin
 \label{eq:mixed-effects}
 \log \beta_i = \mu_\beta + x_i^\top \gamma + u_i, \qquad u_i \sim \mathcal{N}(0, \sigma_\beta^2),
 \end{equation}
-where $x_i$ includes covariates (log-karma, log-follower count, account age). We estimate via penalized likelihood or Bayesian MCMC.
+where $x_i$ includes covariates (log-karma, log-follower count, account age). We estimate via penalized likelihood; Bayesian MCMC is an optional extension.
 
 \subsubsection{Stratified Estimates}
 
@@ -148,7 +148,14 @@ To assess whether Moltbook dynamics differ from human-driven platforms, we compa
 
 \subsubsection{Matching}
 
-As described in \cref{sec:data:reddit}, we employ coarsened exact matching on early engagement, topic, and posting time. This yields a matched sample where Moltbook and Reddit posts have similar initial conditions, isolating the effect of platform (agent vs.\ human).
+Naive cross-platform comparisons confound platform differences with selection effects (e.g., threads that attract early engagement differ systematically from those that do not). We employ coarsened exact matching \citep{iacus2012causal} to align Moltbook and Reddit threads on:
+\begin{itemize}
+    \item \textbf{Early engagement}: comment count within the first 30 minutes (binned into quartiles),
+    \item \textbf{Topic category}: mapped to Moltbook submolt categories via keyword overlap in titles (with manual spot checks and robustness analyses),
+    \item \textbf{Time of posting}: hour-of-day bin to control for diurnal patterns.
+\end{itemize}
+
+For each Moltbook post, we identify up to three Reddit posts with exact matches on all bins. Posts without matches are excluded from cross-platform comparisons. We assess post-matching balance using standardized mean differences and report balance diagnostics alongside sensitivity analyses.
 
 \subsubsection{Outcome Metrics}
 
@@ -183,13 +190,4 @@ We assess robustness via:
 \subsection{Implementation}
 \label{sec:methods:implementation}
 
-All analyses are implemented in Python using:
-\begin{itemize}
-    \item \texttt{pandas} and \texttt{polars} for data manipulation,
-    \item \texttt{lifelines} for survival analysis,
-    \item \texttt{scipy.signal} for spectral analysis,
-    \item \texttt{statsmodels} for regression and time-series models,
-    \item \texttt{networkx} for tree operations.
-\end{itemize}
-
-Code and intermediate outputs are versioned in a public repository (see \cref{sec:reproducibility}).
+All analyses are implemented in Python. Software dependencies, versions, and end-to-end reproduction instructions are documented in \Cref{sec:reproducibility}.

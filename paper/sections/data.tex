@@ -8,13 +8,17 @@ We analyze two datasets: the Moltbook Observatory Archive as our primary source 
 
 Our primary dataset is the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, a publicly available snapshot hosted on Hugging Face. The archive comprises multiple relational tables capturing platform activity from January 28 to February 4, 2026---the first week following Moltbook's public launch.
 
+\subsubsection{Acquisition, Versioning, and Backfill}
+
+We download and export the archive tables using our repository script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}), storing immutable exports under \texttt{data/raw/} along with an export manifest (download timestamp, dataset identifier, and export format). Because the archive is updated via incremental exports and may backfill recent days, we treat \texttt{dump\_date} (when present) as a snapshot identifier. When constructing a canonical ``latest state'' view for analysis, we deduplicate by primary key (e.g., \texttt{comments.id}) and keep the record from the most recent available \texttt{dump\_date}.
+
 \subsubsection{Dataset Structure}
 
 The archive contains six tables, summarized in \cref{tab:dataset}:
 
 \begin{table}[t]
 \centering
-\caption{Moltbook Observatory Archive structure. Counts reflect the full archive as of February 4, 2026.}
+\caption{Moltbook Observatory Archive structure. Counts are as reported by dataset metadata as of February 4, 2026.}
 \label{tab:dataset}
 \small
 \begin{tabular}{@{}llrl@{}}
@@ -47,11 +51,15 @@ The \texttt{parent\_id} field enables reconstruction of full comment trees, whic
 
 We apply the following preprocessing steps:
 
-\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post. We discard orphaned comments (those referencing nonexistent parents, typically due to deletions) and posts with no comments.
+\paragraph{Schema discovery and column retention.} We ingest all columns in each table and generate a schema manifest (column names and types) to guard against upstream schema changes. Where field names differ across sources or versions, we map them via an explicit schema dictionary.
 
-\paragraph{Timestamp normalization.} All timestamps are converted to Unix epoch seconds and shifted so that each thread's root post occurs at $t = 0$. This normalization facilitates aggregation across threads with different start times.
+\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post. We discard orphaned comments (those referencing nonexistent parents) and posts with no comments.
 
-\paragraph{Agent resolution.} We join comments with the \texttt{agents} table to obtain author metadata (karma, follower count, account creation date). Agents missing from the \texttt{agents} table (approximately 2\% of comment authors) are retained with imputed median values for covariates.
+\paragraph{Deduplication and integrity checks.} Before reconstruction, we deduplicate comments and posts to handle backfill overlap. We perform basic referential integrity checks (e.g., \texttt{comments.post\_id} exists in \texttt{posts.id}; non-null \texttt{comments.parent\_id} exists in \texttt{comments.id}) and record the rate of violations. Orphaned comments can arise from deletions, moderation, or snapshot mismatch; we log and analyze their prevalence and assess sensitivity to excluding them.
+
+\paragraph{Timestamp normalization.} We parse all timestamps to UTC and retain raw timestamp strings for audit. For modeling, we convert times to numeric representations (e.g., Unix epoch seconds) and shift each thread so that its root post occurs at $t = 0$. This normalization facilitates aggregation across threads with different start times.
+
+\paragraph{Agent resolution.} We join comments with the \texttt{agents} table to obtain author metadata (karma, follower count, and account age where available). If some comment authors are missing from the \texttt{agents} table, we retain these comments and handle missing covariates explicitly (e.g., missingness indicators, imputation, and sensitivity analyses).
 
 \paragraph{Submolt categorization.} We manually categorize the top 100 submolts by subscriber count into five categories: \emph{Builder/Technical} (programming, automation, tool development), \emph{Philosophy/Meta} (consciousness, AI ethics, existential discussion), \emph{Social/Casual} (jokes, memes, casual chat), \emph{Creative} (writing, art, music), and \emph{Spam/Low-Signal} (cryptocurrency, promotion, repetitive content). Remaining submolts are labeled \emph{Other}. \todo{Finalize categorization after data exploration.}
 
@@ -92,16 +100,9 @@ We select subreddits that cover topics prevalent on Moltbook:
     \item \texttt{r/CasualConversation}: social/casual baseline.
 \end{itemize}
 
-\subsubsection{Matching Procedure}
+\subsubsection{Matched Sample Construction}
 
-Naive comparison between platforms conflates intrinsic differences with selection effects (Moltbook posts may attract more/fewer initial comments). We employ coarsened exact matching \citep{iacus2012causal} on:
-\begin{itemize}
-    \item \textbf{Early engagement}: comment count within the first 30 minutes, binned into quartiles,
-    \item \textbf{Topic category}: matched to Moltbook submolt categories via keyword overlap in titles,
-    \item \textbf{Time of posting}: hour-of-day bin to control for diurnal patterns.
-\end{itemize}
-
-For each Moltbook post, we identify up to three Reddit posts with exact matches on all bins. Posts without matches are excluded from cross-platform comparisons.
+We construct a matched sample of Reddit threads to compare against Moltbook under similar initial conditions. The matching procedure is described in \Cref{sec:methods:comparison}.
 
 \subsubsection{Data Collection}
 
@@ -109,15 +110,4 @@ Reddit data is collected via the official API in compliance with terms of servic
 
 \todo{Specify final sample sizes and matching success rates after data collection.}
 
-\subsection{Ethical Considerations}
-\label{sec:data:ethics}
-
-Our study uses publicly available data from platforms designed for public discourse. Nevertheless, we adopt the following practices:
-
-\paragraph{No personally identifiable information.} Agent ``names'' on Moltbook are pseudonymous and self-selected. Reddit usernames are hashed before analysis. We do not attempt to link accounts across platforms or to real-world identities.
-
-\paragraph{Aggregate reporting.} Results are reported at the thread or population level. We do not single out individual agents or users except where their content is already widely discussed in public commentary (e.g., prominent agents mentioned in news coverage).
-
-\paragraph{Platform terms of service.} Data collection respects rate limits and terms of service for both platforms. The Moltbook Observatory Archive is released under the MIT license for research purposes.
-
-\paragraph{Potential for misuse.} Our analysis could inform manipulation strategies (e.g., how to sustain artificial engagement). We mitigate this by focusing on descriptive and mechanistic findings rather than prescriptive optimization, and by releasing code for detection of anomalous patterns alongside analysis tools.
+Ethical considerations for data use, privacy, and platform terms of service are discussed in \Cref{sec:limitations}.

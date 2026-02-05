@@ -10,55 +10,44 @@ We are committed to open and reproducible research. This section documents resou
 \begin{center}
 \url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}
 \end{center}
-The dataset is released under the MIT license. We provide a download script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}) that fetches and exports the required tables to local storage.
+The dataset is released under the MIT license. We provide a download/export script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}) that fetches and exports the required tables to local storage and writes an export manifest (timestamp, dataset identifier, and exported splits).
 
-\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we provide:
+\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we intend to provide:
 \begin{itemize}
     \item Post and comment IDs enabling re-collection via Reddit's API,
-    \item Pre-computed features (timestamps, parent links, anonymized author hashes) sufficient for reproducing our analyses.
+    \item Pre-computed derived features (timestamps, parent links, anonymized author hashes) sufficient for reproducing our analyses.
 \end{itemize}
+\todo{Finalize and document the Reddit re-collection pipeline and the exact released derived artifacts.}
 
-\paragraph{Processed datasets.} We release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing.
+\paragraph{Processed datasets.} We intend to release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing, subject to platform terms of service and licensing constraints.
 
 \subsection{Code Availability}
 \label{sec:reproducibility:code}
 
-All analysis code is available in our public repository:
+All code associated with this manuscript is available in our repository:
 \begin{center}
 \url{https://github.com/[REDACTED]/moltbook-persistence}
 \end{center}
 
 The repository includes:
 \begin{itemize}
-    \item \texttt{scripts/}: Data download and preprocessing utilities.
-    \item \texttt{analysis/}: Analysis entrypoints reproducing all figures and tables.
+    \item \texttt{scripts/}: Data download and export utilities.
+    \item \texttt{analysis/}: Analysis entrypoints (added as the pipeline stabilizes; see \texttt{analysis/README.md} for current status).
     \item \texttt{paper/}: \LaTeX{} source for this manuscript.
-    \item \texttt{requirements.txt}: Python dependencies with pinned versions.
+    \item \texttt{requirements.txt}: Python dependencies (minimum versions).
 \end{itemize}
 
 \subsection{Computational Environment}
 \label{sec:reproducibility:environment}
 
-Analyses were conducted on \todo{describe hardware: e.g., ``a Linux workstation with 32 GB RAM and an Intel i7-12700K processor''}. Total computation time for all analyses is approximately \todo{X} hours.
+\todo{Describe hardware/software environment used for final runs (CPU/RAM/OS) and total compute time once the analysis pipeline is finalized.}
 
-Key software dependencies and versions:
-\begin{itemize}
-    \item Python 3.11
-    \item pandas 2.0.x
-    \item polars 0.20.x
-    \item lifelines 0.27.x (survival analysis)
-    \item scipy 1.11.x
-    \item statsmodels 0.14.x
-    \item networkx 3.x
-    \item datasets (Hugging Face) 2.x
-\end{itemize}
-
-A complete \texttt{requirements.txt} with pinned versions is included in the repository.
+We target Python 3.11. A complete list of Python dependencies is provided in \texttt{requirements.txt}.
 
 \subsection{Reproducing Key Results}
 \label{sec:reproducibility:reproduce}
 
-To reproduce our main findings:
+To reproduce the current end-to-end workflow (data export and paper build):
 
 \begin{enumerate}
     \item \textbf{Environment setup:}
@@ -74,26 +63,13 @@ To reproduce our main findings:
         --out-dir data/raw/moltbook-observatory-archive
     \end{verbatim}
 
-    \item \textbf{Preprocessing:}
+    \item \textbf{Build the paper PDF (requires a local \LaTeX{} toolchain):}
     \begin{verbatim}
-    python analysis/01_preprocess.py
-    \end{verbatim}
-
-    \item \textbf{Main analyses:}
-    \begin{verbatim}
-    python analysis/02_geometry.py      # Conversation geometry
-    python analysis/03_halflife.py      # Half-life estimation
-    python analysis/04_periodicity.py   # Spectral analysis
-    python analysis/05_comparison.py    # Cross-platform comparison
-    \end{verbatim}
-
-    \item \textbf{Generate paper figures:}
-    \begin{verbatim}
-    python analysis/06_figures.py
+    make paper
     \end{verbatim}
 \end{enumerate}
 
-Expected outputs are documented in \texttt{outputs/README.md}.
+Analysis scripts to reproduce figures and tables are added under \texttt{analysis/} as the pipeline stabilizes; the current state and next planned steps are documented in \texttt{analysis/README.md}.
 
 \subsection{Versioning and Archival}
 \label{sec:reproducibility:versioning}
