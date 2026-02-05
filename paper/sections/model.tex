@@ -61,7 +61,7 @@ Agent interaction on platforms like Moltbook is shaped by two distinct temporal 
 The \emph{aggregate availability function} $b: \R_{\geq 0} \to \R_{\geq 0}$ represents the fraction of agents active at time $t$ relative to the long-run average. We normalize so that $\bar{b} := \frac{1}{T} \int_0^T b(t) \, dt = 1$ over a sufficiently long window $T$.
 \end{definition}
 
-The availability function captures platform-level scheduling. On Moltbook, the heartbeat mechanism instructs agents to check the platform at approximately 4-hour intervals, inducing periodic structure in $b(t)$. A tractable parametric form is:
+The availability function captures platform-level scheduling. On Moltbook, agents are commonly configured to check the platform on an approximately 4-hour ``heartbeat'' cadence \citep{willison2026moltbook}, inducing periodic structure in $b(t)$. A tractable parametric form is:
 \begin{equation}
 \label{eq:availability-periodic}
 b(t) = 1 + \kappa \cos\!\left(\frac{2\pi}{\tau} t + \phi\right), \qquad |\kappa| < 1,
@@ -73,7 +73,7 @@ where $\tau$ is the heartbeat period (approximately 4 hours), $\kappa$ controls 
 Conditional on exposure to a thread, an agent's propensity to respond decreases with time since the relevant stimulus. We model this via an exponential kernel: the staleness factor for a comment authored by agent $i$ at time $s$, evaluated at time $t > s$, is $e^{-\beta_i (t - s)}$ where $\beta_i > 0$ is agent $i$'s \emph{decay rate}.
 \end{definition}
 
-The decay rate $\beta_i$ captures how quickly attention to agent $i$'s content fades. Faster context loss or higher task-switching costs correspond to larger $\beta_i$. The combined effect of availability and staleness enters multiplicatively in the event intensities we now define.
+The decay rate $\beta_i$ captures how quickly attention to agent $i$'s content fades. Faster context loss or higher task-switching costs correspond to larger $\beta_i$. Importantly, $\beta_i$ (staleness) and $\tau$ (availability periodicity) govern distinct mechanisms and need not coincide. The combined effect of availability and staleness enters multiplicatively in the event intensities we now define.
 
 \subsection{Temporal Dynamics: Self-Exciting Reply Processes}
 \label{sec:model:temporal}
@@ -136,7 +136,7 @@ At the thread level, we define an effective half-life using a weighted average o
 where weights $w_{jm}$ may reflect comment influence (e.g., score) or simply be uniform.
 
 \begin{remark}[Estimation]
-Under the direct-reply model \cref{eq:reply-intensity}, inter-reply times to a fixed parent $m$ form an inhomogeneous Poisson process with hazard proportional to $e^{-\beta_{a_{jm}} \Delta}$. The decay rate $\beta_i$ can thus be estimated via maximum likelihood using offspring times relative to each parent, treating $b(t)$ as a known offset. \Cref{sec:methods} details our estimation procedure.
+Under the direct-reply model \cref{eq:reply-intensity}, inter-reply times to a fixed parent $m$ form an inhomogeneous Poisson process with hazard proportional to $e^{-\beta_{a_{jm}} \Delta}$. The decay rate $\beta_i$ can thus be estimated via maximum likelihood using offspring times relative to each parent, treating $b(t)$ as a known or parametrically modeled offset. \Cref{sec:methods} details our estimation procedure.
 \end{remark}
 
 \subsection{Structural Dynamics: Branching Process Interpretation}
@@ -251,7 +251,28 @@ where:
 \end{itemize}
 \end{definition}
 
-The re-entry half-life for agent $i$ is $h_i^{(r)} = \ln 2 / \beta_i^{(r)}$. Agents with large $\eta_i$ and small $\beta_i^{(r)}$ are ``coordination hubs'' that sustain extended threads.
+The re-entry half-life for agent $i$ is $h_i^{(r)} = \ln 2 / \beta_i^{(r)}$. Agents with large $\eta_i$ and small $\beta_i^{(r)}$ can act as ``coordination hubs'' that sustain extended threads.
+
+\begin{remark}[Integrated re-entry mass]
+\label{rem:reentry-mass}
+The integrated expected self-excitation contribution of agent $i$ is
+\begin{equation}
+\label{eq:reentry-mass}
+R_i^{(r)} := \int_0^\infty \eta_i e^{-\beta_i^{(r)} u}\,du = \frac{\eta_i}{\beta_i^{(r)}}.
+\end{equation}
+Larger $R_i^{(r)}$ corresponds to stronger within-thread persistence via re-entry.
+\end{remark}
+
+\subsubsection{Recovering Reply Edges Under the Agent Model}
+\label{sec:model:reply-edges}
+
+The agent-level process \cref{eq:reentry-intensity} specifies \emph{who} comments and \emph{when}, but not \emph{which parent} a comment replies to. To connect to observed reply edges, we introduce a parent-selection rule conditional on a new comment time and author. A simple choice consistent with staleness decay is:
+\begin{equation}
+\label{eq:parent-selection-weighted}
+\Prob(p_{jn} = m \mid t_{jn} = t, a_{jn} = i, \calH_j(t)) =
+\frac{w_{jm}(t)\exp\!\left(-\beta_{a_{jm}}(t - t_{jm})\right)}{\sum_{\ell : t_{j\ell} < t} w_{j\ell}(t)\exp\!\left(-\beta_{a_{j\ell}}(t - t_{j\ell})\right)},
+\end{equation}
+where $w_{jm}(t) \ge 0$ captures UI/visibility effects (e.g., extra weight on the root post, or on recent comments).
 
 \subsubsection{Re-Entry Rate as Observable}
 
@@ -276,7 +297,7 @@ If $b(t)$ has period $\tau$, the model predicts:
 \end{enumerate}
 \end{proposition}
 
-These predictions are testable via spectral analysis of timestamps and autocorrelation of per-agent activity sequences. Detection of a $\sim$4-hour periodic component would provide direct evidence linking the heartbeat mechanism to observed dynamics.
+These predictions are testable via spectral analysis of timestamps and autocorrelation of per-agent activity sequences. Detection of a $\sim$4-hour periodic component would provide evidence consistent with the heartbeat mechanism shaping observed dynamics.
 
 \subsection{Connection to Platform Mechanisms}
 \label{sec:model:mechanisms}
@@ -284,13 +305,13 @@ These predictions are testable via spectral analysis of timestamps and autocorre
 Our model is not merely a mathematical abstraction: its parameters map to concrete platform design choices.
 
 \paragraph{Heartbeat cadence $\to$ availability periodicity.}
-The heartbeat mechanism instructs agents to check Moltbook every $\tau \approx 4$ hours. If agents comply with idiosyncratic jitter, agent-specific availability $b_i(t)$ is periodic or renewal-driven, and the aggregate $b(t) = \E[b_i(t)]$ inherits this structure. Under the cosine form \cref{eq:availability-periodic}, the expected offspring mean \cref{eq:offspring-mean} becomes analytically tractable via $\int_0^\infty e^{-\beta u} \cos(\omega u) \, du = \beta / (\beta^2 + \omega^2)$.
+The heartbeat mechanism instructs agents to check Moltbook every $\tau \approx 4$ hours \citep{willison2026moltbook}. If agents comply with idiosyncratic jitter, agent-specific availability $b_i(t)$ is periodic or renewal-driven, and the aggregate $b(t) = \E[b_i(t)]$ inherits this structure. Under the cosine form \cref{eq:availability-periodic}, the expected offspring mean \cref{eq:offspring-mean} becomes analytically tractable via $\int_0^\infty e^{-\beta u} \cos(\omega u) \, du = \beta / (\beta^2 + \omega^2)$.
 
 \paragraph{Context/memory constraints $\to$ decay rate.}
 Faster context loss or higher switching costs increase $\beta_i$, shortening half-life and reducing offspring mean. Conversely, memory scaffolds or thread summarization can be modeled as lowering $\beta_i$, predicting deeper trees and larger $\mu$.
 
 \paragraph{Visibility/UI choices $\to$ parent weights.}
-If clients display recent items prominently, the parent-selection distribution \cref{eq:parent-selection} can be extended with position-dependent weights $w_{jm}(t)$. Higher recency weights predict more star-shaped trees (many replies to near-root nodes). Estimating $w$ from reply patterns quantifies how interface design shapes structure.
+Interface design can shape which nodes attract replies. One extension is to include visibility weights $w_{jm}(t)$ in the parent-selection rule \cref{eq:parent-selection-weighted}. For example, strong root prominence (large $w_{j0}(t)$) yields star-shaped trees, while strong recency weighting concentrates replies on recent comments. Estimating $w$ from reply-edge patterns quantifies these effects.
 
 \subsection{Summary of Model Predictions}
 \label{sec:model:summary}
@@ -306,11 +327,11 @@ Our framework yields the following testable predictions, summarized in \cref{tab
 \toprule
 \textbf{Prediction} & \textbf{Mechanism} & \textbf{Empirical Test} \\
 \midrule
-Short interaction half-life ($\sim$4 hours) & Heartbeat cadence + context limits & Survival analysis of inter-reply times \\
+Short interaction half-life ($h = \ln 2/\beta$) & Context limits + task switching (staleness) & Survival analysis of inter-reply times \\
 Shallow conversation trees & High $\beta$ $\Rightarrow$ low $\mu$ $\Rightarrow$ exponential depth decay & Depth distribution analysis \\
-Star-shaped structure & Recency bias in parent selection & Branching factor by depth level \\
-Periodic activity patterns & Heartbeat synchronization & Spectral analysis of timestamps \\
-Heterogeneous re-entry & Few high-$\eta$ agents sustain threads & Re-entry rate distribution \\
+Star-shaped structure & Root-reply affordances + visibility weights $w_{jm}(t)$ & Branching factor by depth level \\
+Periodic activity patterns (near $\tau \approx 4$ hours) & Heartbeat synchronization $b(t)$ & Spectral analysis of timestamps \\
+Heterogeneous re-entry & Few high-$R_i^{(r)}$ agents sustain threads & Re-entry rate distribution \\
 Topic moderation & Builder submolts have lower $\beta$ & Half-life by submolt category \\
 \bottomrule
 \end{tabular}
