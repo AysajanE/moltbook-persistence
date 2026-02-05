@@ -1,0 +1,272 @@
+{
+  "errors": [],
+  "expected_layout": "data_raw/moltbook_api/YYYY-MM-DD/{endpoint}/{timestamp}.json",
+  "file_count": 12,
+  "generated_at_utc": "2026-02-05T18:15:52.709174+00:00",
+  "groups": {
+    "2026-02-05/posts_comments": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "endpoint": "posts_comments",
+      "file_count": 2,
+      "file_paths_sample": [
+        "data_raw/moltbook_api/2026-02-05/posts_comments/attempt_1_20260205-152619Z/2026-02-05T15-52-54.120435Z__post_id=cbd6474f-8478-4894-95f1-7b104a73bcd5__sort=new.json",
+        "data_raw/moltbook_api/2026-02-05/posts_comments/attempt_1_20260205-152619Z/2026-02-05T15-52-54.539060Z__post_id=2fdd8e55-1fde-43c9-b513-9483d0be8e38__sort=new.json"
+      ],
+      "group_key": "2026-02-05/posts_comments",
+      "object_field_types": {
+        "comments": [
+          "array"
+        ],
+        "count": [
+          "int"
+        ],
+        "post_id": [
+          "str"
+        ],
+        "post_title": [
+          "str"
+        ],
+        "sort": [
+          "str"
+        ],
+        "success": [
+          "bool"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "comments",
+          "count",
+          "post_id",
+          "post_title",
+          "sort",
+          "success"
+        ],
+        "intersection_count": 6,
+        "union": [
+          "comments",
+          "count",
+          "post_id",
+          "post_title",
+          "sort",
+          "success"
+        ],
+        "union_count": 6
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 2
+      }
+    },
+    "2026-02-05/posts_detail": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "endpoint": "posts_detail",
+      "file_count": 5,
+      "file_paths_sample": [
+        "data_raw/moltbook_api/2026-02-05/posts_detail/attempt_1_20260205-152619Z/2026-02-05T15-52-52.416205Z__post_id=cbd6474f-8478-4894-95f1-7b104a73bcd5.json",
+        "data_raw/moltbook_api/2026-02-05/posts_detail/attempt_1_20260205-152619Z/2026-02-05T15-52-52.676264Z__post_id=2fdd8e55-1fde-43c9-b513-9483d0be8e38.json",
+        "data_raw/moltbook_api/2026-02-05/posts_detail/attempt_1_20260205-152619Z/2026-02-05T15-52-52.941137Z__post_id=75404525-5e5e-4778-ad1b-3fac43c6903d.json",
+        "data_raw/moltbook_api/2026-02-05/posts_detail/attempt_1_20260205-152619Z/2026-02-05T15-52-53.398461Z__post_id=562faad7-f9cc-49a3-8520-2bdf362606bb.json",
+        "data_raw/moltbook_api/2026-02-05/posts_detail/attempt_1_20260205-152619Z/2026-02-05T15-52-53.608627Z__post_id=4b64728c-645d-45ea-86a7-338e52a2abc6.json"
+      ],
+      "group_key": "2026-02-05/posts_detail",
+      "object_field_types": {
+        "comments": [
+          "array"
+        ],
+        "context": [
+          "object"
+        ],
+        "post": [
+          "object"
+        ],
+        "success": [
+          "bool"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "comments",
+          "context",
+          "post",
+          "success"
+        ],
+        "intersection_count": 4,
+        "union": [
+          "comments",
+          "context",
+          "post",
+          "success"
+        ],
+        "union_count": 4
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 5
+      }
+    },
+    "2026-02-05/posts_feed": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "endpoint": "posts_feed",
+      "file_count": 4,
+      "file_paths_sample": [
+        "data_raw/moltbook_api/2026-02-05/posts_feed/attempt_1_20260205-152619Z/2026-02-05T15-52-50.084125Z__sort=hot__limit=25.json",
+        "data_raw/moltbook_api/2026-02-05/posts_feed/attempt_1_20260205-152619Z/2026-02-05T15-52-50.513824Z__sort=new__limit=25.json",
+        "data_raw/moltbook_api/2026-02-05/posts_feed/attempt_1_20260205-152619Z/2026-02-05T15-52-51.942681Z__sort=hot__limit=25.json",
+        "data_raw/moltbook_api/2026-02-05/posts_feed/attempt_1_20260205-152619Z/2026-02-05T15-52-52.154955Z__sort=new__limit=25.json"
+      ],
+      "group_key": "2026-02-05/posts_feed",
+      "object_field_types": {
+        "authenticated": [
+          "bool"
+        ],
+        "count": [
+          "int"
+        ],
+        "has_more": [
+          "bool"
+        ],
+        "next_offset": [
+          "int"
+        ],
+        "posts": [
+          "array"
+        ],
+        "success": [
+          "bool"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "authenticated",
+          "count",
+          "has_more",
+          "next_offset",
+          "posts",
+          "success"
+        ],
+        "intersection_count": 6,
+        "union": [
+          "authenticated",
+          "count",
+          "has_more",
+          "next_offset",
+          "posts",
+          "success"
+        ],
+        "union_count": 6
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 4
+      }
+    },
+    "2026-02-05/submolts": {
+      "array": {
+        "element_type_counts": {},
+        "object_field_types": {},
+        "object_keys": {
+          "intersection": [],
+          "intersection_count": 0,
+          "union": [],
+          "union_count": 0
+        },
+        "sampling": {
+          "max_array_elements": 1000,
+          "sampled_total": 0
+        }
+      },
+      "date": "2026-02-05",
+      "endpoint": "submolts",
+      "file_count": 1,
+      "file_paths_sample": [
+        "data_raw/moltbook_api/2026-02-05/submolts/attempt_1_20260205-152619Z/2026-02-05T15-52-54.925910Z.json"
+      ],
+      "group_key": "2026-02-05/submolts",
+      "object_field_types": {
+        "count": [
+          "int"
+        ],
+        "submolts": [
+          "array"
+        ],
+        "success": [
+          "bool"
+        ],
+        "total_comments": [
+          "int"
+        ],
+        "total_posts": [
+          "int"
+        ]
+      },
+      "object_keys": {
+        "intersection": [
+          "count",
+          "submolts",
+          "success",
+          "total_comments",
+          "total_posts"
+        ],
+        "intersection_count": 5,
+        "union": [
+          "count",
+          "submolts",
+          "success",
+          "total_comments",
+          "total_posts"
+        ],
+        "union_count": 5
+      },
+      "parse_errors": [],
+      "top_level_type_counts": {
+        "object": 1
+      }
+    }
+  },
+  "notes": [],
+  "raw_root": "data_raw/moltbook_api",
+  "status": "ok"
+}

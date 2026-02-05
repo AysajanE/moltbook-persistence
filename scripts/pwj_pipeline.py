@@ -629,7 +629,14 @@ def main() -> None:
             # If the state file is corrupt, do not overwrite it.
             raise SystemExit(f"Could not read state file: {state_path}")
 
-    protected_paths = [Path("docs"), Path("paper"), Path("scripts"), Path("analysis"), Path("README.md")]
+    protected_paths = [
+        Path("docs"),
+        Path("paper"),
+        Path("scripts"),
+        Path("analysis"),
+        Path("schemas"),
+        Path("README.md"),
+    ]
 
     for item_id in selected_ids:
         item = items_by_id[item_id]

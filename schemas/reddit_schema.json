@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "expected_layout": "data_raw/reddit/YYYY-MM-DD/{subreddit_or_query}/.../*.json",
+  "file_count": 0,
+  "generated_at_utc": "2026-02-05T18:15:56.508269+00:00",
+  "groups": {},
+  "notes": [
+    "No local raw Reddit JSON samples found. Collect at least one raw response per subreddit/query under the expected layout, then re-run this script."
+  ],
+  "raw_root": "data_raw/reddit",
+  "status": "no_samples_found"
+}
