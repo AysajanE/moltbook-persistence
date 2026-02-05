@@ -11,7 +11,8 @@
     "decision",
     "rationale",
     "checks",
-    "required_fixes"
+    "required_fixes",
+    "suggested_worker_instructions"
   ],
   "properties": {
     "role": { "type": "string", "const": "judge" },
@@ -40,4 +41,3 @@
     "suggested_worker_instructions": { "type": "string" }
   }
 }
-

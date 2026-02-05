@@ -209,9 +209,10 @@ Plan requirements:
   - Use repo-relative paths.
   - Mark `must_exist=true` for artifacts required for PASS.
   - Prefer per-run manifests/reports under `outputs/` and data under `data_raw/`, `data_curated/`, `data_features/`.
-- Use `suggested_commands` to give a minimal, copy-pastable command sequence when helpful (optional but recommended).
+- Include `suggested_commands` as an array of strings (can be empty); use it to give a minimal, copy-pastable command sequence.
 - Include `checks`: exact validations the worker must run (row counts, schema discovery output, referential integrity, timestamp parse rate, etc).
 - Include `constraints`: key guardrails (no deletions, no secrets, no huge downloads if doing a pilot, etc). If an item requires auth, state the prerequisite explicitly.
+- Include `notes` as a string (can be empty) for any extra nuance not captured above.
 
 Minimum required artifacts (include these with `must_exist=true`):
 - `{attempt_dir}/run_manifest.json` (machine-readable: inputs, commands, versions, timestamps, row counts)
@@ -296,8 +297,9 @@ Implementation expectations:
 - Produce all `must_exist=true` artifacts listed by the planner.
 - Ensure `{attempt_dir}/run_manifest.json` and `{attempt_dir}/report.md` exist and are coherent.
 - Run the planner’s `checks` and record what you ran in `checks_run` (include command names and what they validated).
-- Populate `artifacts_created` with accurate repo-relative paths and descriptions (include row counts when available).
+- Populate `artifacts_created` with accurate repo-relative paths and descriptions. For tabular artifacts, include row counts; otherwise set `rows=-1`.
 - If the work would take a long time or download large volumes, implement a small, verifiable slice first and document how to scale it up (but do not pretend it is complete).
+- Populate `next_steps` (can be empty) with what to do next to scale from this run.
 
 Return JSON only. No markdown. No commentary outside JSON.
 """
@@ -369,7 +371,7 @@ Output requirements:
 - `decision`: PASS or FAIL
 - `checks`: include multiple checks with clear pass/fail and details (include paths you inspected and commands you ran).
 - `required_fixes`: if FAIL, list exact missing artifacts/commands/edits needed.
-- `suggested_worker_instructions`: if FAIL, give a ready-to-paste instruction for the next worker iteration.
+- `suggested_worker_instructions`: required. If FAIL, give a ready-to-paste instruction for the next worker iteration. If PASS, set to an empty string.
 
 Return JSON only. No markdown. No commentary outside JSON.
 """
@@ -538,6 +540,7 @@ def main() -> None:
     protected_paths = [Path("docs"), Path("paper"), Path("scripts"), Path("analysis"), Path("README.md")]
 
     for item_id in selected_ids:
+        item = items_by_id[item_id]
         item_state = state.setdefault("items", {}).get(item_id, {})
         if item_state.get("status") == "completed" and not args.force:
             continue

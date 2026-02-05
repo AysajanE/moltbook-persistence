@@ -12,7 +12,8 @@
     "actions_taken",
     "artifacts_created",
     "checks_run",
-    "issues"
+    "issues",
+    "next_steps"
   ],
   "properties": {
     "role": { "type": "string", "const": "worker" },
@@ -29,11 +30,11 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "description"],
+        "required": ["path", "description", "rows"],
         "properties": {
           "path": { "type": "string" },
           "description": { "type": "string" },
-          "rows": { "type": "integer", "minimum": 0 }
+          "rows": { "type": "integer", "minimum": -1 }
         }
       }
     },
@@ -51,4 +52,3 @@
     }
   }
 }
-

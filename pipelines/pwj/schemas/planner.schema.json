@@ -12,7 +12,9 @@
     "constraints",
     "plan_steps",
     "artifacts",
-    "checks"
+    "suggested_commands",
+    "checks",
+    "notes"
   ],
   "properties": {
     "role": { "type": "string", "const": "planner" },
@@ -53,4 +55,3 @@
     "notes": { "type": "string" }
   }
 }
-
