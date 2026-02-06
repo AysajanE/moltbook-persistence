@@ -14,7 +14,7 @@ We focus on a specific architectural feature that may explain these dynamics: th
 Our central research questions are:
 \begin{enumerate}
     \item \textbf{Interaction half-life:} How quickly does conversational engagement decay on Moltbook, and does this decay exhibit the hypothesized $\sim$4-hour characteristic timescale?
-    \item \textbf{Conversation geometry:} How do structural properties of discussion trees (depth, branching, reciprocity) differ between Moltbook and human platforms?
+    \item \textbf{Conversation geometry:} What structural properties (depth, branching, reciprocity) characterize Moltbook discussion trees, and how do these compare to human-platform baselines?
     \item \textbf{Heterogeneity and coordination:} Which factors---topic domain, agent reputation, early engagement---predict extended conversational persistence?
 \end{enumerate}
 
@@ -23,10 +23,10 @@ Our central research questions are:
 
 Guided by the horizon-limited cascade framework (\Cref{sec:model}) and prior qualitative observations \citep{willison2026moltbook, alexander2026afterweekend}, we test the following hypotheses:
 \begin{enumerate}
-    \item \textbf{H1 (Short half-life and attention clock).} Moltbook threads exhibit a shorter interaction half-life than matched Reddit threads, and aggregate activity shows periodic structure near the heartbeat cadence ($\tau \approx 4$ hours).
-    \item \textbf{H2 (Shallow, star-shaped structure).} Moltbook comment trees are shallower and more root-concentrated, with lower reciprocity and re-entry than matched Reddit threads.
-    \item \textbf{H3 (Topic moderates persistence).} Persistence depends on topic/community: builder/technical submolts exhibit longer half-lives and deeper trees than low-signal or purely social submolts, controlling for early engagement.
-    \item \textbf{H4 (Agent heterogeneity).} A small set of high-reputation agents disproportionately sustain long-lived threads, exhibiting lower decay rates and higher within-thread re-entry behavior.
+    \item \textbf{H1 (Short half-life and attention clock).} We test whether Moltbook threads exhibit characteristically short first-reply half-lives consistent with architectural constraints, and whether aggregate comment activity shows periodic structure near the hypothesized heartbeat cadence ($\tau \approx 4$ hours).
+    \item \textbf{H2 (Shallow, star-shaped structure).} We test whether Moltbook comment trees are shallower and more root-concentrated than human-platform baselines, with lower reciprocity and re-entry rates.
+    \item \textbf{H3 (Topic moderates persistence).} We test whether persistence varies by topic/community, with builder/technical submolts exhibiting longer half-lives and deeper trees than social or low-signal submolts.
+    \item \textbf{H4 (Agent heterogeneity).} We test whether agent-level covariates (account claim status, follower count) predict variation in reply incidence and conversational persistence.
 \end{enumerate}
 
 We operationalize these hypotheses via the metrics and estimators described in \Cref{sec:methods} and evaluate them in \Cref{sec:results}.
@@ -35,7 +35,7 @@ We operationalize these hypotheses via the metrics and estimators described in \
 
 We develop a \emph{horizon-limited interaction cascade} model that formalizes conversation dynamics on agent platforms. Our framework combines self-exciting point processes (Hawkes processes) with age-dependent branching dynamics, explicitly incorporating periodic availability modulation to capture the heartbeat mechanism. The model yields closed-form expressions linking platform design parameters to observable quantities: interaction half-life, expected conversation depth, and agent re-entry rates.
 
-We validate this framework empirically using the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive} and a run-scoped curated Reddit corpus. The present manuscript version reports: (1)~descriptive characterization of conversation geometry, (2)~estimation of temporal decay parameters via survival analysis, (3)~a full-scale Reddit-side baseline analysis run (\texttt{attempt\_scaled\_20260206-142651Z}) using the same geometry/survival/periodicity estimators, and (4)~an executed coarse matched Moltbook--Reddit comparison with paired effect estimation.
+We evaluate this framework empirically using the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive} and a run-scoped curated Reddit corpus as a contextual human-platform baseline. The present manuscript reports: (1)~descriptive characterization of conversation geometry, (2)~estimation of temporal decay parameters via survival analysis, (3)~spectral tests for periodic activity signatures, (4)~a full-scale Reddit-side baseline analysis, and (5)~a coarse matched observational comparison with paired effect estimation.
 
 Our contributions are as follows:
 

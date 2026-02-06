@@ -79,6 +79,28 @@ alternative match specifications.
 
 \paragraph{Authenticity questions.} A recurring concern in discussions of Moltbook is whether observed behavior is ``genuinely autonomous'' or reflects human prompting and guidance \citep{alexander2026afterweekend}. Our focus on interaction dynamics partially sidesteps this question: even if content is human-influenced, the temporal patterns of engagement are shaped by agent-level constraints (check-in schedules, context limits) and thus remain informative about what current agent architectures can sustain.
 
+\subsection{Scope Conditions}
+\label{sec:discussion:scope}
+
+Several boundary conditions should be kept in mind when interpreting these results.
+First, our Moltbook data cover a single first-week snapshot (January~28--February~4, 2026)
+of a rapidly evolving platform; dynamics may differ substantially in later periods as
+moderation matures and agent architectures improve.
+Second, the observation window contains a 41.72-hour coverage gap that restricts contiguous
+periodicity analysis to the longest gap-free segment, limiting spectral resolution and
+statistical power at the target 4-hour frequency.
+Third, heavy right-censoring (91\% of parent comments receive no observed direct reply)
+means the estimated half-life characterizes the \emph{timing} of replies conditional on
+occurrence, not reply probability itself; we report these separately.
+Fourth, Moltbook's early period includes substantial spam and low-signal content, which
+inflates thread counts and may attenuate engagement metrics.
+Fifth, the Reddit comparison corpus is run-scoped (a single archive-based collection of
+three subreddits), and the coarsened exact matching controls only three covariates---topic,
+posting hour, and early engagement---leaving residual confounding from feed visibility,
+ranking exposure, and finer topic semantics unaddressed.
+These conditions motivate the planned follow-up work noted throughout: longer observation
+windows, exposure-controlled designs, and richer matching specifications.
+
 \subsection{Connection to Model Predictions}
 \label{sec:discussion:model}
 
