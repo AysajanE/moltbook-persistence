@@ -110,7 +110,7 @@ This formulation connects the model to observable reply edges and supports likel
 
 \begin{remark}[Connection to standard Hawkes processes]
 \label{rem:hawkes}
-If we ignore explicit parent-edge generation and consider only event times, \cref{eq:total-intensity} defines a marked Hawkes process with agent-dependent excitation kernel $g_i(\Delta) = \alpha_i e^{-\beta_i \Delta}$ modulated by $b(t)$. Such processes are widely used for information cascades and social media dynamics \citep{crane2008robust, zhao2015seismic, rizoiu2017expecting}.
+If we ignore explicit parent-edge generation and consider only event times, \cref{eq:total-intensity} defines a marked Hawkes process with agent-dependent excitation kernel $g_i(\Delta) = \alpha_i e^{-\beta_i \Delta}$ modulated by $b(t)$. Self-exciting and cascade models of this form are widely used for social media dynamics \citep{crane2008robust, zhao2015seismic, rizoiu2017expecting}.
 \end{remark}
 
 \subsection{Interaction Half-Life}
@@ -227,7 +227,7 @@ Each agent $i \in \calA$ has latent parameters $\theta_i := (\alpha_i, \beta_i, 
 \log \beta_i = x_i^\top \gamma_\beta + u_i^{(\beta)}, \quad
 \log \rho_i = x_i^\top \gamma_\rho + u_i^{(\rho)},
 \end{equation}
-where $u_i^{(\cdot)}$ are mean-zero latent heterogeneity terms (e.g., Gaussian). This hierarchical specification is standard in survival and point-process modeling \citep{cox1972regression}.
+where $u_i^{(\cdot)}$ are mean-zero latent heterogeneity terms (e.g., Gaussian). This hierarchical specification adopts a proportional-hazards covariate structure \citep{cox1972regression} with parametric baselines and agent-level random effects.
 
 \subsubsection{Re-Entry as Self-Excitation}
 
