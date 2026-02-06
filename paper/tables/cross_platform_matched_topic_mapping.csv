@@ -1,0 +1,13 @@
+platform,source_label,coarse_topic
+moltbook,Builder/Technical,tech
+moltbook,Creative,general
+moltbook,Other,general
+moltbook,Philosophy/Meta,meta
+moltbook,Social/Casual,general
+moltbook,Spam/Low-Signal,spam
+reddit,MachineLearning,tech
+reddit,Python,tech
+reddit,artificial,meta
+reddit,datascience,tech
+reddit,learnprogramming,tech
+reddit,programming,tech

@@ -1,0 +1,9 @@
+stage_order,stage,platform,n_threads,share_of_input
+1,Input threads,moltbook,34730,1.0
+1,Input threads,reddit,1104,1.0
+2,Covariates available,moltbook,34730,1.0
+2,Covariates available,reddit,1104,1.0
+3,In overlap strata,moltbook,2641,0.07604376619637201
+3,In overlap strata,reddit,888,0.8043478260869565
+4,Matched threads (1:1),moltbook,813,0.02340915634897783
+4,Matched threads (1:1),reddit,813,0.7364130434782609

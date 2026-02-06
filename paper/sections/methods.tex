@@ -1,7 +1,9 @@
 \section{Methods}
 \label{sec:methods}
 
-We describe our empirical methodology for (1) characterizing conversation geometry, (2) estimating interaction half-life, (3) detecting periodic signatures, and (4) specifying the matched cross-platform comparison design used in future inference.
+We describe our empirical methodology for (1) characterizing conversation geometry,
+(2) estimating interaction half-life, (3) detecting periodic signatures, and
+(4) executing a coarse matched cross-platform comparison.
 
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
@@ -147,49 +149,68 @@ autocorrelation on each agent's 15-minute binned activity process. We report:
 \label{sec:methods:comparison}
 
 To assess whether Moltbook dynamics differ from human-driven platforms, we compare against matched Reddit threads.
-This section defines the comparison design; the current revision reports platform-side baselines
-without executing the matched inferential stage.
+In this revision, we execute a coarse matched observational comparison using
+\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} (run ID
+\texttt{run\_20260206-182842Z}).
 
 \subsubsection{Matching}
 
 Naive cross-platform comparisons confound platform differences with selection effects (e.g., threads that attract early engagement differ systematically from those that do not). We employ coarsened exact matching \citep{iacus2012causal} to align Moltbook and Reddit threads on:
 \begin{itemize}
-    \item \textbf{Early engagement}: comment count within the first 30 minutes (binned into quartiles),
-    \item \textbf{Topic category}: mapped to Moltbook submolt categories via keyword overlap in titles (with manual spot checks and robustness analyses),
-    \item \textbf{Time of posting}: hour-of-day bin to control for diurnal patterns.
+    \item \textbf{Early engagement}: thread comment count in the first 30 minutes, computed from
+    \texttt{thread\_events} and coarsened into bins \(\{0,\;1\text{--}2,\;3\text{--}5,\;6\text{--}10,\;11+\}\),
+    \item \textbf{Topic category}: deterministic coarse mapping. Moltbook
+    \((\texttt{Builder/Technical}\rightarrow\texttt{tech},
+    \texttt{Philosophy/Meta}\rightarrow\texttt{meta},
+    \texttt{Social/Casual}\rightarrow\texttt{general},
+    \texttt{Creative}\rightarrow\texttt{general},
+    \texttt{Other}\rightarrow\texttt{general},
+    \texttt{Spam/Low-Signal}\rightarrow\texttt{spam})\);
+    Reddit
+    \((\texttt{MachineLearning}, \texttt{Python}, \texttt{datascience},
+    \texttt{learnprogramming}, \texttt{programming}\rightarrow\texttt{tech},
+    \texttt{artificial}\rightarrow\texttt{meta})\),
+    \item \textbf{Time of posting}: exact UTC hour bin (\(0,\ldots,23\)).
 \end{itemize}
 
-For each Moltbook post, we identify up to three Reddit posts with exact matches on all bins. Posts without matches are excluded from cross-platform comparisons. We assess post-matching balance using standardized mean differences and report balance diagnostics alongside sensitivity analyses.
+Threads are assigned to exact strata defined by
+\((\texttt{topic\_coarse},\texttt{post\_hour\_bin},\texttt{early\_engagement\_bin})\).
+Within each stratum, we sort Moltbook and Reddit threads by
+\((\texttt{early\_comments\_30m}, \texttt{created\_at\_utc}, \texttt{thread\_id})\) and
+take one-to-one matches up to \(\min(n_M, n_R)\). This yields deterministic 1:1 pairing
+without random tie-breaking.
 
 \subsubsection{Outcome Metrics}
 
 For each matched pair, we compute:
 \begin{itemize}
-    \item \textbf{Interaction half-life} $\hat{h}$ via the survival analysis procedure above,
-    \item \textbf{Maximum depth} $D$,
-    \item \textbf{Total comments} $N$,
-    \item \textbf{Re-entry rate} $\text{RE}$,
-    \item \textbf{Reciprocity} (dyadic).
+    \item \textbf{Total comments} \(N\),
+    \item \textbf{Maximum depth} \(D\),
+    \item \textbf{Unique participants},
+    \item \textbf{Thread duration} (hours),
+    \item \textbf{Re-entry rate} \(\mathrm{RE}\).
 \end{itemize}
+Interaction half-life is additionally estimated on the matched-thread subsets for each
+platform (not pairwise at thread level) using the same first-reply survival construction as
+platform-side analyses.
 
 \subsubsection{Statistical Testing}
 
 We test for platform differences using:
 \begin{itemize}
-    \item \textbf{Paired tests}: Wilcoxon signed-rank test for matched-pair differences,
-    \item \textbf{Effect sizes}: Cliff's delta (non-parametric effect size) and Cohen's $d$ (assuming approximate normality),
-    \item \textbf{Regression}: mixed-effects models with platform as fixed effect and matched pair as random effect, controlling for residual covariate imbalance.
+    \item \textbf{Paired tests}: two-sided Wilcoxon signed-rank tests on matched-pair differences,
+    \item \textbf{Effect sizes}: paired Cohen's \(d\),
+    \item \textbf{Uncertainty}: bootstrap 95\% confidence intervals for mean paired differences
+    (1,000 resamples over matched pairs),
+    \item \textbf{Balance diagnostics}: standardized mean differences (SMD) before/after matching;
+    for categorical controls we report level-wise SMD and total variation distance.
 \end{itemize}
 
 \subsubsection{Sensitivity Analyses}
 
-We assess robustness via:
-\begin{itemize}
-    \item Varying matching caliper (stricter vs.\ looser matches),
-    \item Excluding Moltbook periods with suspected spam or abnormal activity,
-    \item Restricting to ``high-quality'' threads (above-median engagement),
-    \item Alternative half-life estimators (Kaplan-Meier, Cox regression).
-\end{itemize}
+The present cross-platform pass is intentionally coarse. We treat caliper variants,
+alternative topic maps, and richer causal estimators as planned follow-up analyses rather than
+reporting them post hoc.
 
 \subsection{Implementation}
 \label{sec:methods:implementation}
@@ -198,5 +219,9 @@ All analyses are implemented in Python. The Reddit full-scale run reported here 
 \texttt{analysis/07\_reddit\_only\_analysis.py} with run ID
 \texttt{attempt\_scaled\_20260206-142651Z} (seed 20260206; censor boundary 4 hours; 400
 bootstrap replications; 2,000 AR(1) simulations), after run-scoped validation by
-\texttt{analysis/05\_reddit\_validate.py}. Software dependencies, versions, and end-to-end
-reproduction instructions are documented in \Cref{sec:reproducibility}.
+\texttt{analysis/05\_reddit\_validate.py}. Cross-platform matched analysis uses
+\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} with run ID
+\texttt{run\_20260206-182842Z} (seed 20260206; 1,000 paired bootstrap replications; 400
+thread-cluster bootstrap replications for matched-subset half-life). Software dependencies,
+versions, and end-to-end reproduction instructions are documented in
+\Cref{sec:reproducibility}.

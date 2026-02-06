@@ -1,0 +1,6 @@
+covariate,type,before_smd,after_smd,before_abs_smd,after_abs_smd,before_tvd,after_tvd
+post_hour_utc,numeric,-0.15763399083274793,0.0,0.15763399083274793,0.0,,
+early_comments_30m,numeric,0.8362998949272834,-0.05205807813269281,0.8362998949272834,0.05205807813269281,,
+topic_coarse,categorical,,,3.886351326647301,0.0,0.901468471062482,0.0
+post_hour_bin,categorical,,,0.216881669950825,0.0,0.15609823399558498,0.0
+early_engagement_bin,categorical,,,0.8729827965161855,0.0,0.5862570784144352,0.0

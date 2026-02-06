@@ -26,3 +26,13 @@ Current stabilized entrypoint for Moltbook-only analysis:
     and manuscript-facing tables/figures under `outputs/reddit_only/<run_id>/`
   - Covers: Reddit thread geometry, re-entry, first-reply survival half-life, PSD/Fisher-g
     periodicity checks, and run manifests with explicit upstream warning caveats.
+
+- `08_cross_platform_matched_analysis.py`
+  - Inputs: run-scoped Moltbook and Reddit feature tables
+    (`thread_metrics.parquet`, `thread_events.parquet`, `survival_units.parquet`)
+  - Outputs: run-scoped matched-pair artifacts under
+    `outputs/cross_platform_matched/<run_id>/` including sample flow, pre/post balance
+    diagnostics, paired outcome estimates, matched-subset half-life summaries, figures,
+    `analysis_summary.json`, and `run_manifest.json`.
+  - Covers: deterministic coarse topic mapping, UTC posting-hour and first-30-minute
+    engagement coarsening, exact matching by stratum, and paired effect estimation.

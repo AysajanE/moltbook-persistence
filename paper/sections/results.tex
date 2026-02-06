@@ -239,9 +239,77 @@ curated, observed corpus.
 \subsection{Cross-Platform Comparison}
 \label{sec:results:comparison}
 
-Matched Moltbook--Reddit inference (coarsened exact matching and paired effect estimation) is
-not yet executed in this revision. The Moltbook and Reddit sections above are platform-side
-descriptive baselines and should not be interpreted as causal or matched comparative effects.
+We executed coarse exact matching using
+\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} (run ID
+\texttt{run\_20260206-182842Z}) on pinned feature runs
+\texttt{run\_20260206-145240Z} (Moltbook) and
+\texttt{attempt\_scaled\_20260206-142651Z} (Reddit).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
+\caption{Matched-sample flow for the coarse cross-platform design.}
+\label{fig:cross-platform-flow}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_balance_love.png}
+\caption{Covariate balance before and after coarse exact matching.}
+\label{fig:cross-platform-balance}
+\end{figure}
+
+\textbf{Sample flow.} The input includes 34,730 Moltbook threads and 1,104 Reddit threads.
+After requiring matching covariates, all threads remained eligible. Exact overlap strata on
+\((\texttt{topic\_coarse},\texttt{hour},\texttt{early-bin})\) retained 2,641 Moltbook threads
+and 888 Reddit threads across 118 shared strata. Deterministic 1:1 matching yielded 813 pairs
+(813 threads per platform; \cref{fig:cross-platform-flow}).
+
+\textbf{Balance diagnostics.} The maximum absolute SMD across monitored covariates decreased
+from 3.886 pre-match to 0.052 post-match. By construction, matched support aligns on the
+coarsened matching factors after pairing; some factor levels are absent post-match and therefore
+have undefined level-wise diagnostics (\cref{fig:cross-platform-balance}; promoted table:
+\texttt{tables/cross\_platform\_matched\_balance\_diagnostics.csv}).
+
+\begin{table}[t]
+\centering
+\caption{Paired cross-platform outcome differences in the matched sample
+(Moltbook minus Reddit).}
+\label{tab:cross-platform-paired-effects}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Outcome} & \textbf{\(n\) pairs} & \textbf{Moltbook mean} & \textbf{Reddit mean} & \textbf{Mean diff [95\% CI]} \\
+\midrule
+Comments per thread & 813 & 2.337 & 10.041 & \(-7.704\) [\(-9.432\), \(-6.060\)] \\
+Max depth & 813 & 1.021 & 2.212 & \(-1.191\) [\(-1.343\), \(-1.039\)] \\
+Unique participants & 813 & 2.042 & 7.050 & \(-5.009\) [\(-6.099\), \(-4.001\)] \\
+Thread duration (hours) & 813 & 0.051 & 8.656 & \(-8.606\) [\(-9.997\), \(-7.338\)] \\
+Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All paired differences are negative for Moltbook relative to Reddit under this coarse design.
+Wilcoxon signed-rank \(p\)-values are \(1.43\times10^{-49}\) (comments),
+\(5.16\times10^{-54}\) (depth), \(7.62\times10^{-45}\) (unique participants),
+\(6.50\times10^{-41}\) (duration), and \(4.77\times10^{-9}\) (re-entry). Full machine-readable
+results are promoted to \texttt{tables/cross\_platform\_matched\_paired\_effects.csv}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_paired_effects.png}
+\caption{Paired mean differences with bootstrap 95\% confidence intervals
+(Moltbook minus Reddit).}
+\label{fig:cross-platform-effects}
+\end{figure}
+
+\textbf{Matched-subset first-reply half-life.} Restricting survival units to matched threads,
+the primary-sample half-life is 0.0628 hours on Moltbook (3.77 minutes; 95\% CI:
+[1.19, 7.06] minutes; \(n=1{,}841\) parent comments, 22 events) and 2.4448 hours on Reddit
+(95\% CI: [2.1298, 2.7926] hours; \(n=7{,}979\), 2,882 events). These half-life values are
+derived from matched-thread subsets but are estimated at platform level, not as paired
+thread-level survival effects.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
@@ -258,10 +326,16 @@ descriptive baselines and should not be interpreted as causal or matched compara
     \item \textbf{No statistically significant 4-hour spectral peak}: Although power at
     0.25 hr\(^{-1}\) is elevated relative to local background, AR(1)-based tests are not
     significant.
-    \item \textbf{Reddit baseline geometry and timing}: In
-    \texttt{attempt\_scaled\_20260206-142651Z}, Reddit threads show mean max depth 2.169
-    (\(\Prob(D \ge 5)=11.32\%\), \(\Prob(D \ge 10)=1.54\%\)), re-entry mean 0.0938, and
-    first-reply half-life 2.6066 hours (95\% CI: [2.2933, 2.9539]).
+    \item \textbf{Coarse matched cross-platform sample}: Exact matching on coarse topic,
+    UTC posting hour, and first-30-minute engagement bins produced 813 1:1 pairs across
+    118 strata. Maximum absolute SMD decreased from 3.886 to 0.052.
+    \item \textbf{Coarse matched differences}: In matched pairs, Moltbook threads are lower
+    on comments (\(-7.704\)), depth (\(-1.191\)), unique participants (\(-5.009\)),
+    duration (\(-8.606\) hours), and re-entry (\(-0.040\)); all Wilcoxon tests are
+    statistically significant.
+    \item \textbf{Matched-subset half-life contrast}: On matched-thread subsets, Moltbook
+    first-reply half-life is 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes)
+    versus 2.4448 hours for Reddit (95\% CI: [2.1298, 2.7926]).
     \item \textbf{Reddit periodicity finding}: Dominant periodic component is 32 hours
     (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test is not significant
     (\(p=0.6845\)), while Fisher's \(g\) reports \(p<0.0005\) (0/2000 exceedances).

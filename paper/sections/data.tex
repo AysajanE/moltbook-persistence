@@ -123,9 +123,11 @@ Run \texttt{attempt\_scaled\_20260206-142651Z} includes the following six subred
 
 \subsubsection{Matched Sample Construction}
 
-The matched Moltbook--Reddit sample design is unchanged and is described in
-\Cref{sec:methods:comparison}. In this revision, we report the Reddit side as an independent
-full-scale baseline; matched inferential comparisons are future work.
+Matched cross-platform construction follows \Cref{sec:methods:comparison} and is executed in
+\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} with run ID
+\texttt{run\_20260206-182842Z}. Using deterministic topic mapping, UTC posting-hour bins, and
+first-30-minute engagement bins, the run yields 813 one-to-one matched pairs across 118 shared
+strata.
 
 \subsubsection{Data Collection}
 
@@ -147,6 +149,9 @@ contains 2 non-200/error responses.
 
 For this revision, we compute Reddit-side geometry, survival, and periodicity metrics using the
 same estimators as the Moltbook analysis and report them in \Cref{sec:results:reddit-full-scale}.
-These results are descriptive and do not yet constitute matched cross-platform inference.
+We also report a coarse matched observational comparison in
+\Cref{sec:results:comparison} using promoted artifacts in
+\texttt{paper/tables/cross\_platform\_matched\_*.csv} and
+\texttt{paper/figures/cross\_platform\_matched\_*.png}.
 
 Ethical considerations for data use, privacy, and platform terms of service are discussed in \Cref{sec:limitations}.

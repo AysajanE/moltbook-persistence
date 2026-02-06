@@ -1,0 +1,272 @@
+{
+  "run_id": "run_20260206-182842Z",
+  "seed": 20260206,
+  "inputs": {
+    "moltbook_thread_metrics_path": "data_features/moltbook_only/run_20260206-145240Z/thread_metrics.parquet",
+    "moltbook_thread_events_path": "data_features/moltbook_only/run_20260206-145240Z/thread_events.parquet",
+    "moltbook_survival_path": "data_features/moltbook_only/run_20260206-145240Z/survival_units.parquet",
+    "reddit_thread_metrics_path": "data_features/reddit_only/attempt_scaled_20260206-142651Z/thread_metrics.parquet",
+    "reddit_thread_events_path": "data_features/reddit_only/attempt_scaled_20260206-142651Z/thread_events.parquet",
+    "reddit_survival_path": "data_features/reddit_only/attempt_scaled_20260206-142651Z/survival_units.parquet"
+  },
+  "controls": {
+    "topic_mapping": {
+      "moltbook": {
+        "Builder/Technical": "tech",
+        "Philosophy/Meta": "meta",
+        "Social/Casual": "general",
+        "Creative": "general",
+        "Other": "general",
+        "Spam/Low-Signal": "spam"
+      },
+      "reddit": {
+        "MachineLearning": "tech",
+        "Python": "tech",
+        "datascience": "tech",
+        "learnprogramming": "tech",
+        "programming": "tech",
+        "artificial": "meta"
+      }
+    },
+    "post_hour_bin": "UTC hour of post/submission creation (0-23)",
+    "early_engagement_proxy": {
+      "definition": "comments in first 30 minutes since thread root",
+      "bin_edges": [
+        -0.1,
+        0.0,
+        2.0,
+        5.0,
+        10.0,
+        "inf"
+      ],
+      "bin_labels": [
+        "0",
+        "1-2",
+        "3-5",
+        "6-10",
+        "11+"
+      ]
+    }
+  },
+  "sample_flow": {
+    "moltbook_input_threads": 34730,
+    "reddit_input_threads": 1104,
+    "moltbook_covariates_available": 34730,
+    "reddit_covariates_available": 1104,
+    "moltbook_in_overlap_strata": 2641,
+    "reddit_in_overlap_strata": 888,
+    "shared_strata_count": 118,
+    "shared_strata_with_pairs": 118,
+    "matched_pairs": 813,
+    "matched_threads_per_platform": 813
+  },
+  "balance": {
+    "summary": [
+      {
+        "covariate": "post_hour_utc",
+        "type": "numeric",
+        "before_smd": -0.15763399083274793,
+        "after_smd": 0.0,
+        "before_abs_smd": 0.15763399083274793,
+        "after_abs_smd": 0.0,
+        "before_tvd": null,
+        "after_tvd": null
+      },
+      {
+        "covariate": "early_comments_30m",
+        "type": "numeric",
+        "before_smd": 0.8362998949272834,
+        "after_smd": -0.05205807813269281,
+        "before_abs_smd": 0.8362998949272834,
+        "after_abs_smd": 0.05205807813269281,
+        "before_tvd": null,
+        "after_tvd": null
+      },
+      {
+        "covariate": "topic_coarse",
+        "type": "categorical",
+        "before_smd": null,
+        "after_smd": null,
+        "before_abs_smd": 3.886351326647301,
+        "after_abs_smd": 0.0,
+        "before_tvd": 0.901468471062482,
+        "after_tvd": 0.0
+      },
+      {
+        "covariate": "post_hour_bin",
+        "type": "categorical",
+        "before_smd": null,
+        "after_smd": null,
+        "before_abs_smd": 0.216881669950825,
+        "after_abs_smd": 0.0,
+        "before_tvd": 0.15609823399558498,
+        "after_tvd": 0.0
+      },
+      {
+        "covariate": "early_engagement_bin",
+        "type": "categorical",
+        "before_smd": null,
+        "after_smd": null,
+        "before_abs_smd": 0.8729827965161855,
+        "after_abs_smd": 0.0,
+        "before_tvd": 0.5862570784144352,
+        "after_tvd": 0.0
+      }
+    ],
+    "max_abs_smd_before": 3.886351326647301,
+    "max_abs_smd_after": 0.05205807813269281
+  },
+  "paired_effects": [
+    {
+      "outcome": "n_comments",
+      "outcome_label": "Comments per thread",
+      "n_pairs": 813,
+      "moltbook_mean": 2.337023370233702,
+      "reddit_mean": 10.040590405904059,
+      "mean_diff_m_minus_r": -7.703567035670357,
+      "mean_diff_ci95_low": -9.431949569495695,
+      "mean_diff_ci95_high": -6.060178351783518,
+      "median_diff_m_minus_r": 0.0,
+      "cohen_d_paired": -0.31077176826069086,
+      "wilcoxon_stat": 14963.0,
+      "wilcoxon_p": 1.4262247272902475e-49,
+      "sign_test_p": 2.725822007432291e-20
+    },
+    {
+      "outcome": "depth_max",
+      "outcome_label": "Max depth",
+      "n_pairs": 813,
+      "moltbook_mean": 1.020910209102091,
+      "reddit_mean": 2.211562115621156,
+      "mean_diff_m_minus_r": -1.1906519065190653,
+      "mean_diff_ci95_low": -1.3431734317343174,
+      "mean_diff_ci95_high": -1.039329643296433,
+      "median_diff_m_minus_r": 0.0,
+      "cohen_d_paired": -0.5358219270824974,
+      "wilcoxon_stat": 226.0,
+      "wilcoxon_p": 5.1606938685089477e-54,
+      "sign_test_p": 4.0657842364926987e-88
+    },
+    {
+      "outcome": "n_unique_agents",
+      "outcome_label": "Unique participants",
+      "n_pairs": 813,
+      "moltbook_mean": 2.041820418204182,
+      "reddit_mean": 7.0504305043050435,
+      "mean_diff_m_minus_r": -5.008610086100861,
+      "mean_diff_ci95_low": -6.098708487084871,
+      "mean_diff_ci95_high": -4.00119926199262,
+      "median_diff_m_minus_r": 0.0,
+      "cohen_d_paired": -0.3121915320143188,
+      "wilcoxon_stat": 15949.0,
+      "wilcoxon_p": 7.622401072310756e-45,
+      "sign_test_p": 4.172045620240535e-19
+    },
+    {
+      "outcome": "thread_duration_hours",
+      "outcome_label": "Thread duration (hours)",
+      "n_pairs": 813,
+      "moltbook_mean": 0.050587118559857314,
+      "reddit_mean": 8.656496514965205,
+      "mean_diff_m_minus_r": -8.60590939640529,
+      "mean_diff_ci95_low": -9.99653003232015,
+      "mean_diff_ci95_high": -7.338321033969669,
+      "median_diff_m_minus_r": -0.079551212778,
+      "cohen_d_paired": -0.4785696380138175,
+      "wilcoxon_stat": 75728.0,
+      "wilcoxon_p": 6.497726078541528e-41,
+      "sign_test_p": 0.03528848018677924
+    },
+    {
+      "outcome": "reentry_rate",
+      "outcome_label": "Re-entry rate",
+      "n_pairs": 792,
+      "moltbook_mean": 0.055657862760119955,
+      "reddit_mean": 0.09570581359585732,
+      "mean_diff_m_minus_r": -0.0400479508357298,
+      "mean_diff_ci95_low": -0.053806226666854924,
+      "mean_diff_ci95_high": -0.026809485194431444,
+      "median_diff_m_minus_r": 0.0,
+      "cohen_d_paired": -0.20907742481514446,
+      "wilcoxon_stat": 10962.5,
+      "wilcoxon_p": 4.77443793066426e-09,
+      "sign_test_p": 3.1240293596875434e-14
+    }
+  ],
+  "matched_sample_half_life": {
+    "moltbook": {
+      "n_rows": 1900,
+      "n_threads": 813,
+      "n_primary": 1841,
+      "events_primary": 22,
+      "censored_primary": 1819,
+      "excluded_boundary_comments": 59,
+      "fit": {
+        "success": true,
+        "alpha": 0.1328042593814239,
+        "beta": 11.033919543396534,
+        "half_life_hours": 0.06281966964085513,
+        "log_likelihood": -88.37109339727289,
+        "n": 1841,
+        "events": 22.0
+      },
+      "bootstrap": {
+        "n_successful_bootstrap": 400,
+        "beta_ci_95": [
+          5.890066682540455,
+          34.91996472886276
+        ],
+        "half_life_ci_95": [
+          0.019849647016176374,
+          0.11768070669680898
+        ]
+      }
+    },
+    "reddit": {
+      "n_rows": 8161,
+      "n_threads": 813,
+      "n_primary": 7979,
+      "events_primary": 2882,
+      "censored_primary": 5097,
+      "excluded_boundary_comments": 182,
+      "fit": {
+        "success": true,
+        "alpha": 0.13806199799436028,
+        "beta": 0.28351352653169365,
+        "half_life_hours": 2.4448469497714043,
+        "log_likelihood": -11181.8715607688,
+        "n": 7979,
+        "events": 2882.0
+      },
+      "bootstrap": {
+        "n_successful_bootstrap": 400,
+        "beta_ci_95": [
+          0.24820963319949213,
+          0.32544650957354115
+        ],
+        "half_life_ci_95": [
+          2.1298344396961246,
+          2.792589003051695
+        ]
+      }
+    }
+  },
+  "artifacts": {
+    "tables": [
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/matched_pairs.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/matched_pairs.parquet",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/matching_strata_counts.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/sample_flow.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/balance_diagnostics.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/balance_diagnostics_levels.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/paired_effects.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/matched_sample_half_life.csv",
+      "outputs/cross_platform_matched/run_20260206-182842Z/tables/topic_mapping.csv"
+    ],
+    "figures": [
+      "outputs/cross_platform_matched/run_20260206-182842Z/figures/balance_love_plot.png",
+      "outputs/cross_platform_matched/run_20260206-182842Z/figures/matched_sample_flow.png",
+      "outputs/cross_platform_matched/run_20260206-182842Z/figures/paired_effects.png"
+    ]
+  }
+}
