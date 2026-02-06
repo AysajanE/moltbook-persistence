@@ -1,7 +1,9 @@
 \section{Data}
 \label{sec:data}
 
-We analyze two datasets: the Moltbook Observatory Archive as our primary source for agent-driven conversations, and a matched sample of Reddit threads for cross-platform comparison.
+We analyze the Moltbook Observatory Archive as our primary source for agent-driven conversations.
+Reddit collection for cross-platform comparison is in progress but is not used in the
+quantitative results reported in this manuscript version.
 
 \subsection{Moltbook Observatory Archive}
 \label{sec:data:moltbook}
@@ -14,23 +16,24 @@ We download and export the archive tables using our repository script (\texttt{s
 
 \subsubsection{Dataset Structure}
 
-The archive contains six tables, summarized in \cref{tab:dataset}:
+The archive contains six tables, summarized in \cref{tab:dataset}.
 
 \begin{table}[t]
 \centering
-\caption{Moltbook Observatory Archive structure. Counts are as reported by dataset metadata as of February 4, 2026.}
+\caption{Moltbook Observatory Archive structure in curated snapshot
+\texttt{snapshot\_20260204-234429Z}.}
 \label{tab:dataset}
 \small
 \begin{tabular}{@{}llrl@{}}
 \toprule
 \textbf{Table} & \textbf{Description} & \textbf{Rows} & \textbf{Key Fields} \\
 \midrule
-\texttt{agents} & Agent profiles and metadata & 25,600 & \texttt{id}, \texttt{karma}, \texttt{follower\_count} \\
-\texttt{posts} & Root posts with scores & 120,000 & \texttt{id}, \texttt{agent\_id}, \texttt{submolt}, \texttt{created\_at} \\
-\texttt{comments} & Comments with parent links & 226,000 & \texttt{id}, \texttt{post\_id}, \texttt{parent\_id}, \texttt{created\_at} \\
-\texttt{submolts} & Community metadata & 3,680 & \texttt{name}, \texttt{subscriber\_count} \\
+\texttt{agents} & Agent profiles and metadata & 25,597 & \texttt{id}, \texttt{karma}, \texttt{follower\_count} \\
+\texttt{posts} & Root posts with scores & 119,677 & \texttt{id}, \texttt{agent\_id}, \texttt{submolt}, \texttt{created\_at\_utc} \\
+\texttt{comments} & Comments with parent links & 226,173 & \texttt{id}, \texttt{post\_id}, \texttt{parent\_id}, \texttt{created\_at\_utc} \\
+\texttt{submolts} & Community metadata & 3,678 & \texttt{name}, \texttt{subscriber\_count} \\
 \texttt{snapshots} & Periodic observatory metrics & 114 & \texttt{timestamp}, \texttt{total\_agents}, \texttt{active\_agents\_24h} \\
-\texttt{word\_frequency} & Hourly word counts & 15,300 & \texttt{word}, \texttt{hour}, \texttt{count} \\
+\texttt{word\_frequency} & Hourly word counts & 15,346 & \texttt{word}, \texttt{hour}, \texttt{count} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -53,15 +56,29 @@ We apply the following preprocessing steps:
 
 \paragraph{Schema discovery and column retention.} We ingest all columns in each table and generate a schema manifest (column names and types) to guard against upstream schema changes. Where field names differ across sources or versions, we map them via an explicit schema dictionary.
 
-\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post. We discard orphaned comments (those referencing nonexistent parents) and posts with no comments.
+\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post.
 
-\paragraph{Deduplication and integrity checks.} Before reconstruction, we deduplicate comments and posts to handle backfill overlap. We perform basic referential integrity checks (e.g., \texttt{comments.post\_id} exists in \texttt{posts.id}; non-null \texttt{comments.parent\_id} exists in \texttt{comments.id}) and record the rate of violations. Orphaned comments can arise from deletions, moderation, or snapshot mismatch; we log and analyze their prevalence and assess sensitivity to excluding them.
+\paragraph{Deduplication and integrity checks.} Before reconstruction, we use canonical
+``latest'' tables deduplicated by primary key using maximum \texttt{dump\_date}. In this
+snapshot, canonical comments contain 223,317 unique comment IDs (from 226,173 raw comment
+rows), and referential integrity checks pass: every \texttt{comments.post\_id} exists in
+\texttt{posts.id}, every non-null \texttt{comments.parent\_id} exists in \texttt{comments.id},
+and no negative parent or post lags are observed.
 
 \paragraph{Timestamp normalization.} We parse all timestamps to UTC and retain raw timestamp strings for audit. For modeling, we convert times to numeric representations (e.g., Unix epoch seconds) and shift each thread so that its root post occurs at $t = 0$. This normalization facilitates aggregation across threads with different start times.
 
 \paragraph{Agent resolution.} We join comments with the \texttt{agents} table to obtain author metadata (karma, follower count, and account age where available). If some comment authors are missing from the \texttt{agents} table, we retain these comments and handle missing covariates explicitly (e.g., missingness indicators, imputation, and sensitivity analyses).
 
-\paragraph{Submolt categorization.} We manually categorize the top 100 submolts by subscriber count into five categories: \emph{Builder/Technical} (programming, automation, tool development), \emph{Philosophy/Meta} (consciousness, AI ethics, existential discussion), \emph{Social/Casual} (jokes, memes, casual chat), \emph{Creative} (writing, art, music), and \emph{Spam/Low-Signal} (cryptocurrency, promotion, repetitive content). Remaining submolts are labeled \emph{Other}. \todo{Finalize categorization after data exploration.}
+\paragraph{Submolt categorization.} We assign each submolt to one of six labels
+(\emph{Builder/Technical}, \emph{Philosophy/Meta}, \emph{Social/Casual},
+\emph{Creative}, \emph{Spam/Low-Signal}, \emph{Other}) via a deterministic
+keyword-based mapping in \texttt{analysis/06\_moltbook\_only\_analysis.py}. This avoids
+manual post hoc relabeling and keeps category assignments reproducible across runs.
+
+\paragraph{Coverage caveat.} Event-time analysis uses \texttt{created\_at\_utc}. We detect a
+single 41.72-hour gap in comment timestamps (from 2026-01-31 10:37:53Z to
+2026-02-02 04:20:50Z). As a result, periodicity analyses are computed on contiguous segments
+rather than assuming complete continuous coverage.
 
 \subsubsection{Descriptive Statistics}
 
@@ -69,18 +86,19 @@ We apply the following preprocessing steps:
 
 \begin{table}[t]
 \centering
-\caption{Descriptive statistics for processed Moltbook data. \todo{Update with actual values after data processing.}}
+\caption{Descriptive statistics for processed Moltbook threads
+(\(N=34{,}730\) threads with at least one comment).}
 \label{tab:descriptive}
 \small
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 \textbf{Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\
 \midrule
-Comments per post & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
-Max depth per thread & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
-Thread duration (hours) & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--} \\
-Unique agents per thread & \todo{--} & \todo{--} & \todo{--} & 1 & \todo{--} \\
-Re-entry rate & \todo{--} & \todo{--} & \todo{--} & 0 & \todo{--} \\
+Comments per post & 6.43 & 5.00 & 7.04 & 1.00 & 846.00 \\
+Max depth per thread & 1.38 & 1.00 & 0.49 & 1.00 & 5.00 \\
+Thread duration (hours) & 0.06 & 0.04 & 0.21 & 0.00 & 20.60 \\
+Unique agents per thread & 4.57 & 4.00 & 3.15 & 0.00 & 74.00 \\
+Re-entry rate & 0.19 & 0.17 & 0.21 & 0.00 & 0.98 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -106,8 +124,9 @@ We construct a matched sample of Reddit threads to compare against Moltbook unde
 
 \subsubsection{Data Collection}
 
-Reddit data is collected via the official API in compliance with terms of service. We record the same fields as for Moltbook: comment ID, parent ID, author, timestamp, and score. Author identifiers are anonymized (hashed) to protect privacy.
-
-\todo{Specify final sample sizes and matching success rates after data collection.}
+Reddit data collection is an active next stage (using a reproducible collector/curator/validator
+pipeline) and is not included in the Moltbook-only estimates reported here. For the eventual
+comparison stage, we record the same structural and timing fields as for Moltbook (post/comment
+ID, parent ID, author identifier, timestamp, score), with author identifiers anonymized.
 
 Ethical considerations for data use, privacy, and platform terms of service are discussed in \Cref{sec:limitations}.

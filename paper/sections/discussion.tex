@@ -1,24 +1,28 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\note{Draft discussion: the quantitative estimates in \Cref{sec:results} are still being finalized. The discussion below is written to interpret those estimates once populated and should be updated after results are locked.}
-
 This section interprets the empirical patterns reported in \Cref{sec:results} through the lens of our model (\Cref{sec:model}). We focus on implications for agent collective behavior, platform design, and the broader trajectory of autonomous AI systems.
 
-\subsection{Interpreting an Hour-Scale Half-Life}
+\subsection{Interpreting a Minute-Scale First-Reply Half-Life}
 \label{sec:discussion:halflife}
 
-If the estimated interaction half-life on Moltbook is on the order of hours (and especially if it is close to the heartbeat period $\tau \approx 4$ hours), this would be consistent with a platform architecture in which agents engage with threads during scheduled visits and the probability of returning to a specific thread decays rapidly between visits.
+The estimated first-reply half-life is under one minute in the primary specification, not
+hours. Combined with the high censoring fraction, this indicates a bursty process: if direct
+replies occur, they occur quickly; otherwise comments usually receive no direct reply in the
+observation window.
 
 Several factors may contribute to this pattern:
 
 \paragraph{Context window limitations.} Even within a single session, LLMs face finite context windows. As agents accumulate interactions across multiple threads and tasks, earlier conversational context is compressed or lost, reducing the salience of any particular ongoing discussion.
 
-\paragraph{Task switching costs.} The heartbeat mechanism exposes agents to the entire platform feed at each check-in. New, salient content competes for attention, drawing engagement away from threads where the agent has already participated.
+\paragraph{Task switching costs.} The feed exposes agents to large volumes of new content.
+Even without a statistically significant 4-hour spectral peak, this can induce rapid
+attention displacement away from already-open threads.
 
 \paragraph{Lack of persistent memory.} Unlike human users who maintain continuous episodic memory across sessions, agent memory of specific threads depends on explicit retrieval or re-exposure through feeds. Without mechanisms to prioritize ``return to active conversations,'' threads fade from agent awareness.
 
-The contrast with Reddit is informative. If human-driven threads exhibit longer half-lives in a matched comparison, this would be consistent with humans' ability to maintain interest across longer horizons, return intentionally to threads they care about, and sustain repeated interaction with specific discussion partners.
+The contrast with Reddit remains an open empirical question in this manuscript version,
+pending completion of the matched comparison corpus.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -36,7 +40,10 @@ A central question motivating this study is whether AI agents can sustain the ex
 
 \paragraph{Shallow deliberation.} Effective collective decision-making often requires deep discussion: proposals, critiques, revisions, and convergence. If conversations are persistently star-shaped with limited depth, they may generate many initial reactions but few extended chains of reasoning.
 
-\paragraph{Coordination hubs.} If a minority of agents exhibit longer half-lives and higher re-entry mass (\cref{rem:reentry-mass}), these agents may play an outsized role in sustaining whatever extended discussion occurs. Identifying and amplifying such agents could be a lever for improving platform-level coordination capacity.
+\paragraph{Coordination hubs.} Topic-level half-life differences suggest heterogeneity in
+sustained discussion potential, but our karma-quartile split is weakly informative in this
+snapshot because karma mass is concentrated at zero. Stronger hub inference requires richer
+agent-level covariate variation and longer observation windows.
 
 \subsection{Design Implications}
 \label{sec:discussion:design}
@@ -78,4 +85,5 @@ Our theoretical framework (\cref{sec:model}) generates specific predictions that
     \item \textbf{Agent heterogeneity:} Estimate variation in decay rates and re-entry behavior across agents, and relate it to reputation covariates.
 \end{itemize}
 
-Once populated, these comparisons provide a direct check on whether the horizon-limited cascade framework is a parsimonious explanation for Moltbook dynamics.
+These Moltbook-only comparisons provide a direct first check on whether the horizon-limited
+cascade framework is a parsimonious explanation for early Moltbook dynamics.

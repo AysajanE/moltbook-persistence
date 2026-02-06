@@ -17,7 +17,7 @@ The dataset is released under the MIT license. We provide a download/export scri
     \item Post and comment IDs enabling re-collection via Reddit's API,
     \item Pre-computed derived features (timestamps, parent links, anonymized author hashes) sufficient for reproducing our analyses.
 \end{itemize}
-\todo{Finalize and document the Reddit re-collection pipeline and the exact released derived artifacts.}
+The Reddit re-collection/release manifest will be added when the comparison-stage dataset is finalized.
 
 \paragraph{Processed datasets.} We intend to release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing, subject to platform terms of service and licensing constraints.
 
@@ -40,14 +40,20 @@ The repository includes:
 \subsection{Computational Environment}
 \label{sec:reproducibility:environment}
 
-\todo{Describe hardware/software environment used for final runs (CPU/RAM/OS) and total compute time once the analysis pipeline is finalized.}
-
-We target Python 3.11. A complete list of Python dependencies is provided in \texttt{requirements.txt}.
+The Moltbook-only results reported in \Cref{sec:results} were generated on:
+\begin{itemize}
+    \item OS/architecture: macOS 15.6.1 (arm64),
+    \item Python: 3.13.5,
+    \item Key packages: \texttt{numpy 2.4.2}, \texttt{pandas 2.3.3},
+    \texttt{scipy 1.17.0}, \texttt{lifelines 0.30.1},
+    \texttt{matplotlib 3.10.8}, \texttt{seaborn 0.13.2}.
+\end{itemize}
+Project dependencies and minimum versions remain listed in \texttt{requirements.txt}.
 
 \subsection{Reproducing Key Results}
 \label{sec:reproducibility:reproduce}
 
-To reproduce the current end-to-end workflow (data export and paper build):
+To reproduce the Moltbook-only workflow reported in this manuscript version:
 
 \begin{enumerate}
     \item \textbf{Environment setup:}
@@ -63,13 +69,26 @@ To reproduce the current end-to-end workflow (data export and paper build):
         --out-dir data/raw/moltbook-observatory-archive
     \end{verbatim}
 
+    \item \textbf{Run Moltbook-only analysis (produces derived tables/figures/manifest):}
+    \begin{verbatim}
+    python analysis/06_moltbook_only_analysis.py \
+        --snapshot-root data_curated/hf_archive/snapshot_20260204-234429Z \
+        --data-features-root data_features/moltbook_only \
+        --outputs-root outputs/moltbook_only \
+        --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
+    \end{verbatim}
+
     \item \textbf{Build the paper PDF (requires a local \LaTeX{} toolchain):}
     \begin{verbatim}
     make paper
     \end{verbatim}
 \end{enumerate}
 
-Analysis scripts to reproduce figures and tables are added under \texttt{analysis/} as the pipeline stabilizes; the current state and next planned steps are documented in \texttt{analysis/README.md}.
+The canonical run used for manuscript values in this revision is
+\texttt{run\_20260206-145240Z}, with manifest:
+\texttt{outputs/moltbook\_only/run\_20260206-145240Z/run\_manifest.json}
+and summary:
+\texttt{outputs/moltbook\_only/run\_20260206-145240Z/tables/analysis\_summary.json}.
 
 \subsection{Versioning and Archival}
 \label{sec:reproducibility:versioning}

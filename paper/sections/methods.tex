@@ -87,29 +87,23 @@ S(s) = \exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right).
 \end{equation}
 The case $\gamma = 1$ recovers the exponential; $\gamma < 1$ indicates decreasing hazard (early replies more likely), while $\gamma > 1$ indicates increasing hazard.
 
-\paragraph{Heterogeneous agents.} We extend to agent-specific $\beta_i$ using a mixed-effects survival model with log-normal random effects on $\beta$:
-\begin{equation}
-\label{eq:mixed-effects}
-\log \beta_i = \mu_\beta + x_i^\top \gamma + u_i, \qquad u_i \sim \mathcal{N}(0, \sigma_\beta^2),
-\end{equation}
-where $x_i$ includes covariates (log-karma, log-follower count, account age). We estimate via penalized likelihood; Bayesian MCMC is an optional extension.
+\paragraph{Agent heterogeneity (implemented summary).} In this analysis pass, we report
+stratified pooled estimates rather than a full mixed-effects survival model: half-life
+estimates by submolt category and by karma quartile (bottom vs.\ top quartile among
+observed karma values).
 
 \subsubsection{Stratified Estimates}
 
 We compute half-life estimates stratified by:
 \begin{itemize}
     \item \textbf{Submolt category}: Builder/Technical, Philosophy/Meta, Social/Casual, etc.,
-    \item \textbf{Agent karma quartile}: to test whether high-reputation agents sustain longer engagement,
-    \item \textbf{Time period}: early vs.\ late in the observation window, to detect temporal trends.
+    \item \textbf{Agent karma quartile}: bottom vs.\ top quartile for a first-pass
+    heterogeneity check.
 \end{itemize}
 
 \subsubsection{Confidence Intervals and Uncertainty}
 
-We report 95\% confidence intervals via:
-\begin{itemize}
-    \item Profile likelihood for parametric models,
-    \item Bootstrap resampling (threads as units) for robustness to model misspecification.
-\end{itemize}
+We report 95\% confidence intervals using cluster bootstrap resampling at the thread level.
 
 \subsection{Periodicity Detection}
 \label{sec:methods:periodicity}
@@ -118,7 +112,10 @@ Our model predicts periodic structure in comment arrivals at the heartbeat frequ
 
 \subsubsection{Aggregate Activity Time Series}
 
-We construct a time series of comment counts binned at 15-minute intervals across the observation window. Let $C_t$ denote the count in bin $t$. We apply standard preprocessing:
+We construct a time series of comment counts binned at 15-minute intervals. Because the
+canonical comment timeline contains a long coverage gap, we first segment the event stream
+at gaps $>6$ hours and analyze the longest contiguous segment. Let $C_t$ denote the count in
+bin $t$ for that segment. We apply standard preprocessing:
 \begin{itemize}
     \item Log-transform: $Y_t = \log(C_t + 1)$ to stabilize variance,
     \item Detrending: subtract a 24-hour moving average to remove diurnal drift,
@@ -127,18 +124,23 @@ We construct a time series of comment counts binned at 15-minute intervals acros
 
 \subsubsection{Spectral Analysis}
 
-We estimate the power spectral density (PSD) via Welch's method with 50\% overlapping segments. We test for peaks at the expected heartbeat frequency $f_\tau = 1/\tau \approx 1/(4\text{ hours}) = 0.25\text{ hr}^{-1}$ by:
+We estimate the power spectral density (PSD) via Welch's method with overlapping segments.
+We test for peaks at the expected heartbeat frequency
+$f_\tau = 1/\tau \approx 1/(4\text{ hours}) = 0.25\text{ hr}^{-1}$ by:
 \begin{itemize}
-    \item Comparing observed power at $f_\tau$ to a red-noise null (AR(1) process fitted to the data),
-    \item Computing the peak-to-background ratio and testing significance via Fisher's $g$-statistic.
+    \item Comparing observed power at $f_\tau$ to a red-noise null from an AR(1) process
+    fit to the detrended series,
+    \item Estimating Monte Carlo $p$-values using 2,000 AR(1) simulations for both
+    Fisher's $g$ and the target-frequency power.
 \end{itemize}
 
 \subsubsection{Agent-Level Autocorrelation}
 
-For agents with $\geq 10$ comments, we compute the autocorrelation function (ACF) of inter-comment times. Under the heartbeat model, we expect elevated autocorrelation at lags near 4 hours. We report:
+For agents with $\geq 10$ comments in the contiguous periodicity segment, we compute lagged
+autocorrelation on each agent's 15-minute binned activity process. We report:
 \begin{itemize}
-    \item Mean ACF across agents at lags 1--12 hours,
-    \item Distribution of peak ACF lag across agents.
+    \item Mean autocorrelation at lag 4 hours,
+    \item Bootstrap confidence intervals over agents.
 \end{itemize}
 
 \subsection{Cross-Platform Comparison}

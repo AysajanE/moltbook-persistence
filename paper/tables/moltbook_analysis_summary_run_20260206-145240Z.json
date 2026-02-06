@@ -1,0 +1,190 @@
+{
+  "run_id": "run_20260206-145240Z",
+  "seed": 20260206,
+  "input_snapshot_root": "data_curated/hf_archive/snapshot_20260204-234429Z",
+  "censor_boundary_hours": 4.0,
+  "bootstrap_reps": 400,
+  "qc": {
+    "n_posts": 119677,
+    "n_comments": 223317,
+    "n_agents": 25597,
+    "n_submolts": 3678,
+    "n_threads_with_comments": 34730,
+    "missing_parent_timestamp": 0,
+    "negative_lag_since_parent": 0,
+    "negative_lag_since_post": 0,
+    "missing_depth": 0,
+    "timestamp_start": "2026-01-31T07:46:02.546988+00:00",
+    "timestamp_end": "2026-02-04T19:51:53.476102+00:00",
+    "time_gaps_gt_threshold": [
+      {
+        "gap_hours": 41.7157065925,
+        "before": "2026-01-31T10:37:53.768053+00:00",
+        "after": "2026-02-02T04:20:50.311786+00:00"
+      }
+    ]
+  },
+  "geometry": {
+    "n_threads": 34730,
+    "mean_depth": 1.3776562050100778,
+    "median_depth": 1.0,
+    "p_depth_ge_5": 5.7587100489490355e-05,
+    "p_depth_ge_10": 0.0,
+    "mu_hat_depth_tail": 0.15411609680735566,
+    "depth_bootstrap": {
+      "mean_depth_ci_95": [
+        1.372155197235819,
+        1.383045637777138
+      ],
+      "p_depth_ge_5_ci_95": [
+        0.0,
+        0.00014396775122372588
+      ],
+      "p_depth_ge_10_ci_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "reciprocity_overall": {
+      "dyads": 162430,
+      "reciprocal_dyads": 1621,
+      "reciprocity_rate": 0.009979683555993352
+    },
+    "reentry_mean": 0.19478705690859405,
+    "reentry_median": 0.16666666666666666,
+    "reciprocal_chains": {
+      "reciprocal_chain_count": 349,
+      "reciprocal_chain_median_length": 2.0,
+      "reciprocal_chain_mean_length": 2.0916905444126073
+    }
+  },
+  "half_life": {
+    "primary_sample_comments": 199000,
+    "primary_events": 17915,
+    "primary_censored": 181085,
+    "excluded_boundary_comments": 24316,
+    "observation_end_utc": "2026-02-04T19:51:53.476102+00:00",
+    "exponential": {
+      "success": true,
+      "alpha": 5.085854623890399,
+      "beta": 52.20877867784936,
+      "half_life_hours": 0.013276448867669589,
+      "log_likelihood": -6538.914760138476,
+      "n": 199000,
+      "events": 17915.0
+    },
+    "exponential_bootstrap": {
+      "n_successful_bootstrap": 400,
+      "beta_ci_95": [
+        36.852381429566194,
+        78.52385950189957
+      ],
+      "half_life_ci_95": [
+        0.00882721757324007,
+        0.01880877303886199
+      ]
+    },
+    "exponential_sensitivity_no_boundary_exclusion": {
+      "success": true,
+      "alpha": 6.276182485805615,
+      "beta": 60.15364281648383,
+      "half_life_hours": 0.011522946044591052,
+      "log_likelihood": -3285.260319397732,
+      "n": 223316,
+      "events": 21430.0
+    },
+    "weibull": {
+      "success": true,
+      "shape": 0.11152548923902367,
+      "scale": 29075791871.548332,
+      "half_life_hours": 1087135015.8921719,
+      "log_likelihood": -6485.821894650605
+    },
+    "weibull_bootstrap": {
+      "n_successful_bootstrap": 400,
+      "shape_ci_95": [
+        0.1109506490226155,
+        0.11215544036233525
+      ]
+    },
+    "category_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
+    "karma_quartile_comparison": {
+      "q1_cutoff": 0.0,
+      "q3_cutoff": 0.0,
+      "estimates": {
+        "low_q1": {
+          "n_comments": 173704,
+          "n_threads": 30615,
+          "half_life_hours": 0.01404402712581359
+        },
+        "high_q4": {
+          "n_comments": 198061,
+          "n_threads": 31217,
+          "half_life_hours": 0.013278505901084488
+        }
+      }
+    }
+  },
+  "periodicity": {
+    "segment_start": "2026-02-02T04:20:50.311786+00:00",
+    "segment_end": "2026-02-04T19:51:53.476102+00:00",
+    "segment_duration_hours": 63.517545643333335,
+    "segments_detected": [
+      {
+        "start": "2026-01-31T07:46:02.546988+00:00",
+        "end": "2026-01-31T10:37:53.768053+00:00",
+        "duration_hours": 2.864228073611111,
+        "n_comments": 2856
+      },
+      {
+        "start": "2026-02-02T04:20:50.311786+00:00",
+        "end": "2026-02-04T19:51:53.476102+00:00",
+        "duration_hours": 63.517545643333335,
+        "n_comments": 220461
+      }
+    ],
+    "bin_minutes": 15,
+    "target_frequency_per_hour": 0.25,
+    "target_frequency_nearest_per_hour": 0.25,
+    "target_period_hours_nearest": 4.0,
+    "target_power": 1.2152691649615626,
+    "background_power_median": 0.1896447457964916,
+    "peak_to_background_ratio": 6.408135167982307,
+    "dominant_frequency_per_hour": 0.15625,
+    "dominant_period_hours": 6.4,
+    "fisher_g": 0.09371090048065756,
+    "fisher_g_p_value_ar1": 0.697,
+    "target_power_p_value_ar1": 0.4905,
+    "ar1_phi": 0.730780269896234
+  },
+  "agent_acf": {
+    "eligible_agents": 1076,
+    "mean_acf_lag_4h": 0.11061743063947889,
+    "acf_lag_4h_ci_95": [
+      0.09967147092580649,
+      0.12206633460723378
+    ],
+    "lag_hours": 4.0,
+    "lag_bins": 16
+  },
+  "artifacts": {
+    "thread_events_parquet": "data_features/moltbook_only/run_20260206-145240Z/thread_events.parquet",
+    "thread_metrics_parquet": "data_features/moltbook_only/run_20260206-145240Z/thread_metrics.parquet",
+    "survival_units_parquet": "data_features/moltbook_only/run_20260206-145240Z/survival_units.parquet",
+    "agent_acf_parquet": "data_features/moltbook_only/run_20260206-145240Z/agent_acf.parquet",
+    "branching_by_depth_parquet": "data_features/moltbook_only/run_20260206-145240Z/branching_by_depth.parquet",
+    "figures": [
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_depth_distribution.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_branching_by_depth.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_reentry_distribution.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_survival_curve.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_psd.png"
+    ],
+    "tables": [
+      "outputs/moltbook_only/run_20260206-145240Z/tables/descriptive_stats.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/branching_by_depth.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/psd_curve.csv"
+    ]
+  }
+}
