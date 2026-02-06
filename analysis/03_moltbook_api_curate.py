@@ -378,6 +378,7 @@ def main() -> None:
             partitioning=["run_id", "dt"],
             partitioning_flavor="hive",
             create_dir=True,
+            existing_data_behavior="overwrite_or_ignore",
         )
         outputs[name] = {
             "rows": int(df.shape[0]),
