@@ -5,8 +5,9 @@ This script implements a reproducible, end-to-end analysis workflow on the curat
 Moltbook Observatory Archive snapshot, including:
 1) thread reconstruction and geometry metrics,
 2) interaction half-life estimation (exponential + Weibull),
-3) periodicity analysis on aggregate arrivals,
-4) manuscript-facing figures/tables and machine-readable summaries.
+3) reply-probability and heterogeneity decomposition,
+4) periodicity analysis on aggregate arrivals (including bin-width robustness),
+5) manuscript-facing figures/tables and machine-readable summaries.
 """
 
 from __future__ import annotations
@@ -37,6 +38,7 @@ DEFAULT_CENSOR_BOUNDARY_HOURS = 4.0
 DEFAULT_GAP_THRESHOLD_HOURS = 6.0
 DEFAULT_PERIODICITY_BIN_MINUTES = 15
 DEFAULT_MIN_AGENT_COMMENTS_FOR_ACF = 10
+PERIODICITY_ROBUSTNESS_BIN_MINUTES = (5, 15, 30)
 
 CATEGORY_ORDER = [
     "Builder/Technical",
@@ -46,6 +48,8 @@ CATEGORY_ORDER = [
     "Spam/Low-Signal",
     "Other",
 ]
+
+FOLLOWER_BIN_ORDER = ["0", "1-9", "10+"]
 
 # Simple, deterministic keyword dictionaries used for transparent categorization.
 SPAM_KEYWORDS = {
@@ -309,7 +313,7 @@ def prepare_tables(
 
     agents = pd.read_parquet(
         snapshot_root / "agents",
-        columns=["id", "karma", "follower_count", "dump_date"],
+        columns=["id", "karma", "follower_count", "is_claimed", "dump_date"],
     )
     agents = dedupe_latest(agents, key="id").rename(columns={"id": "agent_id"})
 
@@ -671,6 +675,145 @@ def cluster_bootstrap_weibull_shape(
     }
 
 
+def implied_eventual_reply_probability(exponential_fit: dict[str, Any]) -> float:
+    if not exponential_fit.get("success"):
+        return float("nan")
+    alpha = exponential_fit.get("alpha")
+    beta = exponential_fit.get("beta")
+    if alpha is None or beta is None:
+        return float("nan")
+    alpha_f = float(alpha)
+    beta_f = float(beta)
+    if not np.isfinite(alpha_f) or not np.isfinite(beta_f) or beta_f <= 0:
+        return float("nan")
+    mass = alpha_f / beta_f
+    if mass < 0:
+        return float("nan")
+    return float(1.0 - np.exp(-mass))
+
+
+def reply_dynamics_row(
+    label: str,
+    survival_subset: pd.DataFrame,
+    prefit_exponential: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    n_parent_comments = int(len(survival_subset))
+    n_events = int(survival_subset["event_observed"].sum()) if n_parent_comments else 0
+    observed_prob = float(n_events / n_parent_comments) if n_parent_comments else float("nan")
+
+    if n_parent_comments and n_events > 0:
+        event_durations = survival_subset.loc[
+            survival_subset["event_observed"].astype(bool), "duration_hours"
+        ].to_numpy(dtype=float)
+        conditional_median_minutes = float(np.median(event_durations) * 60.0)
+    else:
+        conditional_median_minutes = float("nan")
+
+    fit = prefit_exponential
+    if fit is None:
+        fit = fit_exponential_decay(
+            durations_hours=survival_subset["duration_hours"].to_numpy(dtype=float),
+            event_observed=survival_subset["event_observed"].to_numpy(dtype=float),
+        )
+    half_life_hours = float(fit["half_life_hours"]) if fit.get("success") else float("nan")
+    implied_prob = implied_eventual_reply_probability(fit)
+
+    return {
+        "group_label": label,
+        "n_parent_comments": n_parent_comments,
+        "n_events": n_events,
+        "observed_reply_probability": observed_prob,
+        "conditional_median_reply_minutes": conditional_median_minutes,
+        "half_life_hours": half_life_hours,
+        "implied_eventual_reply_probability": implied_prob,
+    }
+
+
+def build_reply_dynamics_by_category_table(
+    survival_primary: pd.DataFrame,
+    overall_exponential_fit: dict[str, Any],
+) -> pd.DataFrame:
+    rows = [
+        reply_dynamics_row(
+            "Overall",
+            survival_primary,
+            prefit_exponential=overall_exponential_fit,
+        )
+    ]
+    for category in CATEGORY_ORDER:
+        subset = survival_primary[survival_primary["submolt_category"] == category].copy()
+        if subset.empty:
+            continue
+        rows.append(reply_dynamics_row(category, subset))
+    return pd.DataFrame(rows)
+
+
+def follower_bin(series: pd.Series) -> pd.Series:
+    out = pd.to_numeric(series, errors="coerce")
+    labels = pd.cut(
+        out,
+        bins=[-np.inf, 0.0, 9.0, np.inf],
+        labels=FOLLOWER_BIN_ORDER,
+        right=True,
+    )
+    return labels.astype("string")
+
+
+def build_agent_group_reply_dynamics_table(
+    survival_primary: pd.DataFrame,
+    agents: pd.DataFrame,
+) -> pd.DataFrame:
+    covariates = agents[["agent_id", "is_claimed", "follower_count"]].copy()
+    merged = survival_primary.merge(
+        covariates.rename(columns={"agent_id": "comment_agent_id"}),
+        on="comment_agent_id",
+        how="left",
+    )
+    merged["is_claimed_group"] = np.where(
+        pd.to_numeric(merged["is_claimed"], errors="coerce").fillna(0).astype(int) == 1,
+        "Claimed",
+        "Unclaimed",
+    )
+    merged["follower_count_group"] = follower_bin(merged["follower_count"])
+
+    rows: list[dict[str, Any]] = []
+    for label in ["Claimed", "Unclaimed"]:
+        subset = merged[merged["is_claimed_group"] == label].copy()
+        if subset.empty:
+            continue
+        row = reply_dynamics_row(label, subset)
+        row["group_family"] = "is_claimed"
+        row["n_threads"] = int(subset["thread_id"].nunique())
+        rows.append(row)
+
+    for label in FOLLOWER_BIN_ORDER:
+        subset = merged[merged["follower_count_group"] == label].copy()
+        if subset.empty:
+            continue
+        row = reply_dynamics_row(label, subset)
+        row["group_family"] = "follower_count_bin"
+        row["n_threads"] = int(subset["thread_id"].nunique())
+        rows.append(row)
+
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+    family_order = pd.Categorical(
+        out["group_family"], categories=["is_claimed", "follower_count_bin"], ordered=True
+    )
+    label_order = pd.Categorical(
+        out["group_label"],
+        categories=["Claimed", "Unclaimed", *FOLLOWER_BIN_ORDER],
+        ordered=True,
+    )
+    out = out.assign(_family_order=family_order, _label_order=label_order)
+    out = out.sort_values(["_family_order", "_label_order"], kind="stable").drop(
+        columns=["_family_order", "_label_order"]
+    )
+    out["half_life_minutes"] = out["half_life_hours"] * 60.0
+    return out.reset_index(drop=True)
+
+
 def percentile_ci(values: Iterable[float], alpha: float = 0.05) -> list[float]:
     arr = np.asarray(list(values), dtype=float)
     if arr.size == 0:
@@ -845,23 +988,22 @@ def ar1_simulation(n: int, phi: float, sigma: float, rng: np.random.Generator) -
     return x
 
 
-def analyze_periodicity(
+def periodicity_metrics_on_segment(
     comment_times: pd.Series,
-    cfg: Config,
+    segment_start: pd.Timestamp,
+    segment_end: pd.Timestamp,
+    bin_minutes: int,
+    ar1_sims: int,
     rng: np.random.Generator,
 ) -> tuple[dict[str, Any], pd.DataFrame]:
-    segment_start, segment_end, segments = longest_contiguous_segment(
-        comment_times,
-        threshold_hours=cfg.gap_threshold_hours,
-    )
     binned = build_periodicity_series(
         comment_times,
         start=segment_start,
         end=segment_end,
-        bin_minutes=cfg.periodicity_bin_minutes,
+        bin_minutes=bin_minutes,
     )
-    fs_per_hour = 60.0 / cfg.periodicity_bin_minutes
-    moving_window_bins = int(round((24 * 60) / cfg.periodicity_bin_minutes))
+    fs_per_hour = 60.0 / bin_minutes
+    moving_window_bins = int(round((24 * 60) / bin_minutes))
     y = detrend_series_for_psd(binned.to_numpy(), moving_window_bins=moving_window_bins)
 
     freqs, power = signal.welch(
@@ -896,7 +1038,7 @@ def analyze_periodicity(
     phi, sigma = fit_ar1(y)
     g_null = []
     target_null = []
-    for _ in range(cfg.ar1_sims):
+    for _ in range(ar1_sims):
         sim = ar1_simulation(len(y), phi, sigma, rng)
         sim_freq, sim_power = periodogram_positive(sim, fs_per_hour=fs_per_hour)
         g_null.append(float(np.max(sim_power) / np.sum(sim_power)))
@@ -914,11 +1056,7 @@ def analyze_periodicity(
 
     psd_df = pd.DataFrame({"frequency_per_hour": freqs, "power": power})
     summary = {
-        "segment_start": segment_start.isoformat(),
-        "segment_end": segment_end.isoformat(),
-        "segment_duration_hours": float((segment_end - segment_start).total_seconds() / 3600.0),
-        "segments_detected": segments,
-        "bin_minutes": cfg.periodicity_bin_minutes,
+        "bin_minutes": bin_minutes,
         "target_frequency_per_hour": target_freq,
         "target_frequency_nearest_per_hour": target_freq_nearest,
         "target_period_hours_nearest": float(1.0 / target_freq_nearest),
@@ -933,6 +1071,62 @@ def analyze_periodicity(
         "ar1_phi": phi,
     }
     return summary, psd_df
+
+
+def analyze_periodicity(
+    comment_times: pd.Series,
+    cfg: Config,
+    rng: np.random.Generator,
+) -> tuple[dict[str, Any], pd.DataFrame]:
+    segment_start, segment_end, segments = longest_contiguous_segment(
+        comment_times,
+        threshold_hours=cfg.gap_threshold_hours,
+    )
+    metrics, psd_df = periodicity_metrics_on_segment(
+        comment_times=comment_times,
+        segment_start=segment_start,
+        segment_end=segment_end,
+        bin_minutes=cfg.periodicity_bin_minutes,
+        ar1_sims=cfg.ar1_sims,
+        rng=rng,
+    )
+    summary = {
+        "segment_start": segment_start.isoformat(),
+        "segment_end": segment_end.isoformat(),
+        "segment_duration_hours": float((segment_end - segment_start).total_seconds() / 3600.0),
+        "segments_detected": segments,
+        **metrics,
+    }
+    return summary, psd_df
+
+
+def analyze_periodicity_bin_robustness(
+    comment_times: pd.Series,
+    cfg: Config,
+    bin_minutes_options: tuple[int, ...],
+    rng: np.random.Generator,
+) -> pd.DataFrame:
+    segment_start, segment_end, _segments = longest_contiguous_segment(
+        comment_times,
+        threshold_hours=cfg.gap_threshold_hours,
+    )
+    rows = []
+    for bin_minutes in bin_minutes_options:
+        metrics, _psd_df = periodicity_metrics_on_segment(
+            comment_times=comment_times,
+            segment_start=segment_start,
+            segment_end=segment_end,
+            bin_minutes=bin_minutes,
+            ar1_sims=cfg.ar1_sims,
+            rng=rng,
+        )
+        rows.append(metrics)
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+    out = out.sort_values("bin_minutes", kind="stable").reset_index(drop=True)
+    out["target_p_lt_0_05"] = out["target_power_p_value_ar1"] < 0.05
+    return out
 
 
 def agent_lag_autocorrelation(
@@ -1108,6 +1302,84 @@ def make_psd_figure(psd_df: pd.DataFrame, out_path: Path) -> None:
     ax.set_title("Aggregate comment activity PSD")
     ax.grid(True, linestyle="--", alpha=0.3)
     ax.legend(frameon=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=300)
+    plt.close(fig)
+
+
+def make_periodicity_robustness_figure(robustness: pd.DataFrame, out_path: Path) -> None:
+    if robustness.empty:
+        return
+    fig, axes = plt.subplots(1, 2, figsize=(10.2, 4.2))
+
+    axes[0].plot(
+        robustness["bin_minutes"],
+        robustness["target_power_p_value_ar1"],
+        marker="o",
+        linewidth=1.8,
+        color="#4c78a8",
+    )
+    axes[0].axhline(0.05, color="#e45756", linestyle="--", linewidth=1.2)
+    axes[0].set_xlabel("Bin width (minutes)")
+    axes[0].set_ylabel("AR(1)-calibrated p-value at 4h")
+    axes[0].set_title("4-hour target test by bin width")
+    axes[0].set_ylim(0.0, 1.0)
+    axes[0].grid(True, linestyle="--", alpha=0.3)
+
+    axes[1].plot(
+        robustness["bin_minutes"],
+        robustness["dominant_period_hours"],
+        marker="o",
+        linewidth=1.8,
+        color="#54a24b",
+    )
+    axes[1].axhline(4.0, color="#e45756", linestyle="--", linewidth=1.2)
+    axes[1].set_xlabel("Bin width (minutes)")
+    axes[1].set_ylabel("Dominant period (hours)")
+    axes[1].set_title("Dominant period by bin width")
+    axes[1].grid(True, linestyle="--", alpha=0.3)
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=300)
+    plt.close(fig)
+
+
+def make_agent_group_reply_dynamics_figure(group_table: pd.DataFrame, out_path: Path) -> None:
+    if group_table.empty:
+        return
+
+    claim = group_table[group_table["group_family"] == "is_claimed"].copy()
+    follow = group_table[group_table["group_family"] == "follower_count_bin"].copy()
+    claim["group_label"] = pd.Categorical(
+        claim["group_label"], categories=["Claimed", "Unclaimed"], ordered=True
+    )
+    follow["group_label"] = pd.Categorical(
+        follow["group_label"], categories=FOLLOWER_BIN_ORDER, ordered=True
+    )
+    claim = claim.sort_values("group_label", kind="stable")
+    follow = follow.sort_values("group_label", kind="stable")
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.8, 4.2))
+
+    axes[0].bar(
+        claim["group_label"].astype(str),
+        claim["observed_reply_probability"],
+        color=["#4c78a8", "#72b7b2"],
+    )
+    axes[0].set_ylim(0.0, 0.2)
+    axes[0].set_ylabel("Observed direct-reply probability")
+    axes[0].set_title("By claim status")
+    axes[0].grid(True, axis="y", linestyle="--", alpha=0.3)
+
+    axes[1].bar(
+        follow["group_label"].astype(str),
+        follow["half_life_minutes"],
+        color=["#54a24b", "#f58518", "#e45756"],
+    )
+    axes[1].set_ylabel("First-reply half-life (minutes)")
+    axes[1].set_title("By follower count bin")
+    axes[1].grid(True, axis="y", linestyle="--", alpha=0.3)
+
     fig.tight_layout()
     fig.savefig(out_path, dpi=300)
     plt.close(fig)
@@ -1348,6 +1620,12 @@ def main() -> None:
         cfg=cfg,
         rng=rng,
     )
+    periodicity_robustness = analyze_periodicity_bin_robustness(
+        comment_times=events["created_at_utc"],
+        cfg=cfg,
+        bin_minutes_options=PERIODICITY_ROBUSTNESS_BIN_MINUTES,
+        rng=np.random.default_rng(cfg.seed + 19),
+    )
     segment_start = pd.Timestamp(periodicity_summary["segment_start"])
     segment_end = pd.Timestamp(periodicity_summary["segment_end"])
     agent_acf, agent_acf_summary = agent_lag_autocorrelation(
@@ -1360,29 +1638,14 @@ def main() -> None:
         bootstrap_reps=cfg.bootstrap_reps,
     )
 
-    # Karma-stratified half-life (bottom vs top quartile among known karma).
-    survival_agent = survival_primary.merge(
-        agents.rename(columns={"agent_id": "comment_agent_id"}),
-        on="comment_agent_id",
-        how="left",
+    reply_dynamics_by_category = build_reply_dynamics_by_category_table(
+        survival_primary=survival_primary,
+        overall_exponential_fit=exp_fit,
     )
-    survival_agent = survival_agent.dropna(subset=["karma"]).copy()
-    q1 = float(survival_agent["karma"].quantile(0.25))
-    q3 = float(survival_agent["karma"].quantile(0.75))
-    low = survival_agent[survival_agent["karma"] <= q1].copy()
-    high = survival_agent[survival_agent["karma"] >= q3].copy()
-
-    karma_compare = {}
-    for label, subset in [("low_q1", low), ("high_q4", high)]:
-        fit = fit_exponential_decay(
-            durations_hours=subset["duration_hours"].to_numpy(),
-            event_observed=subset["event_observed"].to_numpy(),
-        )
-        karma_compare[label] = {
-            "n_comments": int(subset["comment_id"].nunique()),
-            "n_threads": int(subset["thread_id"].nunique()),
-            "half_life_hours": float(fit["half_life_hours"]) if fit.get("success") else None,
-        }
+    agent_group_reply_dynamics = build_agent_group_reply_dynamics_table(
+        survival_primary=survival_primary,
+        agents=agents,
+    )
 
     # Write derived features.
     events_out = run_features_dir / "thread_events.parquet"
@@ -1402,6 +1665,8 @@ def main() -> None:
     reentry_fig = figures_dir / "moltbook_reentry_distribution.png"
     surv_fig = figures_dir / "moltbook_survival_curve.png"
     psd_fig = figures_dir / "moltbook_psd.png"
+    periodicity_robustness_fig = figures_dir / "moltbook_periodicity_bin_robustness.png"
+    agent_groups_fig = figures_dir / "moltbook_agent_group_reply_dynamics.png"
     make_depth_figure(
         thread_metrics=thread_metrics,
         mu_hat=depth_tail["mu_hat"],
@@ -1415,17 +1680,31 @@ def main() -> None:
         out_path=surv_fig,
     )
     make_psd_figure(psd_df=psd_df, out_path=psd_fig)
+    make_periodicity_robustness_figure(
+        robustness=periodicity_robustness,
+        out_path=periodicity_robustness_fig,
+    )
+    make_agent_group_reply_dynamics_figure(
+        group_table=agent_group_reply_dynamics,
+        out_path=agent_groups_fig,
+    )
 
     # Tables / JSON summaries.
     descriptive_table = summarize_descriptive_table(thread_metrics)
     descriptive_out = tables_dir / "descriptive_stats.csv"
     branching_csv_out = tables_dir / "branching_by_depth.csv"
     half_life_by_cat_out = tables_dir / "half_life_by_category.csv"
+    reply_dynamics_out = tables_dir / "reply_dynamics_by_category.csv"
+    agent_group_reply_out = tables_dir / "agent_group_reply_dynamics.csv"
     psd_out = tables_dir / "psd_curve.csv"
+    periodicity_robustness_out = tables_dir / "periodicity_bin_robustness.csv"
     descriptive_table.to_csv(descriptive_out, index=False)
     branching_by_depth.to_csv(branching_csv_out, index=False)
     half_life_by_category.to_csv(half_life_by_cat_out, index=False)
+    reply_dynamics_by_category.to_csv(reply_dynamics_out, index=False)
+    agent_group_reply_dynamics.to_csv(agent_group_reply_out, index=False)
     psd_df.to_csv(psd_out, index=False)
+    periodicity_robustness.to_csv(periodicity_robustness_out, index=False)
 
     summary = {
         "run_id": cfg.run_id,
@@ -1459,13 +1738,17 @@ def main() -> None:
             "weibull": weib_fit,
             "weibull_bootstrap": weib_boot,
             "category_table_path": str(half_life_by_cat_out),
-            "karma_quartile_comparison": {
-                "q1_cutoff": q1,
-                "q3_cutoff": q3,
-                "estimates": karma_compare,
-            },
+            "reply_dynamics_by_category_table_path": str(reply_dynamics_out),
+            "implied_eventual_reply_probability": implied_eventual_reply_probability(exp_fit),
         },
-        "periodicity": periodicity_summary,
+        "reply_dynamics": {
+            "by_submolt_rows": reply_dynamics_by_category.to_dict(orient="records"),
+            "agent_group_rows": agent_group_reply_dynamics.to_dict(orient="records"),
+        },
+        "periodicity": {
+            **periodicity_summary,
+            "bin_width_robustness": periodicity_robustness.to_dict(orient="records"),
+        },
         "agent_acf": agent_acf_summary,
         "artifacts": {
             "thread_events_parquet": str(events_out),
@@ -1479,12 +1762,17 @@ def main() -> None:
                 str(reentry_fig),
                 str(surv_fig),
                 str(psd_fig),
+                str(periodicity_robustness_fig),
+                str(agent_groups_fig),
             ],
             "tables": [
                 str(descriptive_out),
                 str(branching_csv_out),
                 str(half_life_by_cat_out),
+                str(reply_dynamics_out),
+                str(agent_group_reply_out),
                 str(psd_out),
+                str(periodicity_robustness_out),
             ],
         },
     }

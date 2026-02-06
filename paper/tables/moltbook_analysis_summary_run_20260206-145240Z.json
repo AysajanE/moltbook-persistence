@@ -108,22 +108,137 @@
       ]
     },
     "category_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
-    "karma_quartile_comparison": {
-      "q1_cutoff": 0.0,
-      "q3_cutoff": 0.0,
-      "estimates": {
-        "low_q1": {
-          "n_comments": 173704,
-          "n_threads": 30615,
-          "half_life_hours": 0.01404402712581359
-        },
-        "high_q4": {
-          "n_comments": 198061,
-          "n_threads": 31217,
-          "half_life_hours": 0.013278505901084488
-        }
+    "reply_dynamics_by_category_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/reply_dynamics_by_category.csv",
+    "implied_eventual_reply_probability": 0.09281944720545698
+  },
+  "reply_dynamics": {
+    "by_submolt_rows": [
+      {
+        "group_label": "Overall",
+        "n_parent_comments": 199000,
+        "n_events": 17915,
+        "observed_reply_probability": 0.0900251256281407,
+        "conditional_median_reply_minutes": 0.07590916666666667,
+        "half_life_hours": 0.013276448867669589,
+        "implied_eventual_reply_probability": 0.09281944720545698
+      },
+      {
+        "group_label": "Builder/Technical",
+        "n_parent_comments": 7696,
+        "n_events": 133,
+        "observed_reply_probability": 0.017281704781704783,
+        "conditional_median_reply_minutes": 1.9178118333333334,
+        "half_life_hours": 0.05292412985019467,
+        "implied_eventual_reply_probability": 0.01731530161323136
+      },
+      {
+        "group_label": "Philosophy/Meta",
+        "n_parent_comments": 5429,
+        "n_events": 101,
+        "observed_reply_probability": 0.018603794437281267,
+        "conditional_median_reply_minutes": 1.8438908333333333,
+        "half_life_hours": 0.13462558870450575,
+        "implied_eventual_reply_probability": 0.018671210775812352
+      },
+      {
+        "group_label": "Social/Casual",
+        "n_parent_comments": 168407,
+        "n_events": 17337,
+        "observed_reply_probability": 0.10294702714257721,
+        "conditional_median_reply_minutes": 0.07528798333333334,
+        "half_life_hours": 0.011529208041878772,
+        "implied_eventual_reply_probability": 0.10666055661243112
+      },
+      {
+        "group_label": "Creative",
+        "n_parent_comments": 366,
+        "n_events": 7,
+        "observed_reply_probability": 0.01912568306010929,
+        "conditional_median_reply_minutes": 0.48287136666666663,
+        "half_life_hours": 0.007594579251023297,
+        "implied_eventual_reply_probability": 0.019123224201603173
+      },
+      {
+        "group_label": "Spam/Low-Signal",
+        "n_parent_comments": 2218,
+        "n_events": 20,
+        "observed_reply_probability": 0.009017132551848512,
+        "conditional_median_reply_minutes": 1.3146773,
+        "half_life_hours": 0.02258720480100527,
+        "implied_eventual_reply_probability": 0.009015666322249705
+      },
+      {
+        "group_label": "Other",
+        "n_parent_comments": 14884,
+        "n_events": 317,
+        "observed_reply_probability": 0.021298038161784466,
+        "conditional_median_reply_minutes": 1.4835247333333332,
+        "half_life_hours": 0.05347864722054653,
+        "implied_eventual_reply_probability": 0.021368659160068137
       }
-    }
+    ],
+    "agent_group_rows": [
+      {
+        "group_label": "Claimed",
+        "n_parent_comments": 18367,
+        "n_events": 3341,
+        "observed_reply_probability": 0.18190232482169108,
+        "conditional_median_reply_minutes": 0.07345846666666667,
+        "half_life_hours": 0.008015408821819439,
+        "implied_eventual_reply_probability": 0.19359302659887023,
+        "group_family": "is_claimed",
+        "n_threads": 10246,
+        "half_life_minutes": 0.48092452930916635
+      },
+      {
+        "group_label": "Unclaimed",
+        "n_parent_comments": 180633,
+        "n_events": 14574,
+        "observed_reply_probability": 0.08068293169022271,
+        "conditional_median_reply_minutes": 0.07666339999999999,
+        "half_life_hours": 0.014494297398652267,
+        "implied_eventual_reply_probability": 0.082900555278695,
+        "group_family": "is_claimed",
+        "n_threads": 31090,
+        "half_life_minutes": 0.869657843919136
+      },
+      {
+        "group_label": "0",
+        "n_parent_comments": 176689,
+        "n_events": 14858,
+        "observed_reply_probability": 0.08409125638834336,
+        "conditional_median_reply_minutes": 0.07633514166666665,
+        "half_life_hours": 0.014232886697054591,
+        "implied_eventual_reply_probability": 0.08651004187122391,
+        "group_family": "follower_count_bin",
+        "n_threads": 30694,
+        "half_life_minutes": 0.8539732018232755
+      },
+      {
+        "group_label": "1-9",
+        "n_parent_comments": 21167,
+        "n_events": 3042,
+        "observed_reply_probability": 0.14371427221618557,
+        "conditional_median_reply_minutes": 0.07444229166666666,
+        "half_life_hours": 0.0086159135281754,
+        "implied_eventual_reply_probability": 0.1509616291354937,
+        "group_family": "follower_count_bin",
+        "n_threads": 12072,
+        "half_life_minutes": 0.516954811690524
+      },
+      {
+        "group_label": "10+",
+        "n_parent_comments": 238,
+        "n_events": 4,
+        "observed_reply_probability": 0.01680672268907563,
+        "conditional_median_reply_minutes": 0.9753948833333334,
+        "half_life_hours": 0.030813156194290335,
+        "implied_eventual_reply_probability": 0.01683706792288231,
+        "group_family": "follower_count_bin",
+        "n_threads": 230,
+        "half_life_minutes": 1.8487893716574202
+      }
+    ]
   },
   "periodicity": {
     "segment_start": "2026-02-02T04:20:50.311786+00:00",
@@ -155,7 +270,57 @@
     "fisher_g": 0.09371090048065756,
     "fisher_g_p_value_ar1": 0.697,
     "target_power_p_value_ar1": 0.4905,
-    "ar1_phi": 0.730780269896234
+    "ar1_phi": 0.730780269896234,
+    "bin_width_robustness": [
+      {
+        "bin_minutes": 5,
+        "target_frequency_per_hour": 0.25,
+        "target_frequency_nearest_per_hour": 0.28125,
+        "target_period_hours_nearest": 3.5555555555555554,
+        "target_power": 2.394113589970279,
+        "background_power_median": 0.055546851245823016,
+        "peak_to_background_ratio": 43.100797547913395,
+        "dominant_frequency_per_hour": 0.1875,
+        "dominant_period_hours": 5.333333333333333,
+        "fisher_g": 0.0863007752627374,
+        "fisher_g_p_value_ar1": 0.2385,
+        "target_power_p_value_ar1": 0.508,
+        "ar1_phi": 0.8146076470830007,
+        "target_p_lt_0_05": false
+      },
+      {
+        "bin_minutes": 15,
+        "target_frequency_per_hour": 0.25,
+        "target_frequency_nearest_per_hour": 0.25,
+        "target_period_hours_nearest": 4.0,
+        "target_power": 1.2152691649615626,
+        "background_power_median": 0.1896447457964916,
+        "peak_to_background_ratio": 6.408135167982307,
+        "dominant_frequency_per_hour": 0.15625,
+        "dominant_period_hours": 6.4,
+        "fisher_g": 0.09371090048065756,
+        "fisher_g_p_value_ar1": 0.6855,
+        "target_power_p_value_ar1": 0.501,
+        "ar1_phi": 0.730780269896234,
+        "target_p_lt_0_05": false
+      },
+      {
+        "bin_minutes": 30,
+        "target_frequency_per_hour": 0.25,
+        "target_frequency_nearest_per_hour": 0.25,
+        "target_period_hours_nearest": 4.0,
+        "target_power": 1.300261567945813,
+        "background_power_median": 0.45096851156831,
+        "peak_to_background_ratio": 2.883264650615982,
+        "dominant_frequency_per_hour": 0.125,
+        "dominant_period_hours": 8.0,
+        "fisher_g": 0.10750522181170585,
+        "fisher_g_p_value_ar1": 0.6315,
+        "target_power_p_value_ar1": 0.556,
+        "ar1_phi": 0.5643016125800598,
+        "target_p_lt_0_05": false
+      }
+    ]
   },
   "agent_acf": {
     "eligible_agents": 1076,
@@ -178,13 +343,18 @@
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_branching_by_depth.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_reentry_distribution.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_survival_curve.png",
-      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_psd.png"
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_psd.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_periodicity_bin_robustness.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_agent_group_reply_dynamics.png"
     ],
     "tables": [
       "outputs/moltbook_only/run_20260206-145240Z/tables/descriptive_stats.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/branching_by_depth.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
-      "outputs/moltbook_only/run_20260206-145240Z/tables/psd_curve.csv"
+      "outputs/moltbook_only/run_20260206-145240Z/tables/reply_dynamics_by_category.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/agent_group_reply_dynamics.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/psd_curve.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/periodicity_bin_robustness.csv"
     ]
   }
 }

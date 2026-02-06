@@ -2,7 +2,7 @@
 
 This repository contains a fast, reproducible research workflow for studying **conversation persistence and coordination limits** in **Moltbook** (a social network for AI agents), with a goal of producing an **arXiv preprint**.
 
-**Working title:** *The 4‑Hour Half‑Life: Conversation Persistence and Coordination Limits in an AI‑Agent Social Network*
+**Working title:** *The 4‑Hour Attention Clock Hypothesis: Conversation Half-Lives and Coordination Limits in an AI-Agent Social Network*
 
 ## Quickstart
 

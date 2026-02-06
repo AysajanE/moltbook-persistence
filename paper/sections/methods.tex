@@ -71,6 +71,20 @@ Under the model (\cref{eq:reply-intensity}), conditional on the availability fun
 \lambda(s \mid t_{jm}) = b(t_{jm} + s) \, \alpha_{a_{jm}} \, e^{-\beta_{a_{jm}} s}.
 \end{equation}
 
+\begin{remark}[Estimand interpretation]
+\label{rem:estimand}
+The \emph{first-reply half-life} $\hat{h} = \ln 2 / \hat{\beta}$ is a
+\textbf{kernel decay timescale}: it characterizes how quickly the instantaneous
+hazard of receiving a direct reply falls as a parent comment ages. It is
+\emph{not} the median thread lifetime or the time at which 50\% of all
+comments have arrived. Because most parent comments receive no direct reply
+in-window (high censoring fraction), the estimated half-life reflects the
+concentration of observed replies in the first seconds to minutes after a
+parent is posted. A short half-life combined with heavy censoring describes a
+\emph{bursty} reply process: if a direct reply occurs at all, it occurs
+quickly; otherwise the parent comment typically receives no direct reply.
+\end{remark}
+
 \subsubsection{Parametric Estimation}
 
 We estimate $\beta$ via maximum likelihood under exponential and Weibull survival models:
@@ -89,18 +103,33 @@ S(s) = \exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right).
 \end{equation}
 The case $\gamma = 1$ recovers the exponential; $\gamma < 1$ indicates decreasing hazard (early replies more likely), while $\gamma > 1$ indicates increasing hazard.
 
+\subsubsection{Reply Probability vs.\ Reply Timing}
+
+Given heavy censoring, we report a two-part decomposition in addition to $\hat{\beta}$:
+\begin{itemize}
+    \item \textbf{Observed in-window reply probability}
+    \(p_{\mathrm{obs}}=\Pr(\text{parent receives} \ge 1 \text{ direct reply in window})\),
+    estimated as event fraction in the primary survival sample.
+    \item \textbf{Conditional timing summary}: median time-to-first-direct-reply among
+    observed events.
+    \item \textbf{Implied eventual reply probability under fitted exponential model}:
+    \(p_{\infty}=1-\exp(-\hat{\alpha}/\hat{\beta})\), where
+    \(\hat{\alpha}/\hat{\beta}\) is integrated reply mass under the fitted hazard.
+\end{itemize}
+This separates \emph{whether} replies occur from \emph{how quickly} they occur when they do.
+
 \paragraph{Agent heterogeneity (implemented summary).} In this analysis pass, we report
 stratified pooled estimates rather than a full mixed-effects survival model: half-life
-estimates by submolt category and by karma quartile (bottom vs.\ top quartile among
-observed karma values).
+and reply-probability summaries by submolt category and by agent-level proxies
+(\texttt{is\_claimed} status and follower-count bins \(\{0,1\text{--}9,10+\}\)).
 
 \subsubsection{Stratified Estimates}
 
 We compute half-life estimates stratified by:
 \begin{itemize}
     \item \textbf{Submolt category}: Builder/Technical, Philosophy/Meta, Social/Casual, etc.,
-    \item \textbf{Agent karma quartile}: bottom vs.\ top quartile for a first-pass
-    heterogeneity check.
+    \item \textbf{Agent groups}: claimed vs.\ unclaimed accounts and follower-count bins
+    (\(0,1\text{--}9,10+\)).
 \end{itemize}
 
 \subsubsection{Confidence Intervals and Uncertainty}
@@ -114,10 +143,10 @@ Our model predicts periodic structure in comment arrivals at the heartbeat frequ
 
 \subsubsection{Aggregate Activity Time Series}
 
-We construct a time series of comment counts binned at 15-minute intervals. Because the
-canonical comment timeline contains a long coverage gap, we first segment the event stream
-at gaps $>6$ hours and analyze the longest contiguous segment. Let $C_t$ denote the count in
-bin $t$ for that segment. We apply standard preprocessing:
+We construct a time series of comment counts binned at 15-minute intervals for the primary
+specification. Because the canonical comment timeline contains a long coverage gap, we first
+segment the event stream at gaps $>6$ hours and analyze the longest contiguous segment. Let
+$C_t$ denote the count in bin $t$ for that segment. We apply standard preprocessing:
 \begin{itemize}
     \item Log-transform: $Y_t = \log(C_t + 1)$ to stabilize variance,
     \item Detrending: subtract a 24-hour moving average to remove diurnal drift,
@@ -135,6 +164,8 @@ $f_\tau = 1/\tau \approx 1/(4\text{ hours}) = 0.25\text{ hr}^{-1}$ by:
     \item Estimating Monte Carlo $p$-values using 2,000 AR(1) simulations for both
     Fisher's $g$ and the target-frequency power.
 \end{itemize}
+As a robustness check, we repeat the target-frequency and dominant-frequency analysis with
+5-minute and 30-minute bins on the same contiguous segment.
 
 \subsubsection{Agent-Level Autocorrelation}
 

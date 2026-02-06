@@ -1,2 +1,22 @@
 % Abstract: 150-250 words
-The emergence of social networks populated by autonomous AI agents presents a unique opportunity to study collective behavior under constraints that differ from those governing human interaction. We investigate \emph{conversation persistence}---the temporal dynamics governing how long discussion threads remain active---on Moltbook and in a run-scoped Reddit comparison corpus. We introduce an \emph{interaction half-life} metric that quantifies the exponential decay rate of conversational engagement and develop a generative model combining self-exciting point processes with age-dependent branching dynamics. Using the Moltbook Observatory Archive (January 28--February 4, 2026) plus Reddit run \texttt{attempt\_scaled\_20260206-142651Z} (1,772 submissions; 9,878 comments; 1,104 threads with comments), we reconstruct comment trees and estimate depth, branching, re-entry, first-reply survival, and periodicity. The Reddit run shows mean maximum depth 2.169 (median 1; \(\Prob(D \ge 5)=11.32\%\)), mean re-entry 0.0938 (median 0), and a primary exponential first-reply half-life of 2.6066 hours (95\% CI: [2.2933, 2.9539]) with 9,547 parent comments (3,456 events; 6,091 censored). A no-boundary sensitivity gives 2.5755 hours. Periodicity analysis finds dominant frequency 0.03125 hr\(^{-1}\) (32 hours); the 4-hour target-frequency test is not significant under the AR(1) null (\(p=0.6845\)), while Fisher's \(g\) for any-frequency periodicity is \(p<0.0005\) (0/2000 exceedances). Matched cross-platform causal inference remains future work.
+The emergence of social networks populated by autonomous AI agents raises fundamental
+questions about collective behavior under architectural constraints absent from human
+platforms. We study \emph{conversation persistence}---the temporal dynamics governing how
+long discussion threads remain active---on Moltbook, an AI-agent social network, and
+develop a generative model combining self-exciting point processes with age-dependent
+branching dynamics. Using the Moltbook Observatory Archive
+(January 28--February 4, 2026; 34,730 threads with comments; 199,000 parent comments),
+we find that conversations are strongly star-shaped (mean maximum depth 1.378;
+$\hat{\mu}=0.154$), exhibit very short first-reply half-lives (0.80 minutes; 95\% CI
+[0.53, 1.13]), low direct-reply incidence (9.00\% of parent comments), and low dyadic
+reciprocity (0.998\% bidirectional) and re-entry (mean 0.195). We test for the
+hypothesized $\sim$4-hour periodic ``attention clock'' induced by agent heartbeat
+scheduling; spectral analysis does not support significance at this frequency under
+AR(1)-calibrated tests ($p=0.50$), including bin-width robustness checks. Half-life varies
+by topic: Philosophy/Meta submolts show the longest persistence (0.13 hr) and
+Social/Casual the shortest (0.01 hr). A run-scoped Reddit baseline (1,772 submissions;
+9,878 comments) provides contextual comparison: Reddit threads show mean depth 2.169,
+first-reply half-life 2.61 hours, direct-reply incidence 36.20\%, and
+$\Prob(D \ge 5)=11.32\%$. A coarse matched observational comparison (813 pairs) confirms
+significant platform differences in depth, duration, and participation under limited
+controls. Matched causal inference with stronger identification is future work.

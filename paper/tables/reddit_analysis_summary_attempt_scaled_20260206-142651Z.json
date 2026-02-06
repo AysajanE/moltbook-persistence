@@ -75,6 +75,20 @@
       "events": 3543.0
     }
   },
+  "reply_dynamics": {
+    "rows": [
+      {
+        "group_label": "Overall",
+        "n_parent_comments": 9547,
+        "n_events": 3456,
+        "observed_reply_probability": 0.36199853357075523,
+        "conditional_median_reply_minutes": 39.31666666666666,
+        "half_life_hours": 2.606642420887886,
+        "implied_eventual_reply_probability": 0.38703866752633975
+      }
+    ],
+    "table_path": "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/reply_dynamics.csv"
+  },
   "periodicity": {
     "segment_start": "2026-01-31T00:03:20+00:00",
     "segment_end": "2026-02-04T23:59:34+00:00",
@@ -141,7 +155,8 @@
       "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/depth_distribution.csv",
       "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/branching_by_depth.csv",
       "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/reentry_rate_distribution.csv",
-      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/psd_curve.csv"
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/psd_curve.csv",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/reply_dynamics.csv"
     ]
   }
 }

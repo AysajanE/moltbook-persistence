@@ -82,9 +82,44 @@ The fitted exponential model yields:
 \end{align*}
 
 In minutes, this corresponds to 0.80 minutes (95\% CI: [0.53, 1.13]).
-The estimate is very short because observed direct replies are concentrated in the first
-seconds to minutes, while most parent comments receive no direct reply in-window.
 Without the 4-hour boundary exclusion, the estimate is similar (0.0115 hr).
+
+This estimate should be interpreted as a \emph{kernel decay timescale}
+(see \cref{rem:estimand}), not as a median thread lifetime. The combination
+of a sub-minute half-life with a 91\% censoring fraction (181,085 of 199,000
+parent comments receive no observed direct reply) describes a bursty two-regime
+process: a small fraction of parent comments attract rapid direct replies
+concentrated in the first seconds to minutes, while the large majority receive
+no direct reply at all during the observation window. The Moltbook reply
+process is thus better characterized as ``fast response or silence'' than as
+a gradual decay of engagement.
+
+\begin{table}[t]
+\centering
+\caption{Reply probability and timing decomposition (primary survival samples).}
+\label{tab:reply-dynamics}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Sample} & \textbf{Parents} & \textbf{Observed reply \%} & \textbf{Cond. median (min)} & \textbf{Half-life (hr)} & \textbf{Implied eventual \%} \\
+\midrule
+Moltbook (overall) & 199,000 & 9.00 & 0.076 & 0.0133 & 9.28 \\
+Builder/Technical & 7,696 & 1.73 & 1.918 & 0.0529 & 1.73 \\
+Philosophy/Meta & 5,429 & 1.86 & 1.844 & 0.1346 & 1.87 \\
+Social/Casual & 168,407 & 10.29 & 0.075 & 0.0115 & 10.67 \\
+Creative & 366 & 1.91 & 0.483 & 0.0076 & 1.91 \\
+Spam/Low-Signal & 2,218 & 0.90 & 1.315 & 0.0226 & 0.90 \\
+Other & 14,884 & 2.13 & 1.484 & 0.0535 & 2.14 \\
+Reddit (overall) & 9,547 & 36.20 & 39.317 & 2.6066 & 38.70 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Cref{tab:reply-dynamics} separates event incidence from timing. On Moltbook, only
+9.00\% of parent comments receive any direct reply in-window, versus 36.20\% on the
+Reddit baseline. Conditional on receiving a reply, Moltbook replies arrive within seconds
+to minutes (overall median 0.076 minutes), while Reddit conditional timing is much slower
+(39.3 minutes median).
 
 \subsubsection{Weibull Shape Parameter}
 
@@ -120,11 +155,37 @@ while Social/Casual and Creative are shortest.
 
 \subsubsection{Agent Heterogeneity}
 
-For a simple heterogeneity check, we compare pooled half-life estimates for comments authored
-by agents in the bottom vs.\ top karma quartile among observed karma values. Because both
-quartile cutoffs are 0 in this snapshot (high mass at zero karma), this split is weakly
-informative. Estimated half-lives are similar: 0.0140 hr (bottom quartile) vs.\ 0.0133 hr
-(top quartile).
+\begin{table}[t]
+\centering
+\caption{Agent-level heterogeneity in reply incidence and timing (Moltbook primary sample).}
+\label{tab:agent-heterogeneity}
+\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+\textbf{Group family} & \textbf{Group} & \textbf{Parents} & \textbf{Observed reply \%} & \textbf{Half-life (min)} \\
+\midrule
+\texttt{is\_claimed} & Claimed & 18,367 & 18.19 & 0.48 \\
+\texttt{is\_claimed} & Unclaimed & 180,633 & 8.07 & 0.87 \\
+\texttt{follower\_count} & 0 & 176,689 & 8.41 & 0.85 \\
+\texttt{follower\_count} & 1--9 & 21,167 & 14.37 & 0.52 \\
+\texttt{follower\_count} & 10+ & 238 & 1.68 & 1.85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/agent_group_reply_dynamics_moltbook.png}
+\caption{Moltbook heterogeneity by claim status and follower-count bins.}
+\label{fig:agent-group-heterogeneity}
+\end{figure}
+
+\Cref{tab:agent-heterogeneity} and \cref{fig:agent-group-heterogeneity} show that claimed
+accounts have materially higher observed direct-reply incidence (18.19\% vs.\ 8.07\%) and
+shorter first-reply half-life (0.48 vs.\ 0.87 minutes) than unclaimed accounts. The
+follower-bin split is non-monotonic: \(1\text{--}9\) followers is highest-incidence in this
+snapshot, while the 10+ bin is sparse (\(n=238\) parent comments), so that estimate is
+interpreted cautiously.
 
 \subsection{Periodicity Detection}
 \label{sec:results:periodicity}
@@ -144,8 +205,20 @@ longest contiguous segment (2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.52 
 
 At the 4-hour target frequency (\(f=0.25\) hr\(^{-1}\)), the peak-to-background ratio is
 6.41. However, AR(1)-calibrated tests do not support significance
-(Fisher's \(g=0.0937\), \(p=0.697\); target-frequency power \(p=0.4905\)).
+(Fisher's \(g=0.0937\), \(p=0.6855\); target-frequency power \(p=0.501\)).
 The dominant spectral component is at 0.15625 hr\(^{-1}\) (period 6.4 hours), not 4 hours.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/periodicity_bin_robustness_moltbook.png}
+\caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
+\label{fig:periodicity-bin-robustness}
+\end{figure}
+
+The non-significant 4-hour conclusion is stable across bin widths on the same contiguous
+segment: target-frequency AR(1)-calibrated \(p\)-values are 0.508 (5 min), 0.501 (15 min),
+and 0.556 (30 min). The dominant period shifts from 5.33 to 8.0 hours across these binning
+choices, but none imply a significant 4-hour peak.
 
 \subsubsection{Agent-Level Autocorrelation}
 
@@ -212,7 +285,9 @@ Conversation geometry is materially deeper than a pure star regime but still roo
 The primary survival sample includes 9,547 parent comments (3,456 events; 6,091 censored),
 after excluding 329 parents within the 4-hour right-boundary window. The exponential estimate
 gives a first-reply half-life of 2.6066 hours (95\% CI: [2.2933, 2.9539]). A no-boundary
-sensitivity estimate is similar at 2.5755 hours.
+sensitivity estimate is similar at 2.5755 hours. The observed direct-reply probability is
+36.20\% (3,456/9,547), with implied eventual probability 38.70\% under the fitted
+exponential model.
 
 \subsubsection{Periodicity}
 
@@ -323,9 +398,11 @@ thread-level survival effects.
     (mean 0.195; median 0.167).
     \item \textbf{Very short first-reply half-life}: Estimated half-life is 0.0133 hours
     (0.80 minutes; 95\% CI: [0.53, 1.13] minutes) in the primary survival specification.
+    \item \textbf{Two-regime reply dynamics}: Moltbook observed direct-reply incidence is
+    9.00\% versus 36.20\% on Reddit; conditional timing differs by orders of magnitude.
     \item \textbf{No statistically significant 4-hour spectral peak}: Although power at
     0.25 hr\(^{-1}\) is elevated relative to local background, AR(1)-based tests are not
-    significant.
+    significant across 5/15/30-minute bin-width checks.
     \item \textbf{Coarse matched cross-platform sample}: Exact matching on coarse topic,
     UTC posting hour, and first-30-minute engagement bins produced 813 1:1 pairs across
     118 strata. Maximum absolute SMD decreased from 3.886 to 0.052.

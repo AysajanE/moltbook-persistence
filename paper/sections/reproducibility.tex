@@ -33,12 +33,12 @@ The dataset is released under the MIT license. We provide a download/export scri
 
 All code associated with this manuscript is available in our repository:
 \begin{center}
-\url{https://github.com/[REDACTED]/moltbook-persistence}
+\url{https://github.com/AysajanE/moltbook-persistence}
 \end{center}
 
 The repository includes:
 \begin{itemize}
-    \item \texttt{scripts/}: Data download and export utilities.
+    \item \texttt{scripts/}: Data download/export and arXiv bundling utilities.
     \item \texttt{analysis/}: Analysis entrypoints (added as the pipeline stabilizes; see \texttt{analysis/README.md} for current status).
     \item \texttt{paper/}: \LaTeX{} source for this manuscript.
     \item \texttt{requirements.txt}: Python dependencies (minimum versions).
@@ -50,7 +50,8 @@ The repository includes:
 The Moltbook and Reddit results reported in \Cref{sec:results} were generated on:
 \begin{itemize}
     \item OS/architecture: macOS 15.6.1 (arm64),
-    \item Python: 3.13.5,
+    \item Python: 3.13.5 for canonical runs; code target/lint baseline is Python
+    3.11 (\texttt{ruff target-version = py311} in \texttt{pyproject.toml}),
     \item Key packages: \texttt{numpy 2.4.2}, \texttt{pandas 2.3.3},
     \texttt{scipy 1.17.0}, \texttt{lifelines 0.30.1},
     \texttt{matplotlib 3.10.8}, \texttt{seaborn 0.13.2}.
@@ -82,6 +83,7 @@ To reproduce the workflows reported in this manuscript version:
         --snapshot-root data_curated/hf_archive/snapshot_20260204-234429Z \
         --data-features-root data_features/moltbook_only \
         --outputs-root outputs/moltbook_only \
+        --run-id run_20260206-145240Z \
         --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
     \end{verbatim}
 
@@ -108,6 +110,11 @@ To reproduce the workflows reported in this manuscript version:
     \item \textbf{Build the paper PDF (requires a local \LaTeX{} toolchain):}
     \begin{verbatim}
     make paper
+    \end{verbatim}
+
+    \item \textbf{Build a timestamped arXiv source bundle:}
+    \begin{verbatim}
+    make arxiv-bundle
     \end{verbatim}
 \end{enumerate}
 

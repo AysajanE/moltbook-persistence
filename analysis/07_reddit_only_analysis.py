@@ -8,7 +8,8 @@ computes, from a pinned run_id:
 3) thread re-entry rate distribution,
 4) time-to-first-reply survival + exponential half-life estimate
    (primary censor-boundary exclusion + no-boundary sensitivity),
-5) aggregate comment activity PSD with AR(1)-calibrated Fisher-g p-value.
+5) reply probability and implied eventual-reply mass under the fitted model,
+6) aggregate comment activity PSD with AR(1)-calibrated Fisher-g p-value.
 """
 
 from __future__ import annotations
@@ -718,6 +719,51 @@ def cluster_bootstrap_exponential(
     }
 
 
+def implied_eventual_reply_probability(exponential_fit: dict[str, Any]) -> float:
+    if not exponential_fit.get("success"):
+        return float("nan")
+    alpha = exponential_fit.get("alpha")
+    beta = exponential_fit.get("beta")
+    if alpha is None or beta is None:
+        return float("nan")
+    alpha_f = float(alpha)
+    beta_f = float(beta)
+    if not np.isfinite(alpha_f) or not np.isfinite(beta_f) or beta_f <= 0:
+        return float("nan")
+    mass = alpha_f / beta_f
+    if mass < 0:
+        return float("nan")
+    return float(1.0 - np.exp(-mass))
+
+
+def build_reply_dynamics_table(
+    survival_primary: pd.DataFrame,
+    exp_fit_primary: dict[str, Any],
+) -> pd.DataFrame:
+    n_parent_comments = int(len(survival_primary))
+    n_events = int(survival_primary["event_observed"].sum()) if n_parent_comments else 0
+    observed_prob = float(n_events / n_parent_comments) if n_parent_comments else float("nan")
+    if n_events > 0:
+        event_durations = survival_primary.loc[
+            survival_primary["event_observed"].astype(bool), "duration_hours"
+        ].to_numpy(dtype=float)
+        conditional_median_minutes = float(np.median(event_durations) * 60.0)
+    else:
+        conditional_median_minutes = float("nan")
+    row = {
+        "group_label": "Overall",
+        "n_parent_comments": n_parent_comments,
+        "n_events": n_events,
+        "observed_reply_probability": observed_prob,
+        "conditional_median_reply_minutes": conditional_median_minutes,
+        "half_life_hours": float(exp_fit_primary["half_life_hours"])
+        if exp_fit_primary.get("success")
+        else float("nan"),
+        "implied_eventual_reply_probability": implied_eventual_reply_probability(exp_fit_primary),
+    }
+    return pd.DataFrame([row])
+
+
 def build_survival_units(
     events: pd.DataFrame,
     censor_boundary_hours: float,
@@ -1342,6 +1388,10 @@ def main() -> None:
         rng=rng,
     )
     warnings.extend(periodicity_warnings)
+    reply_dynamics = build_reply_dynamics_table(
+        survival_primary=survival_primary,
+        exp_fit_primary=exp_fit_primary,
+    )
 
     # Write run-scoped feature artifacts.
     events_out = run_features_dir / "thread_events.parquet"
@@ -1383,12 +1433,14 @@ def main() -> None:
     branching_csv_out = tables_dir / "branching_by_depth.csv"
     reentry_csv_out = tables_dir / "reentry_rate_distribution.csv"
     psd_csv_out = tables_dir / "psd_curve.csv"
+    reply_dynamics_csv_out = tables_dir / "reply_dynamics.csv"
 
     descriptive_table.to_csv(descriptive_out, index=False)
     depth_distribution.to_csv(depth_csv_out, index=False)
     branching_by_depth.to_csv(branching_csv_out, index=False)
     reentry_distribution.to_csv(reentry_csv_out, index=False)
     psd_df.to_csv(psd_csv_out, index=False)
+    reply_dynamics.to_csv(reply_dynamics_csv_out, index=False)
 
     depth_vals = thread_metrics["depth_max"].dropna().to_numpy(dtype=float)
     reentry_vals = thread_metrics["reentry_rate"].dropna().to_numpy(dtype=float)
@@ -1443,6 +1495,10 @@ def main() -> None:
             "exponential_primary_bootstrap": exp_boot_primary,
             "exponential_sensitivity_no_boundary_exclusion": exp_fit_all,
         },
+        "reply_dynamics": {
+            "rows": reply_dynamics.to_dict(orient="records"),
+            "table_path": str(reply_dynamics_csv_out),
+        },
         "periodicity": periodicity_summary,
         "warnings": warnings,
         "warning_details": {
@@ -1470,6 +1526,7 @@ def main() -> None:
                 str(branching_csv_out),
                 str(reentry_csv_out),
                 str(psd_csv_out),
+                str(reply_dynamics_csv_out),
             ],
         },
     }

@@ -27,3 +27,9 @@ Keep this file short and pragmatic: record decisions that prevent rework.
 - **Manifest path:** `outputs/reddit_only/attempt_scaled_20260206-142651Z/run_manifest.json`.
 - **Input pinning policy:** enforce `run_id` filtering to avoid pilot/scaled overlap.
 - **Reddit caveat policy:** report dropped-missing-submission and non-200 request-log counts in manifests/results.
+
+## 2026-02-06
+
+- **arXiv packaging workflow:** build source bundles via
+  `scripts/build_arxiv_bundle.py` (`make arxiv-bundle`) to produce timestamped
+  tarballs under `outputs/arxiv/` with optional compile checks.

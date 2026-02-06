@@ -1,7 +1,7 @@
 \section{Additional Details}
 \label{sec:appendix}
 
-This appendix provides additional technical details, robustness checks, and supplementary results.
+This appendix provides additional technical details and supplementary results.
 
 \subsection{Derivations for the Branching Process Model}
 \label{sec:appendix:derivations}
@@ -41,92 +41,59 @@ The total log-likelihood sums \cref{eq:appendix-likelihood} over all parents $m$
 \subsection{Submolt Categorization}
 \label{sec:appendix:submolts}
 
-\Cref{tab:submolt-examples} provides examples of submolts in each category.
+\Cref{tab:submolt-examples} provides examples of submolt keyword triggers
+used in the deterministic categorization described in \Cref{sec:methods}.
 
 \begin{table}[t]
 \centering
-\caption{Example submolts by category. \todo{Update with actual submolt names after categorization.}}
+\caption{Submolt categorization: representative keyword triggers per category.
+Categories are evaluated in priority order (Spam first); a submolt is assigned
+to the first matching category.}
 \label{tab:submolt-examples}
 \small
 \begin{tabular}{@{}lp{9cm}@{}}
 \toprule
-\textbf{Category} & \textbf{Example Submolts} \\
+\textbf{Category} & \textbf{Keyword triggers (examples)} \\
 \midrule
-Builder/Technical & \todo{programming, automation, toolbuilding, ...} \\
-Philosophy/Meta & \todo{consciousness, existential, aiphilosophy, ...} \\
-Social/Casual & \todo{casualchat, jokes, askMoltbook, ...} \\
-Creative & \todo{writing, art, music, poetry, ...} \\
-Spam/Low-Signal & \todo{crypto, promotion, spam, ...} \\
+Spam/Low-Signal & crypto, bitcoin, airdrop, nft, defi, token, solana, scam, shitpost \\
+Builder/Technical & programming, coding, build, builders, dev, engineering, tools, automation, research, framework, mcp, tech \\
+Philosophy/Meta & philosophy, consciousness, existential, meta, souls, musings, aithoughts, ponderings \\
+Creative & writing, poetry, music, creative, story, theatre, shakespeare \\
+Social/Casual & general, casual, introductions, jokes, gaming, humanwatching, social, todayilearned, random \\
+Other & (default: no keyword match) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Balance Diagnostics for Matching}
+\subsection{Cross-Platform Matching: Balance Diagnostics}
 \label{sec:appendix:balance}
 
-\Cref{tab:balance} shows covariate balance before and after matching for the Moltbook--Reddit comparison.
+\Cref{tab:balance} shows covariate balance before and after coarsened exact
+matching for the cross-platform comparison (run
+\texttt{run\_20260206-182842Z}; 813 matched pairs). Post-matching balance is
+exact or near-exact on all controls by construction.
 
 \begin{table}[t]
 \centering
-\caption{Covariate balance before and after matching. SMD = standardized mean difference. \todo{Update with actual values.}}
+\caption{Covariate balance before and after coarsened exact matching.
+SMD = standardized mean difference (absolute value);
+TVD = total variation distance (categorical covariates only).}
 \label{tab:balance}
 \small
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 & \multicolumn{2}{c}{\textbf{Before Matching}} & \multicolumn{2}{c}{\textbf{After Matching}} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-\textbf{Covariate} & \textbf{Moltbook} & \textbf{Reddit} & \textbf{SMD Before} & \textbf{SMD After} \\
+\textbf{Covariate} & \textbf{$|$SMD$|$} & \textbf{TVD} & \textbf{$|$SMD$|$} & \textbf{TVD} \\
 \midrule
-Early comments (30 min) & \todo{--} & \todo{--} & \todo{--} & \todo{$<$0.1} \\
-Hour of posting & \todo{--} & \todo{--} & \todo{--} & \todo{$<$0.1} \\
-Topic category & \multicolumn{2}{c}{(categorical)} & \todo{--} & \todo{exact} \\
+Post hour (UTC) & 0.158 & --- & 0.000 & --- \\
+Early comments (30 min) & 0.836 & --- & 0.052 & --- \\
+Topic (coarse) & 3.886 & 0.901 & 0.000 & 0.000 \\
+Post hour bin & 0.217 & 0.156 & 0.000 & 0.000 \\
+Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\subsection{Robustness Checks}
-\label{sec:appendix:robustness}
-
-\subsubsection{Alternative Half-Life Estimators}
-
-\Cref{tab:robustness-halflife} compares half-life estimates across different estimation methods.
-
-\begin{table}[t]
-\centering
-\caption{Half-life estimates under alternative methods. \todo{Update with actual values.}}
-\label{tab:robustness-halflife}
-\small
-\begin{tabular}{@{}lrr@{}}
-\toprule
-\textbf{Method} & \textbf{Estimate (hr)} & \textbf{95\% CI} \\
-\midrule
-Exponential MLE & \todo{X.X} & \todo{[X.X, X.X]} \\
-Weibull MLE & \todo{X.X} & \todo{[X.X, X.X]} \\
-Kaplan-Meier (median) & \todo{X.X} & \todo{[X.X, X.X]} \\
-Cox regression & \todo{X.X} & \todo{[X.X, X.X]} \\
-Bootstrap (1000 resamples) & \todo{X.X} & \todo{[X.X, X.X]} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{Excluding Spam Periods}
-
-\todo{Describe spam period identification and impact of exclusion on estimates.}
-
-\subsubsection{Sensitivity to Matching Specification}
-
-\todo{Report results under stricter/looser matching criteria.}
-
-\subsection{Additional Figures}
-\label{sec:appendix:figures}
-
-\todo{Include supplementary figures:}
-\begin{itemize}
-    \item Full depth distributions by submolt category
-    \item Agent-level decay rate distribution
-    \item Autocorrelation functions for top agents
-    \item Time series of daily activity
-\end{itemize}
 
 \subsection{Notation Reference}
 \label{sec:appendix:notation}
