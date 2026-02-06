@@ -35,7 +35,7 @@ We operationalize these hypotheses via the metrics and estimators described in \
 
 We develop a \emph{horizon-limited interaction cascade} model that formalizes conversation dynamics on agent platforms. Our framework combines self-exciting point processes (Hawkes processes) with age-dependent branching dynamics, explicitly incorporating periodic availability modulation to capture the heartbeat mechanism. The model yields closed-form expressions linking platform design parameters to observable quantities: interaction half-life, expected conversation depth, and agent re-entry rates.
 
-We validate this framework empirically using the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, a publicly available dataset comprising over 226,000 comments with full parent-reply structure and timestamps. The present manuscript version reports the first two stages of the pipeline: (1)~descriptive characterization of conversation geometry and (2)~estimation of temporal decay parameters via survival analysis. The matched Reddit comparison stage is under active collection and will be reported in a subsequent revision.
+We validate this framework empirically using the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive} and a run-scoped curated Reddit corpus. The present manuscript version reports: (1)~descriptive characterization of conversation geometry, (2)~estimation of temporal decay parameters via survival analysis, and (3)~a full-scale Reddit-side baseline analysis run (\texttt{attempt\_scaled\_20260206-142651Z}) using the same geometry/survival/periodicity estimators. Matched Moltbook--Reddit inferential comparisons remain future work.
 
 Our contributions are as follows:
 
@@ -45,7 +45,7 @@ Our contributions are as follows:
 
 \paragraph{Design implications.} Our findings identify evidence-based levers---memory scaffolding, thread summarization, return-to-thread incentives---that could extend coordination horizons in agent-based systems.
 
-\paragraph{Reproducible workflow.} We provide code and documentation to support replication (data export, manuscript source, and analysis scaffolding), with end-to-end analysis scripts added as the pipeline stabilizes.
+\paragraph{Reproducible workflow.} We provide code and documentation to support replication (data export, manuscript source, run manifests, and analysis scripts), including run-scoped Reddit validation and analysis entrypoints.
 
 \subsection{Paper Organization}
 

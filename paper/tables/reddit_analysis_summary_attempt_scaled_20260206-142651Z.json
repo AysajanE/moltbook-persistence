@@ -1,0 +1,147 @@
+{
+  "run_id": "attempt_scaled_20260206-142651Z",
+  "seed": 20260206,
+  "input_curated_root": "data_curated/reddit",
+  "censor_boundary_hours": 4.0,
+  "gap_threshold_hours": 6.0,
+  "periodicity_bin_minutes": 15,
+  "bootstrap_reps": 400,
+  "ar1_sims": 2000,
+  "qc": {
+    "n_submissions_curated_filtered_run": 1772,
+    "n_comments_curated_filtered_run": 9878,
+    "n_threads_with_comments": 1104,
+    "timestamp_start": "2026-01-31T00:03:20+00:00",
+    "timestamp_end": "2026-02-04T23:59:34+00:00",
+    "time_gaps_gt_threshold": [],
+    "missing_parent_timestamp": 0,
+    "negative_lag_since_parent": 0,
+    "negative_lag_since_submission": 0,
+    "missing_depth": 0,
+    "depth_diagnostics": {
+      "missing_t1_parent_count": 0,
+      "unknown_parent_prefix_count": 0,
+      "t3_parent_submission_mismatch_count": 0,
+      "cycle_detected_count": 0
+    },
+    "parent_completeness": {
+      "t1_parent_count": 5125,
+      "missing_parent_comment_count": 0,
+      "missing_fraction": 0.0
+    }
+  },
+  "geometry": {
+    "n_threads": 1104,
+    "mean_depth_max": 2.1693840579710146,
+    "median_depth_max": 1.0,
+    "p_depth_ge_5": 0.11322463768115942,
+    "p_depth_ge_10": 0.015398550724637682,
+    "mean_reentry_rate": 0.0937971068534301,
+    "median_reentry_rate": 0.0
+  },
+  "half_life": {
+    "primary_sample_comments": 9547,
+    "primary_events": 3456,
+    "primary_censored": 6091,
+    "excluded_boundary_comments": 329,
+    "observation_end_utc": "2026-02-04T23:59:34+00:00",
+    "exponential_primary": {
+      "success": true,
+      "alpha": 0.13015335677779105,
+      "beta": 0.2659157140256478,
+      "half_life_hours": 2.606642420887886,
+      "log_likelihood": -13600.071475337289,
+      "n": 9547,
+      "events": 3456.0
+    },
+    "exponential_primary_bootstrap": {
+      "n_successful_bootstrap": 400,
+      "beta_ci_95": [
+        0.23465494119570227,
+        0.3022466287867797
+      ],
+      "half_life_ci_95": [
+        2.293316514404318,
+        2.9538998002011927
+      ]
+    },
+    "exponential_sensitivity_no_boundary_exclusion": {
+      "success": true,
+      "alpha": 0.13285080851282371,
+      "beta": 0.2691347355808141,
+      "half_life_hours": 2.5754653298990884,
+      "log_likelihood": -13839.385031045844,
+      "n": 9876,
+      "events": 3543.0
+    }
+  },
+  "periodicity": {
+    "segment_start": "2026-01-31T00:03:20+00:00",
+    "segment_end": "2026-02-04T23:59:34+00:00",
+    "segment_duration_hours": 119.93722222222222,
+    "segments_detected": [
+      {
+        "start": "2026-01-31T00:03:20+00:00",
+        "end": "2026-02-04T23:59:34+00:00",
+        "duration_hours": 119.93722222222222,
+        "n_comments": 9878
+      }
+    ],
+    "bin_minutes": 15,
+    "target_frequency_per_hour": 0.25,
+    "target_frequency_nearest_per_hour": 0.25,
+    "target_period_hours_nearest": 4.0,
+    "target_power": 0.07342346077956273,
+    "dominant_frequency_per_hour": 0.03125,
+    "dominant_period_hours": 32.0,
+    "fisher_g": 0.14335990238140656,
+    "fisher_g_p_value_ar1": 0.0,
+    "target_power_p_value_ar1": 0.6845,
+    "ar1_phi": 0.5264809822177958
+  },
+  "warnings": [
+    "Curation manifest reports rows_dropped_missing_submission=1570.",
+    "Validation request log includes non_200_or_error=2.",
+    "Parent completeness caveat: 0/5125 t1_ parent references are missing in run-scoped comments; depth/branching estimates are conditional on observed comments."
+  ],
+  "warning_details": {
+    "ops_root": "outputs/ops",
+    "curation_manifest_path": "outputs/ops/20260206-142651Z/item5/attempt_scaled_20260206-142651Z/curation_manifest.json",
+    "rows_dropped_missing_submission": 1570,
+    "validation_results_path": "outputs/ops/20260206-142651Z/item5/attempt_scaled_20260206-142651Z/validation_results.json",
+    "request_log_non_200_or_error": 2,
+    "validator_parent_completeness": {
+      "missing_fraction": 0.0,
+      "missing_parent_comment_count": 0,
+      "t1_parent_count": 5125
+    },
+    "parent_completeness_local": {
+      "t1_parent_count": 5125,
+      "missing_parent_comment_count": 0,
+      "missing_fraction": 0.0
+    }
+  },
+  "artifacts": {
+    "thread_events_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/thread_events.parquet",
+    "thread_metrics_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/thread_metrics.parquet",
+    "survival_units_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/survival_units.parquet",
+    "branching_by_depth_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/branching_by_depth.parquet",
+    "depth_distribution_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/depth_distribution.parquet",
+    "reentry_rate_distribution_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/reentry_rate_distribution.parquet",
+    "psd_curve_parquet": "data_features/reddit_only/attempt_scaled_20260206-142651Z/psd_curve.parquet",
+    "figures": [
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/figures/reddit_depth_distribution.png",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/figures/reddit_branching_by_depth.png",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/figures/reddit_reentry_distribution.png",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/figures/reddit_survival_curve.png",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/figures/reddit_psd.png"
+    ],
+    "tables": [
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/descriptive_stats.csv",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/depth_distribution.csv",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/branching_by_depth.csv",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/reentry_rate_distribution.csv",
+      "outputs/reddit_only/attempt_scaled_20260206-142651Z/tables/psd_curve.csv"
+    ]
+  }
+}

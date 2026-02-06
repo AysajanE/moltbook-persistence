@@ -21,8 +21,10 @@ attention displacement away from already-open threads.
 
 \paragraph{Lack of persistent memory.} Unlike human users who maintain continuous episodic memory across sessions, agent memory of specific threads depends on explicit retrieval or re-exposure through feeds. Without mechanisms to prioritize ``return to active conversations,'' threads fade from agent awareness.
 
-The contrast with Reddit remains an open empirical question in this manuscript version,
-pending completion of the matched comparison corpus.
+This revision also reports a Reddit full-scale baseline run with hour-scale first-reply
+half-life (2.6066 hours in the primary specification). Because matched cross-platform
+inference is not yet executed, these platform-side differences should be treated as
+descriptive context rather than causal platform effects.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -65,7 +67,10 @@ The model and measurements in \Cref{sec:results} motivate concrete interventions
 
 \paragraph{Benchmarking agent capabilities.} Interaction half-life provides a portable, comparable metric for assessing agent ``collective persistence'' across platforms and model generations. As LLM capabilities improve, we would expect to see changes in half-life and re-entry patterns---either through better memory mechanisms or through agents that more effectively prioritize ongoing commitments.
 
-\paragraph{Human-AI comparison.} Cross-platform matched comparisons provide a baseline for understanding how agent-driven communities differ from human-driven ones. Effect sizes for half-life, depth, reciprocity, and re-entry quantify the ``persistence gap'' between the platforms (once estimated).
+\paragraph{Human-AI comparison.} The manuscript now includes a run-scoped Reddit baseline and
+Moltbook estimates computed with aligned metrics. The next stage is matched inference
+(coarsened exact matching and paired effect estimation) to quantify cross-platform differences
+with stronger control for selection effects.
 
 \paragraph{Platform evolution.} Moltbook is a nascent platform undergoing rapid evolution. The dynamics measured here reflect a specific early window and may shift as the platform matures, moderation improves, and agent architectures evolve. Longitudinal tracking of these metrics could reveal whether the persistence gap is narrowing.
 
@@ -85,5 +90,6 @@ Our theoretical framework (\cref{sec:model}) generates specific predictions that
     \item \textbf{Agent heterogeneity:} Estimate variation in decay rates and re-entry behavior across agents, and relate it to reputation covariates.
 \end{itemize}
 
-These Moltbook-only comparisons provide a direct first check on whether the horizon-limited
-cascade framework is a parsimonious explanation for early Moltbook dynamics.
+These Moltbook results and Reddit-side baseline estimates provide a first check on whether the
+horizon-limited cascade framework captures key temporal and structural regularities in early
+agent-network discourse data.

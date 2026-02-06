@@ -1,9 +1,9 @@
 \section{Data}
 \label{sec:data}
 
-We analyze the Moltbook Observatory Archive as our primary source for agent-driven conversations.
-Reddit collection for cross-platform comparison is in progress but is not used in the
-quantitative results reported in this manuscript version.
+We analyze the Moltbook Observatory Archive as our primary source for agent-driven conversations,
+and we include a run-scoped curated Reddit corpus for full-scale platform-side baseline
+estimation.
 
 \subsection{Moltbook Observatory Archive}
 \label{sec:data:moltbook}
@@ -103,30 +103,50 @@ Re-entry rate & 0.19 & 0.17 & 0.21 & 0.00 & 0.98 \\
 \end{tabular}
 \end{table}
 
-\subsection{Reddit Comparison Sample}
+\subsection{Reddit Full-Scale Corpus}
 \label{sec:data:reddit}
 
-To contextualize Moltbook dynamics, we collect a matched sample of Reddit threads from topically related subreddits.
+To contextualize Moltbook dynamics, we analyze Reddit run
+\texttt{attempt\_scaled\_20260206-142651Z} from the curated pipeline.
 
 \subsubsection{Subreddit Selection}
 
-We select subreddits that cover topics prevalent on Moltbook:
+Run \texttt{attempt\_scaled\_20260206-142651Z} includes the following six subreddits:
 \begin{itemize}
-    \item \texttt{r/ClaudeAI}, \texttt{r/LocalLLaMA}, \texttt{r/MachineLearning}: AI and LLM discussion,
-    \item \texttt{r/programming}, \texttt{r/learnprogramming}: technical/builder topics,
-    \item \texttt{r/philosophy}, \texttt{r/AskPhilosophy}: philosophical discussion,
-    \item \texttt{r/CasualConversation}: social/casual baseline.
+    \item \texttt{r/MachineLearning},
+    \item \texttt{r/Python},
+    \item \texttt{r/artificial},
+    \item \texttt{r/datascience},
+    \item \texttt{r/learnprogramming},
+    \item \texttt{r/programming}.
 \end{itemize}
 
 \subsubsection{Matched Sample Construction}
 
-We construct a matched sample of Reddit threads to compare against Moltbook under similar initial conditions. The matching procedure is described in \Cref{sec:methods:comparison}.
+The matched Moltbook--Reddit sample design is unchanged and is described in
+\Cref{sec:methods:comparison}. In this revision, we report the Reddit side as an independent
+full-scale baseline; matched inferential comparisons are future work.
 
 \subsubsection{Data Collection}
 
-Reddit data collection is an active next stage (using a reproducible collector/curator/validator
-pipeline) and is not included in the Moltbook-only estimates reported here. For the eventual
-comparison stage, we record the same structural and timing fields as for Moltbook (post/comment
-ID, parent ID, author identifier, timestamp, score), with author identifiers anonymized.
+Run \texttt{attempt\_scaled\_20260206-142651Z} contains 1,772 curated submissions and 9,878
+curated comments, with 1,104 threads containing at least one comment. Comment timestamps span
+2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z (UTC). These run metadata are recorded in
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json} and
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json}.
+
+\subsubsection{Validation and Curation Caveats}
+
+Run-scoped validation passed (no failed checks) in
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}.
+Two caveats from manifests are carried into downstream interpretation: (1) 1,570 comments were
+dropped during curation because submission IDs were missing, and (2) the collection request log
+contains 2 non-200/error responses.
+
+\subsubsection{Use in This Manuscript}
+
+For this revision, we compute Reddit-side geometry, survival, and periodicity metrics using the
+same estimators as the Moltbook analysis and report them in \Cref{sec:results:reddit-full-scale}.
+These results are descriptive and do not yet constitute matched cross-platform inference.
 
 Ethical considerations for data use, privacy, and platform terms of service are discussed in \Cref{sec:limitations}.

@@ -1,7 +1,7 @@
 \section{Methods}
 \label{sec:methods}
 
-We describe our empirical methodology for (1) characterizing conversation geometry, (2) estimating interaction half-life, (3) detecting periodic signatures, and (4) conducting cross-platform comparisons.
+We describe our empirical methodology for (1) characterizing conversation geometry, (2) estimating interaction half-life, (3) detecting periodic signatures, and (4) specifying the matched cross-platform comparison design used in future inference.
 
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
@@ -147,6 +147,8 @@ autocorrelation on each agent's 15-minute binned activity process. We report:
 \label{sec:methods:comparison}
 
 To assess whether Moltbook dynamics differ from human-driven platforms, we compare against matched Reddit threads.
+This section defines the comparison design; the current revision reports platform-side baselines
+without executing the matched inferential stage.
 
 \subsubsection{Matching}
 
@@ -192,4 +194,9 @@ We assess robustness via:
 \subsection{Implementation}
 \label{sec:methods:implementation}
 
-All analyses are implemented in Python. Software dependencies, versions, and end-to-end reproduction instructions are documented in \Cref{sec:reproducibility}.
+All analyses are implemented in Python. The Reddit full-scale run reported here uses
+\texttt{analysis/07\_reddit\_only\_analysis.py} with run ID
+\texttt{attempt\_scaled\_20260206-142651Z} (seed 20260206; censor boundary 4 hours; 400
+bootstrap replications; 2,000 AR(1) simulations), after run-scoped validation by
+\texttt{analysis/05\_reddit\_validate.py}. Software dependencies, versions, and end-to-end
+reproduction instructions are documented in \Cref{sec:reproducibility}.

@@ -12,12 +12,19 @@ We are committed to open and reproducible research. This section documents resou
 \end{center}
 The dataset is released under the MIT license. We provide a download/export script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}) that fetches and exports the required tables to local storage and writes an export manifest (timestamp, dataset identifier, and exported splits).
 
-\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we intend to provide:
+\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we provide run-scoped curated artifacts and manifests. For the Reddit full-scale run in this manuscript
+(\texttt{attempt\_scaled\_20260206-142651Z}), we provide:
 \begin{itemize}
-    \item Post and comment IDs enabling re-collection via Reddit's API,
-    \item Pre-computed derived features (timestamps, parent links, anonymized author hashes) sufficient for reproducing our analyses.
+    \item Curated submissions/comments tables partitioned by \texttt{run\_id},
+    \item Validation output
+    (\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}),
+    \item Analysis summary and run manifest
+    (\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json},
+    \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json}),
+    \item Derived features and manuscript-facing figures/tables under
+    \texttt{data\_features/reddit\_only/attempt\_scaled\_20260206-142651Z/} and
+    \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/}.
 \end{itemize}
-The Reddit re-collection/release manifest will be added when the comparison-stage dataset is finalized.
 
 \paragraph{Processed datasets.} We intend to release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing, subject to platform terms of service and licensing constraints.
 
@@ -40,7 +47,7 @@ The repository includes:
 \subsection{Computational Environment}
 \label{sec:reproducibility:environment}
 
-The Moltbook-only results reported in \Cref{sec:results} were generated on:
+The Moltbook and Reddit results reported in \Cref{sec:results} were generated on:
 \begin{itemize}
     \item OS/architecture: macOS 15.6.1 (arm64),
     \item Python: 3.13.5,
@@ -53,7 +60,7 @@ Project dependencies and minimum versions remain listed in \texttt{requirements.
 \subsection{Reproducing Key Results}
 \label{sec:reproducibility:reproduce}
 
-To reproduce the Moltbook-only workflow reported in this manuscript version:
+To reproduce the workflows reported in this manuscript version:
 
 \begin{enumerate}
     \item \textbf{Environment setup:}
@@ -78,17 +85,44 @@ To reproduce the Moltbook-only workflow reported in this manuscript version:
         --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
     \end{verbatim}
 
+    \item \textbf{Validate curated Reddit run \texttt{attempt\_scaled\_20260206-142651Z}:}
+    \begin{verbatim}
+    python analysis/05_reddit_validate.py \
+        --curated-root data_curated/reddit \
+        --run-id attempt_scaled_20260206-142651Z \
+        --request-log data_raw/reddit/2026-02-06/request_log/attempt_scaled_20260206-142651Z.jsonl \
+        --out outputs/reddit_only/attempt_scaled_20260206-142651Z/validation_results_20260206T_orchestrator.json
+    \end{verbatim}
+
+    \item \textbf{Run Reddit-only analysis entrypoint 07:}
+    \begin{verbatim}
+    python analysis/07_reddit_only_analysis.py \
+        --curated-root data_curated/reddit \
+        --run-id attempt_scaled_20260206-142651Z \
+        --outputs-root outputs/reddit_only \
+        --data-features-root data_features/reddit_only \
+        --ops-root outputs/ops \
+        --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
+    \end{verbatim}
+
     \item \textbf{Build the paper PDF (requires a local \LaTeX{} toolchain):}
     \begin{verbatim}
     make paper
     \end{verbatim}
 \end{enumerate}
 
-The canonical run used for manuscript values in this revision is
-\texttt{run\_20260206-145240Z}, with manifest:
+Canonical runs used for manuscript values in this revision are
+\texttt{run\_20260206-145240Z} (Moltbook) and
+\texttt{attempt\_scaled\_20260206-142651Z} (Reddit). Moltbook manifest:
 \texttt{outputs/moltbook\_only/run\_20260206-145240Z/run\_manifest.json}
 and summary:
 \texttt{outputs/moltbook\_only/run\_20260206-145240Z/tables/analysis\_summary.json}.
+Reddit manifest:
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json},
+summary:
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json},
+and validation:
+\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}.
 
 \subsection{Versioning and Archival}
 \label{sec:reproducibility:versioning}
