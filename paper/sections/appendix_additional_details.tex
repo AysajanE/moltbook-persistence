@@ -166,8 +166,43 @@ Other & (default: no keyword match) \\
 \end{tabular}
 \end{table}
 
-\subsection{Cross-Platform Matching: Balance Diagnostics}
+\subsection{Cross-Platform Matching: Supplementary Diagnostics}
+\label{sec:appendix:comparison-details}
+
+\subsubsection{Matched-Sample Flow}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
+\caption{Matched-sample flow for the coarse cross-platform design.}
+\label{fig:cross-platform-flow}
+\end{figure}
+
+The input includes 34,730 Moltbook threads and 1,104 Reddit threads. After
+requiring matching covariates, all threads remained eligible. Exact overlap
+strata on \((\texttt{topic\_coarse},\texttt{hour},\texttt{early-bin})\)
+retained 2,641 Moltbook threads and 888 Reddit threads across 118 shared
+strata. Deterministic 1:1 matching yielded 813 pairs (813 threads per
+platform). Only 2.34\% of Moltbook threads are in the final matched sample
+(813/34,730), so matched estimates should be interpreted as describing the
+overlap region rather than the full platform population or a platform-wide
+causal effect.
+
+\subsubsection{Balance Diagnostics}
 \label{sec:appendix:balance}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_balance_love.png}
+\caption{Covariate balance before and after coarse exact matching.}
+\label{fig:cross-platform-balance}
+\end{figure}
+
+The maximum absolute SMD across monitored covariates decreased from 3.886
+pre-match to 0.052 post-match. By construction, matched support aligns on the
+coarsened matching factors after pairing; some factor levels are absent
+post-match and therefore have undefined level-wise diagnostics
+(\cref{fig:cross-platform-balance}).
 
 \Cref{tab:balance} reports covariate balance before and after coarsened exact
 matching for the cross-platform comparison sample (813 matched pairs).
@@ -193,3 +228,26 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsubsection{Paired-Effect Visualization}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_paired_effects.png}
+\caption{Paired mean differences with bootstrap 95\% confidence intervals
+(Moltbook minus Reddit).}
+\label{fig:cross-platform-effects}
+\end{figure}
+
+\subsubsection{Matched-Subset Reply-Kernel Half-Life}
+\label{sec:appendix:match-halflife}
+
+Restricting survival units to matched threads, the primary-sample half-life is
+0.0628 hours on Moltbook (3.77 minutes; 95\% CI: [1.19, 7.06] minutes;
+\(n=1{,}841\) at-risk parent comments, 22 events) and 2.4448 hours on Reddit
+(95\% CI: [2.1298, 2.7926] hours; \(n=7{,}979\), 2,882 events). These
+half-life values are derived from matched-thread subsets but are estimated at
+platform level, not as paired thread-level survival effects, and should be read
+as contextual overlap-region contrasts. Because the Moltbook matched subset has
+only 22 events and narrow overlap support, its half-life estimate is noisy and
+not directly comparable with the overall Moltbook estimate.

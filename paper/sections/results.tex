@@ -68,7 +68,8 @@ limited (\cref{fig:reentry-distribution}), with mean 0.195 and median 0.167.
 \subsection{Interaction Half-Life}
 \label{sec:results:halflife}
 
-\subsubsection{Overall Estimate}
+\subsubsection{Overall Estimate and Two-Regime Finding}
+\label{sec:results:two-regime}
 
 \begin{figure}[t]
 \centering
@@ -105,7 +106,10 @@ a gradual decay of engagement.
 \centering
 \caption{Reply probability and timing decomposition (primary survival samples).}
 \label{tab:reply-dynamics}
-\small
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 \textbf{Sample} & \textbf{Parents} & \textbf{Observed reply \%} & \textbf{Cond. median (min)} & \textbf{Half-life (hr)} & \textbf{Implied eventual \% (model)} \\
@@ -120,8 +124,12 @@ Other & 14,884 & 2.13 & 1.484 & 0.0535 & 2.14 \\
 Reddit (overall) & 9,547 & 36.20 & 39.317 & 2.6066 & 38.70 \\
 \bottomrule
 \end{tabular}
+\par}
+\endgroup
 \end{table}
 
+\textbf{Two-regime finding (incidence--timing split).}
+\textbf{Result: a low-incidence / ultra-fast conditional response regime.}
 \Cref{tab:reply-dynamics} separates event incidence from timing. On Moltbook, only
 9.00\% of at-risk parent comments receive any direct reply in-window, versus 36.20\% on the
 Reddit baseline. Conditional on receiving a reply, Moltbook replies arrive within seconds
@@ -338,38 +346,16 @@ invalidate the run, but they bound claims to the curated, observed corpus.
 \subsection{Cross-Platform Comparison}
 \label{sec:results:comparison}
 
-This section is a secondary, context-setting analysis rather than a core
-causal identification pillar of the paper. We execute coarse exact matching on
-the Moltbook and Reddit datasets described in \Cref{sec:methods:comparison} to
-compare outcomes only within shared support.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
-\caption{Matched-sample flow for the coarse cross-platform design.}
-\label{fig:cross-platform-flow}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_balance_love.png}
-\caption{Covariate balance before and after coarse exact matching.}
-\label{fig:cross-platform-balance}
-\end{figure}
-
-\textbf{Sample flow.} The input includes 34,730 Moltbook threads and 1,104 Reddit threads.
-After requiring matching covariates, all threads remained eligible. Exact overlap strata on
-\((\texttt{topic\_coarse},\texttt{hour},\texttt{early-bin})\) retained 2,641 Moltbook threads
-and 888 Reddit threads across 118 shared strata. Deterministic 1:1 matching yielded 813 pairs
-(813 threads per platform; \cref{fig:cross-platform-flow}). Only 2.34\% of Moltbook threads
-are in the final matched sample (813/34,730), so matched estimates should be interpreted as
-describing the overlap region rather than the full platform population or a
-platform-wide causal effect.
-
-\textbf{Balance diagnostics.} The maximum absolute SMD across monitored covariates decreased
-from 3.886 pre-match to 0.052 post-match. By construction, matched support aligns on the
-coarsened matching factors after pairing; some factor levels are absent post-match and therefore
-have undefined level-wise diagnostics (\cref{fig:cross-platform-balance}).
+This section is secondary contextual evidence on overlap support rather than a
+core causal identification pillar. Under deterministic coarse matching
+(\Cref{sec:methods:comparison}), 813 pairs are formed, and all paired outcome
+differences in \Cref{tab:cross-platform-paired-effects} are negative for
+Moltbook relative to Reddit; all two-sided Wilcoxon signed-rank tests reject at
+conventional levels (\(p < 10^{-8}\)). The re-entry contrast remains negative
+in matched support even though the full-sample descriptive contrast is positive.
+Sample-flow accounting, balance diagnostics, paired-effect visualization, and
+matched-subset half-life details are reported in
+\Cref{sec:appendix:comparison-details,sec:appendix:balance,sec:appendix:match-halflife}.
 
 \begin{table}[t]
 \centering
@@ -390,32 +376,6 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 \end{tabular}
 \end{table}
 
-All paired differences are negative for Moltbook relative to Reddit under this coarse design.
-All two-sided Wilcoxon signed-rank tests reject at conventional levels
-(\(p < 10^{-8}\) for each outcome).
-This includes re-entry, where the matched contrast is negative even though the
-overall full-sample descriptive contrast is positive (Moltbook 0.195 vs.\ Reddit
-0.0938), indicating that conditioning on overlap strata can change direction.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_paired_effects.png}
-\caption{Paired mean differences with bootstrap 95\% confidence intervals
-(Moltbook minus Reddit).}
-\label{fig:cross-platform-effects}
-\end{figure}
-
-\textbf{Matched-subset reply-kernel half-life.} Restricting survival units to matched threads,
-the primary-sample half-life is 0.0628 hours on Moltbook (3.77 minutes; 95\% CI:
-[1.19, 7.06] minutes; \(n=1{,}841\) at-risk parent comments, 22 events) and 2.4448 hours on Reddit
-(95\% CI: [2.1298, 2.7926] hours; \(n=7{,}979\), 2,882 events). These half-life values are
-derived from matched-thread subsets but are estimated at platform level, not as paired
-thread-level survival effects, and should be read as contextual overlap-region
-contrasts.
-Because the Moltbook matched subset has only 22 events and narrow overlap
-support, its half-life estimate is noisy and not directly comparable with the
-overall Moltbook estimate.
-
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
@@ -431,21 +391,21 @@ background (median power outside the \(\pm0.03\) hr\(^{-1}\) target neighborhood
 AR(1)-based tests remain non-significant across 5/15/30-minute
 binning choices.
 
-In the coarse matched cross-platform design, exact matching on topic, UTC
-posting hour, and first-30-minute engagement yields 813 pairs across 118 shared
-strata, and the maximum absolute SMD decreases from 3.886 to 0.052. Within this
-matched sample, Moltbook threads are lower on comments (\(-7.704\)), depth
-(\(-1.191\)), unique participants (\(-5.009\)), duration (\(-8.606\) hours),
-and re-entry (\(-0.040\)); all corresponding Wilcoxon tests are statistically
-significant. This re-entry direction differs from the overall full-sample
-descriptive contrast, showing that overlap conditioning can reverse the sign.
-These matched differences are secondary contextual estimates on overlap support,
-not platform-wide causal effects. On matched-thread subsets,
-Moltbook reply-kernel half-life is
-0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes), versus 2.4448 hours
-for Reddit (95\% CI: [2.1298, 2.7926]); with only 22 Moltbook events in this
-matched subset, that half-life is noisy and not directly comparable to the
-overall estimate. For Reddit periodicity, the dominant
-component is 32 hours (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test
-is not significant (\(p=0.6845\)), while Fisher's \(g\) reports \(p<0.0005\)
-(0/2000 exceedances).
+\subsubsection{H1a Readout (Short Hazard Half-Life)}
+\label{sec:results:h1a}
+H1a is supported by the minute-scale estimate (\(\hat h=0.0133\) hours) and by
+the labeled two-regime incidence--timing split in
+\Cref{sec:results:two-regime}.
+
+\subsubsection{H1b Readout (4-Hour Periodicity)}
+\label{sec:results:h1b}
+H1b is not detected in this snapshot under AR(1)-calibrated target-frequency
+tests (\(p=0.501\) at 15-minute bins; 0.508 and 0.556 at 5- and 30-minute
+bins).
+
+In the coarse matched cross-platform design, Moltbook remains lower on comments,
+depth, unique participants, duration, and re-entry in matched support
+(\Cref{tab:cross-platform-paired-effects}); these are secondary contextual
+overlap-region estimates rather than platform-wide causal effects. Detailed
+matching diagnostics and matched-subset half-life estimates are provided in
+\Cref{sec:appendix:comparison-details,sec:appendix:balance,sec:appendix:match-halflife}.

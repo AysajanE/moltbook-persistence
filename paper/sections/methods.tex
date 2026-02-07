@@ -5,6 +5,46 @@ We estimate conversation geometry, reply-kernel decay, periodic signatures, and
 coarse matched cross-platform contrasts using a common set of deterministic
 preprocessing rules and fixed inferential settings.
 
+\subsection{Definitions and Estimands}
+\label{sec:methods:def-est}
+
+\begin{center}
+\fbox{%
+\begin{minipage}{0.96\linewidth}
+\begin{itemize}
+\item \textbf{Maximum depth:} \(D_j := \max_n d_{jn}\) for thread \(j\), with \(d_{jn}\) defined in \cref{eq:depth}.
+\item \textbf{Direct-reply incidence:} \(p_{\mathrm{obs}} := N_{\mathrm{reply}}/N_{\mathrm{risk}}\), where
+\(N_{\mathrm{risk}}\) is the number of at-risk parent comments and
+\(N_{\mathrm{reply}}\) is the number with at least one observed direct reply in-window.
+\item \textbf{Event indicator and censoring time (survival unit \(m\)):} let
+\(T_m\) be first-direct-reply time, \(C_m\) be right-censoring time (time from
+parent comment to end of observable coverage), and
+\(s_m:=\min(T_m,C_m)\). The event indicator is
+\(\delta_m:=\mathbf{1}\{T_m\le C_m\}\).
+\item \textbf{Conditional median first-reply time among observed events:}
+\[
+\tilde{s}_{0.5}^{\mathrm{obs}}:=\operatorname{median}\{s_m:\delta_m=1\}.
+\]
+\item \textbf{Re-entry (comment-history, primary):}
+\[
+\mathrm{RE}_j^{\mathrm{comment}} := \frac{1}{N_j}\sum_{n=1}^{N_j}\mathbf{1}\!\left\{a_{jn}\in\{a_{j1},\ldots,a_{j,n-1}\}\right\}.
+\]
+\item \textbf{Re-entry (root-inclusive alternative):}
+\[
+\mathrm{RE}_j^{\mathrm{root+comment}} := \frac{1}{N_j}\sum_{n=1}^{N_j}\mathbf{1}\!\left\{a_{jn}\in\{a_{j0},a_{j1},\ldots,a_{j,n-1}\}\right\}.
+\]
+\item \textbf{Reply-kernel half-life:} \(h:=\ln 2/\beta\), where \(\beta\) is the age-decay rate in direct-reply hazard.
+\item \textbf{Model-diagnostic eventual-reply probability:}
+\[
+p_\infty:=1-\exp(-\hat{\alpha}/\hat{\beta}),
+\]
+reported as a fitted-model diagnostic quantity (not a direct empirical estimand).
+\item \textbf{Parent comment (candidate parent / at-risk comment):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
+\end{itemize}
+\end{minipage}%
+}
+\end{center}
+
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
 
