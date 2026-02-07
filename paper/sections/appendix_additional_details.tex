@@ -11,11 +11,24 @@ model and empirical analysis.
 \label{app:proof-tradeoff}
 
 \begin{proof}
-From \cref{eq:offspring-approx}, \(\mu_i \approx \alpha_i/\beta_i\). Therefore
-\(\partial \mu_i / \partial \alpha_i = 1/\beta_i > 0\) and
-\(\partial \mu_i / \partial \beta_i = -\alpha_i/\beta_i^2 < 0\) for
-\(\alpha_i,\beta_i>0\). Expected replies increase with influence amplitude and
-decrease with staleness decay, establishing the trade-off statement.
+For fixed \(s\), use the exact mean-offspring expression
+\[
+\mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
+\]
+with \(b(\cdot)\ge0\). Differentiating under the integral sign gives
+\[
+\frac{\partial \mu_i(s)}{\partial \alpha_i}
+=\int_0^\infty b(s+u)e^{-\beta_i u}\,du>0,
+\]
+since the integrand is nonnegative and nonzero for nontrivial activity, and
+\[
+\frac{\partial \mu_i(s)}{\partial \beta_i}
+=\int_0^\infty b(s+u)\,\alpha_i(-u)e^{-\beta_i u}\,du<0,
+\]
+because \(\alpha_i>0\), \(u>0\) on \((0,\infty)\), and \(b(s+u)\ge0\).
+Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
+decreasing in \(\beta_i\), proving the claim exactly (without using
+\(\mu_i\approx\alpha_i/\beta_i\)).
 \end{proof}
 
 \subsubsection{Proof of Proposition \ref{prop:thread-size}}
@@ -33,18 +46,27 @@ non-root comments in generation \(k\) beyond depth 1 is
 The single-type case \(\mu_0=\mu\) yields \(\E[N_j]=\mu/(1-\mu)\).
 \end{proof}
 
-\subsubsection{Proof Sketch of Proposition \ref{prop:periodicity}}
+\subsubsection{Proof of Proposition \ref{prop:periodicity}}
 \label{app:proof-periodicity}
 
-\begin{proof}[Proof sketch]
-Write the periodic availability function as a Fourier series,
-\(b(t)=\sum_{\ell\in\mathbb{Z}} c_\ell e^{i2\pi \ell t/\tau}\), with
-nonzero coefficients at integer multiples of \(1/\tau\). Because event
-intensity in \cref{eq:reply-intensity,eq:total-intensity} is multiplicative in
-\(b(t)\), both mean intensity and second-order structure inherit these Fourier
-components under standard superposition conditions. Consequently, the spectral
-representation of aggregated counts contains concentration near frequencies
-\(\ell/\tau\), including the fundamental \(1/\tau\).
+\begin{proof}
+Under the proposition assumptions, mean intensity is
+\[
+m(t):=\E[\lambda(t)]=\E[b(t)g(t)]=b(t)\E[g(t)].
+\]
+If \(\E[g(t)]\) is \(\tau\)-periodic (including the approximately constant
+case on the \(\tau\)-scale), then \(m(t)\) is \(\tau\)-periodic. For binned
+counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
+\[
+\E[C_r]=\int_{r\Delta}^{(r+1)\Delta} m(s)\,ds,
+\]
+so the discrete-time mean sequence inherits the same periodic structure
+(exactly when \(\tau/\Delta\) is commensurate, otherwise with nearby discrete
+frequency concentration). A periodic mean has Fourier mass at harmonics
+\(\ell/\tau\), \(\ell\in\mathbb{Z}\), and therefore contributes line-like
+components to expected periodogram/PSD estimates of \(C_r\). In finite windows,
+windowing and binning spread this mass across nearby frequencies, so empirical
+peaks appear near \(\ell/\tau\) rather than as exact lines (spectral leakage).
 \end{proof}
 
 \subsection{Derivations for the Branching and Survival Components}
@@ -88,6 +110,18 @@ right-censoring time otherwise). Under \cref{eq:reply-intensity} with
 Summing over parents gives
 \(\ell(\alpha,\beta)=\sum_m \ell_m(\alpha,\beta)\), optimized numerically
 under positivity constraints.
+
+Under the same hazard \(\lambda(s)=\alpha e^{-\beta s}\), the exact
+first-reply density conditional on at least one reply is
+\begin{equation}
+\label{eq:appendix-conditional-density}
+f(s\mid \text{event})
+=\frac{\alpha e^{-\beta s}\exp\!\left[-(\alpha/\beta)(1-e^{-\beta s})\right]}
+{1-\exp(-\alpha/\beta)}, \qquad s\ge0.
+\end{equation}
+When \(\alpha/\beta\ll1\), this conditional law is well approximated by
+\(\mathrm{Exponential}(\beta)\), which is the regime used for the model-check
+interpretation in the main text.
 
 \subsection{Model Extensions for Future Estimation}
 \label{sec:model:extensions}

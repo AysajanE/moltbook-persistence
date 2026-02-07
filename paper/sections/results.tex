@@ -30,7 +30,8 @@ Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean ma
 is 0.0058\% (95\% bootstrap CI: [0.0000\%, 0.0144\%]), and the proportion reaching depth 10+
 is 0.0000\%.
 
-Fitting the depth-tail relation \(\Prob(D_j \geq k) \leq \mu^k\) gives
+Fitting a geometric log-tail slope to empirical \(\Prob(D_j \geq k)\) for
+\(k\ge2\), motivated by the bound \(\Prob(D_j \geq k) \leq \mu^k\), gives
 \(\hat{\mu}=0.154\). We report \(\hat{\mu}\) as an effective tail-slope
 parameter (descriptive), indicating rapid depth-tail decay consistent with a
 strongly subcritical branching regime.
@@ -139,9 +140,11 @@ under the exponential-kernel fit, not direct empirical estimands.
 
 Model check (conditional median vs.\ half-life):
 Under the fitted exponential-kernel model in the low-reply-probability regime
-($\hat{\alpha}/\hat{\beta} \approx 0.097$), the conditional distribution of the first
-reply time---given a reply occurs---is approximately $\mathrm{Exponential}(\hat{\beta})$,
-whose median equals the kernel half-life ($\approx 0.80$~minutes).
+($\hat{\alpha}/\hat{\beta} \approx 0.097 \ll 1$), the conditional distribution
+of the first reply time---given a reply occurs---is approximately
+$\mathrm{Exponential}(\hat{\beta})$ (rare-event approximation), whose median
+equals the kernel half-life ($\approx 0.80$~minutes); the exact conditional
+density is given in \Cref{eq:appendix-conditional-density}.
 The empirical conditional median is 0.076~minutes, roughly $10\times$ smaller.
 This gap indicates that the single-parameter exponential kernel captures the overall
 timescale of hazard decay but understates early-time concentration:
