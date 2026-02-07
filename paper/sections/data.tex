@@ -54,16 +54,14 @@ into six deterministic labels (Builder/Technical, Philosophy/Meta,
 Social/Casual, Creative, Spam/Low-Signal, Other) using a fixed keyword mapping
 to avoid post hoc relabeling.
 
-Author identifiers are nearly complete but not perfect. In the run-scoped
-thread-level artifact used for manuscript tables
-(\texttt{thread\_metrics.parquet}; run \texttt{20260206-145240Z}),
-906 of 223,317 comments (0.41\%) have missing \texttt{agent\_id}, concentrated in
-254 threads where all comment authors are missing (0.73\% of threads). We retain
+Author identifiers are nearly complete but not perfect. In this snapshot,
+906 of 223,317 comments (0.41\%) have missing author IDs, concentrated in 254
+threads where all comment authors are missing (0.73\% of threads). We retain
 these rows in canonical thread reconstruction, count resolved commenter IDs only
 for participant metrics, and treat author-based interaction metrics as undefined
 when no commenter IDs are observed.
 
-Event-time analyses use \texttt{created\_at\_utc}. The canonical timeline contains a
+Event-time analyses use UTC timestamps. The canonical timeline contains a
 41.7-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
 analyses are run on contiguous segments rather than under a continuous-coverage
 assumption.

@@ -5,7 +5,7 @@ We estimate conversation geometry, reply-kernel decay, periodic signatures, and
 coarse matched cross-platform contrasts using a common set of deterministic
 preprocessing rules and fixed inferential settings.
 
-\subsection{One-Page Metric Glossary and Estimands}
+\subsection{Metric Glossary and Estimands}
 \label{sec:methods:def-est}
 
 Terminology in \Cref{sec:results,sec:discussion,sec:conclusion} follows this
@@ -43,11 +43,7 @@ p_\infty:=1-\exp(-\hat{\alpha}/\hat{\beta}),
 \]
 reported as a fitted-model diagnostic quantity (not a direct empirical estimand).
 \item \textbf{At-risk comment (candidate parent):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
-\item \textbf{Missing author-ID handling:} \texttt{n\_unique\_agents} counts non-null
-commenter IDs only; re-entry uses known-comment denominators
-(\texttt{known\_agent\_comment\_count}); reciprocity uses only edges where both
-source and parent IDs are observed; when no commenter IDs are known in a thread,
-author-based thread metrics are left undefined (NA) rather than imputed.
+\item \textbf{Missing author-ID handling:} participant counts use observed commenter IDs only; re-entry denominators include only comments with observed commenter IDs; reciprocity uses only edges where both source and parent IDs are observed; when no commenter IDs are observed in a thread, author-based thread metrics are left undefined (not imputed).
 \end{itemize}
 \end{minipage}%
 }
