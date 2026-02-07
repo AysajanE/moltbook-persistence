@@ -1287,6 +1287,120 @@ def make_survival_figure(
     plt.close(fig)
 
 
+def estimate_binned_hazard(
+    survival_units: pd.DataFrame,
+    bin_minutes: float,
+    max_minutes: float,
+) -> pd.DataFrame:
+    if bin_minutes <= 0 or max_minutes <= 0:
+        return pd.DataFrame(
+            columns=[
+                "bin_start_minutes",
+                "bin_end_minutes",
+                "bin_center_minutes",
+                "n_at_risk",
+                "n_events",
+                "exposure_hours",
+                "hazard_per_hour",
+                "hazard_per_minute",
+            ]
+        )
+
+    durations_hours = survival_units["duration_hours"].to_numpy(dtype=float)
+    event_observed = survival_units["event_observed"].astype(bool).to_numpy()
+    valid = np.isfinite(durations_hours) & (durations_hours > 0)
+    durations_hours = durations_hours[valid]
+    event_observed = event_observed[valid]
+    if durations_hours.size == 0:
+        return pd.DataFrame(
+            columns=[
+                "bin_start_minutes",
+                "bin_end_minutes",
+                "bin_center_minutes",
+                "n_at_risk",
+                "n_events",
+                "exposure_hours",
+                "hazard_per_hour",
+                "hazard_per_minute",
+            ]
+        )
+
+    bin_width_hours = bin_minutes / 60.0
+    max_hours = max_minutes / 60.0
+    edges = np.arange(0.0, max_hours + bin_width_hours, bin_width_hours, dtype=float)
+    if edges[-1] < max_hours:
+        edges = np.append(edges, max_hours)
+
+    rows: list[dict[str, float | int]] = []
+    for left, right in zip(edges[:-1], edges[1:], strict=False):
+        n_at_risk = int(np.sum(durations_hours >= left))
+        if n_at_risk == 0:
+            break
+        in_bin = (durations_hours >= left) & (durations_hours < right)
+        n_events = int(np.sum(event_observed & in_bin))
+        exposure_hours = float(n_at_risk * (right - left))
+        hazard_per_hour = float(n_events / exposure_hours) if exposure_hours > 0 else float("nan")
+        rows.append(
+            {
+                "bin_start_minutes": float(left * 60.0),
+                "bin_end_minutes": float(right * 60.0),
+                "bin_center_minutes": float((left + right) * 30.0),
+                "n_at_risk": n_at_risk,
+                "n_events": n_events,
+                "exposure_hours": exposure_hours,
+                "hazard_per_hour": hazard_per_hour,
+                "hazard_per_minute": float(hazard_per_hour / 60.0),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def make_reply_hazard_figure(
+    hazard_binned: pd.DataFrame,
+    exponential_fit: dict[str, Any],
+    out_path: Path,
+    max_minutes: float,
+) -> None:
+    fig, ax = plt.subplots(figsize=(8, 4.8))
+
+    hazard_positive = hazard_binned[hazard_binned["hazard_per_minute"] > 0].copy()
+    if not hazard_positive.empty:
+        ax.plot(
+            hazard_positive["bin_center_minutes"],
+            hazard_positive["hazard_per_minute"],
+            marker="o",
+            markersize=4.0,
+            linewidth=1.6,
+            color="#4c78a8",
+            label="Empirical binned hazard",
+        )
+
+    if exponential_fit.get("success"):
+        t_grid_minutes = np.linspace(0.0, max_minutes, 400)
+        t_grid_hours = t_grid_minutes / 60.0
+        alpha = float(exponential_fit["alpha"])
+        beta = float(exponential_fit["beta"])
+        model_hazard_per_minute = (alpha * np.exp(-beta * t_grid_hours)) / 60.0
+        ax.plot(
+            t_grid_minutes,
+            model_hazard_per_minute,
+            color="#e45756",
+            linewidth=2.0,
+            label="Fitted exponential-kernel hazard",
+        )
+
+    ax.set_yscale("log")
+    ax.set_xlim(0.0, max_minutes)
+    ax.set_xlabel("Parent age (minutes)")
+    ax.set_ylabel("Reply hazard (per minute)")
+    ax.set_title("Reply hazard vs parent age (first 10 minutes)")
+    ax.grid(True, linestyle="--", alpha=0.3, which="both")
+    ax.legend(frameon=True)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=300)
+    plt.close(fig)
+
+
 def make_psd_figure(psd_df: pd.DataFrame, out_path: Path) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.8))
     ax.plot(psd_df["frequency_per_hour"], psd_df["power"], color="#72b7b2", linewidth=2.0)
@@ -1664,9 +1778,15 @@ def main() -> None:
     branch_fig = figures_dir / "moltbook_branching_by_depth.png"
     reentry_fig = figures_dir / "moltbook_reentry_distribution.png"
     surv_fig = figures_dir / "moltbook_survival_curve.png"
+    reply_hazard_fig = figures_dir / "moltbook_reply_hazard.png"
     psd_fig = figures_dir / "moltbook_psd.png"
     periodicity_robustness_fig = figures_dir / "moltbook_periodicity_bin_robustness.png"
     agent_groups_fig = figures_dir / "moltbook_agent_group_reply_dynamics.png"
+    reply_hazard_binned = estimate_binned_hazard(
+        survival_units=survival_primary,
+        bin_minutes=0.25,
+        max_minutes=10.0,
+    )
     make_depth_figure(
         thread_metrics=thread_metrics,
         mu_hat=depth_tail["mu_hat"],
@@ -1678,6 +1798,12 @@ def main() -> None:
         survival_units=survival_primary,
         exponential_fit=exp_fit,
         out_path=surv_fig,
+    )
+    make_reply_hazard_figure(
+        hazard_binned=reply_hazard_binned,
+        exponential_fit=exp_fit,
+        out_path=reply_hazard_fig,
+        max_minutes=10.0,
     )
     make_psd_figure(psd_df=psd_df, out_path=psd_fig)
     make_periodicity_robustness_figure(
@@ -1696,6 +1822,7 @@ def main() -> None:
     half_life_by_cat_out = tables_dir / "half_life_by_category.csv"
     reply_dynamics_out = tables_dir / "reply_dynamics_by_category.csv"
     agent_group_reply_out = tables_dir / "agent_group_reply_dynamics.csv"
+    reply_hazard_binned_out = tables_dir / "reply_hazard_binned.csv"
     psd_out = tables_dir / "psd_curve.csv"
     periodicity_robustness_out = tables_dir / "periodicity_bin_robustness.csv"
     descriptive_table.to_csv(descriptive_out, index=False)
@@ -1703,6 +1830,7 @@ def main() -> None:
     half_life_by_category.to_csv(half_life_by_cat_out, index=False)
     reply_dynamics_by_category.to_csv(reply_dynamics_out, index=False)
     agent_group_reply_dynamics.to_csv(agent_group_reply_out, index=False)
+    reply_hazard_binned.to_csv(reply_hazard_binned_out, index=False)
     psd_df.to_csv(psd_out, index=False)
     periodicity_robustness.to_csv(periodicity_robustness_out, index=False)
 
@@ -1739,6 +1867,7 @@ def main() -> None:
             "weibull_bootstrap": weib_boot,
             "category_table_path": str(half_life_by_cat_out),
             "reply_dynamics_by_category_table_path": str(reply_dynamics_out),
+            "reply_hazard_binned_table_path": str(reply_hazard_binned_out),
             "implied_eventual_reply_probability": implied_eventual_reply_probability(exp_fit),
         },
         "reply_dynamics": {
@@ -1761,6 +1890,7 @@ def main() -> None:
                 str(branch_fig),
                 str(reentry_fig),
                 str(surv_fig),
+                str(reply_hazard_fig),
                 str(psd_fig),
                 str(periodicity_robustness_fig),
                 str(agent_groups_fig),
@@ -1771,6 +1901,7 @@ def main() -> None:
                 str(half_life_by_cat_out),
                 str(reply_dynamics_out),
                 str(agent_group_reply_out),
+                str(reply_hazard_binned_out),
                 str(psd_out),
                 str(periodicity_robustness_out),
             ],

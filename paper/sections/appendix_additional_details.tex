@@ -26,17 +26,41 @@ Using the standard integral $\int_0^\infty e^{-\beta u} \cos(\omega u + \theta) 
 
 When averaged over starting phases $s$ (uniform on $[0, \tau]$), the trigonometric terms vanish, yielding the approximation $\mu_i \approx \alpha_i / \beta_i$.
 
-\subsubsection{Likelihood for Exponential Survival Model}
+\subsubsection{Likelihood for Exponential Survival Model (First-Event Specialization)}
 
-Consider a parent comment $m$ in thread $j$. Let $\{s_1, s_2, \ldots, s_K\}$ be the times (relative to $t_{jm}$) at which direct replies arrive, and let $T$ be the observation horizon. Under the intensity \cref{eq:reply-intensity} with $b(t) = 1$, the log-likelihood contribution from parent $m$ is:
+In our empirical analysis, we observe \emph{at most one} direct reply per parent
+comment: each parent~$m$ contributes a single survival observation with event
+indicator $\delta_m \in \{0,1\}$ and observed duration~$s_m$ equal to the
+time-to-first-direct-reply (if $\delta_m=1$) or the right-censoring time (if
+$\delta_m=0$).
+
+Under the intensity \cref{eq:reply-intensity} with constant availability
+$b(t)=1$, the log-likelihood contribution from parent~$m$ is the standard
+Poisson-process likelihood specialized to $K\in\{0,1\}$:
 \begin{align}
-\ell_m(\alpha, \beta) &= \sum_{k=1}^K \log \lambda(s_k) - \int_0^T \lambda(s) \, ds \nonumber \\
-&= \sum_{k=1}^K \left[\log \alpha - \beta s_k\right] - \alpha \int_0^T e^{-\beta s} \, ds \nonumber \\
-&= K \log \alpha - \beta \sum_{k=1}^K s_k - \frac{\alpha}{\beta}\left(1 - e^{-\beta T}\right).
+\ell_m(\alpha,\beta)
+  &= \delta_m \bigl[\log\alpha - \beta\,s_m\bigr]
+     - \frac{\alpha}{\beta}\bigl(1-e^{-\beta\,s_m}\bigr).
 \label{eq:appendix-likelihood}
 \end{align}
+The first term scores the observed event (if any) at time~$s_m$; the second
+term is the integrated hazard $\Lambda_m = \int_0^{s_m}\alpha\,e^{-\beta u}\,du$,
+which penalizes exposure time regardless of whether a reply was observed.
 
-The total log-likelihood sums \cref{eq:appendix-likelihood} over all parents $m$ across all threads. Numerical optimization (L-BFGS-B with constraints $\alpha, \beta > 0$) yields $(\hat{\alpha}, \hat{\beta})$.
+The total log-likelihood sums \cref{eq:appendix-likelihood} over all
+parent comments across all threads:
+$\ell(\alpha,\beta) = \sum_m \ell_m(\alpha,\beta)$.
+Numerical optimization (L-BFGS-B with constraints $\alpha,\beta>0$)
+yields $(\hat{\alpha},\hat{\beta})$.
+
+\begin{remark}[Connection to the general Poisson-process likelihood]
+If one observed all $K$ direct replies to a parent (not just the first), the
+contribution would be
+$\ell_m = K\log\alpha - \beta\sum_{k=1}^K s_k -
+(\alpha/\beta)(1-e^{-\beta T})$, where $T$ is the observation horizon.
+Setting $K=\delta_m\in\{0,1\}$ and $T=s_m$ recovers
+\cref{eq:appendix-likelihood}.
+\end{remark}
 
 \subsection{Submolt Categorization}
 \label{sec:appendix:submolts}

@@ -109,6 +109,7 @@
     },
     "category_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
     "reply_dynamics_by_category_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/reply_dynamics_by_category.csv",
+    "reply_hazard_binned_table_path": "outputs/moltbook_only/run_20260206-145240Z/tables/reply_hazard_binned.csv",
     "implied_eventual_reply_probability": 0.09281944720545698
   },
   "reply_dynamics": {
@@ -343,6 +344,7 @@
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_branching_by_depth.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_reentry_distribution.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_survival_curve.png",
+      "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_reply_hazard.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_psd.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_periodicity_bin_robustness.png",
       "outputs/moltbook_only/run_20260206-145240Z/figures/moltbook_agent_group_reply_dynamics.png"
@@ -353,6 +355,7 @@
       "outputs/moltbook_only/run_20260206-145240Z/tables/half_life_by_category.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/reply_dynamics_by_category.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/agent_group_reply_dynamics.csv",
+      "outputs/moltbook_only/run_20260206-145240Z/tables/reply_hazard_binned.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/psd_curve.csv",
       "outputs/moltbook_only/run_20260206-145240Z/tables/periodicity_bin_robustness.csv"
     ]

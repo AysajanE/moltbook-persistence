@@ -19,7 +19,15 @@ For each thread $j$, we compute the depth $d_{jn}$ of every comment using \cref{
     \item The proportion of threads reaching depth $k$ for $k = 1, 2, \ldots, 10$.
 \end{itemize}
 
-Under our model (\cref{prop:depth-bound}), $\Prob(D_j \geq k) \leq \mu^k$. We estimate the effective branching ratio $\hat{\mu}$ by fitting this exponential bound to the empirical tail distribution via least squares on log-probabilities.
+Under our model (\cref{prop:depth-bound}), $\Prob(D_j \geq k) \leq \mu^k$. We estimate
+the effective branching ratio $\hat{\mu}$ by fitting this exponential bound to the
+empirical tail distribution via zero-intercept least squares on log-probabilities,
+using $k = 1, 2, \ldots, \max(D_j)$.  Because the depth distribution is computed
+conditional on threads with at least one comment ($N = 34{,}730$),
+$\Prob(D_j \geq 1) = 1$ by construction; the $k = 1$ point anchors the regression
+at zero and the fit is driven by $k \geq 2$.  The resulting $\hat{\mu}$ should be
+interpreted as an \emph{effective non-root reproduction parameter}
+(\cref{rem:two-type}), not a literal unconditional offspring mean for the root post.
 
 \subsubsection{Branching Factor}
 
@@ -73,7 +81,7 @@ Under the model (\cref{eq:reply-intensity}), conditional on the availability fun
 
 \begin{remark}[Estimand interpretation]
 \label{rem:estimand}
-The \emph{first-reply half-life} $\hat{h} = \ln 2 / \hat{\beta}$ is a
+The \emph{reply-kernel half-life} $\hat{h} = \ln 2 / \hat{\beta}$ is a
 \textbf{kernel decay timescale}: it characterizes how quickly the instantaneous
 hazard of receiving a direct reply falls as a parent comment ages. It is
 \emph{not} the median thread lifetime or the time at which 50\% of all
@@ -222,7 +230,7 @@ For each matched pair, we compute:
     \item \textbf{Re-entry rate} \(\mathrm{RE}\).
 \end{itemize}
 Interaction half-life is additionally estimated on the matched-thread subsets for each
-platform (not pairwise at thread level) using the same first-reply survival construction as
+platform (not pairwise at thread level) using the same reply-kernel survival construction as
 platform-side analyses.
 
 \subsubsection{Statistical Testing}

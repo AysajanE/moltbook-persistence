@@ -65,10 +65,10 @@ limited (\cref{fig:reentry-distribution}), with mean 0.195 and median 0.167.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/survival_curve_moltbook.png}
-\caption{Kaplan--Meier survival curve and fitted exponential model for time to first direct
-reply.}
-\label{fig:survival-curve}
+\includegraphics[width=0.9\linewidth]{figures/reply_hazard_moltbook.png}
+\caption{Empirical binned reply hazard versus parent age (first 10 minutes, log scale), with
+fitted exponential-kernel hazard overlay.}
+\label{fig:reply-hazard-moltbook}
 \end{figure}
 
 Using one survival unit per parent comment, the primary analysis sample includes 199,000
@@ -132,8 +132,9 @@ This gap indicates that the single-parameter exponential kernel captures the ove
 timescale of hazard decay but understates early-time concentration:
 observed replies arrive even faster than the fitted exponential predicts.
 The Weibull shape parameter $\hat{\gamma} = 0.1115 \ll 1$ (\Cref{sec:results:halflife})
-confirms this departure---a decreasing hazard that is steeply concentrated in the first
-seconds.  Accordingly, the half-life reported throughout should be interpreted as a
+and the empirical hazard profile in \Cref{fig:reply-hazard-moltbook} confirm this
+departure---a decreasing hazard that is steeply concentrated in the first seconds.
+Accordingly, the half-life reported throughout should be interpreted as a
 \emph{coarse exponential-kernel timescale}, not as a precise predictor of conditional
 reply timing.
 
@@ -198,7 +199,7 @@ while Social/Casual and Creative are shortest.
 
 \Cref{tab:agent-heterogeneity} and \cref{fig:agent-group-heterogeneity} show that claimed
 accounts have materially higher observed direct-reply incidence (18.19\% vs.\ 8.07\%) and
-shorter first-reply half-life (0.48 vs.\ 0.87 minutes) than unclaimed accounts. The
+shorter reply-kernel half-life (0.48 vs.\ 0.87 minutes) than unclaimed accounts. The
 follower-bin split is non-monotonic: \(1\text{--}9\) followers is highest-incidence in this
 snapshot, while the 10+ bin is sparse (\(n=238\) parent comments), so that estimate is
 interpreted cautiously.
@@ -281,7 +282,7 @@ Conversation geometry is materially deeper than a pure star regime but still roo
     \item Re-entry rate mean: 0.0938; median: 0.
 \end{itemize}
 
-\subsubsection{First-Reply Half-Life}
+\subsubsection{Reply-Kernel Half-Life}
 
 \begin{figure}[t]
 \centering
@@ -292,7 +293,7 @@ Conversation geometry is materially deeper than a pure star regime but still roo
 
 The primary survival sample includes 9,547 parent comments (3,456 events; 6,091 censored),
 after excluding 329 parents within the 4-hour right-boundary window. The exponential estimate
-gives a first-reply half-life of 2.6066 hours (95\% CI: [2.2933, 2.9539]). A no-boundary
+gives a reply-kernel half-life of 2.6066 hours (95\% CI: [2.2933, 2.9539]). A no-boundary
 sensitivity estimate is similar at 2.5755 hours. The observed direct-reply probability is
 36.20\% (3,456/9,547), with implied eventual probability 38.70\% under the fitted
 exponential model.
@@ -382,7 +383,7 @@ Wilcoxon signed-rank \(p\)-values are \(1.43\times10^{-49}\) (comments),
 \label{fig:cross-platform-effects}
 \end{figure}
 
-\textbf{Matched-subset first-reply half-life.} Restricting survival units to matched threads,
+\textbf{Matched-subset reply-kernel half-life.} Restricting survival units to matched threads,
 the primary-sample half-life is 0.0628 hours on Moltbook (3.77 minutes; 95\% CI:
 [1.19, 7.06] minutes; \(n=1{,}841\) parent comments, 22 events) and 2.4448 hours on Reddit
 (95\% CI: [2.1298, 2.7926] hours; \(n=7{,}979\), 2,882 events). These half-life values are
@@ -399,7 +400,7 @@ thread-level survival effects.
     chains are short.
     \item \textbf{Limited re-entry}: Thread-level re-entry is modest
     (mean 0.195; median 0.167).
-    \item \textbf{Very short first-reply half-life}: Estimated half-life is 0.0133 hours
+    \item \textbf{Very short reply-kernel half-life}: Estimated half-life is 0.0133 hours
     (0.80 minutes; 95\% CI: [0.53, 1.13] minutes) in the primary survival specification.
     \item \textbf{Two-regime reply dynamics}: Moltbook observed direct-reply incidence is
     9.00\% versus 36.20\% on Reddit; conditional timing differs by orders of magnitude.
@@ -414,7 +415,7 @@ thread-level survival effects.
     duration (\(-8.606\) hours), and re-entry (\(-0.040\)); all Wilcoxon tests are
     statistically significant.
     \item \textbf{Matched-subset half-life contrast}: On matched-thread subsets, Moltbook
-    first-reply half-life is 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes)
+    reply-kernel half-life is 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes)
     versus 2.4448 hours for Reddit (95\% CI: [2.1298, 2.7926]).
     \item \textbf{Reddit periodicity finding}: Dominant periodic component is 32 hours
     (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test is not significant

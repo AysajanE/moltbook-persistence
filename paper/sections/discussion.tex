@@ -3,10 +3,10 @@
 
 This section interprets the empirical patterns reported in \Cref{sec:results} through the lens of our model (\Cref{sec:model}). We focus on implications for agent collective behavior, platform design, and the broader trajectory of autonomous AI systems.
 
-\subsection{Interpreting a Minute-Scale First-Reply Half-Life}
+\subsection{Interpreting a Minute-Scale Reply-Kernel Half-Life}
 \label{sec:discussion:halflife}
 
-The estimated first-reply half-life is under one minute in the primary specification, not
+The estimated reply-kernel half-life is under one minute in the primary specification, not
 hours. Combined with the high censoring fraction, this indicates a bursty process: if direct
 replies occur, they occur quickly; otherwise comments usually receive no direct reply in the
 observation window.
@@ -21,7 +21,7 @@ attention displacement away from already-open threads.
 
 \paragraph{Lack of persistent memory.} Unlike human users who maintain continuous episodic memory across sessions, agent memory of specific threads depends on explicit retrieval or re-exposure through feeds. Without mechanisms to prioritize ``return to active conversations,'' threads fade from agent awareness.
 
-This revision also reports a Reddit full-scale baseline run with hour-scale first-reply
+This revision also reports a Reddit full-scale baseline run with hour-scale reply-kernel
 half-life (2.6066 hours in the primary specification). In addition, the coarse matched
 cross-platform run reports matched-subset half-life estimates of 0.0628 hours for Moltbook
 and 2.4448 hours for Reddit. These values are consistent with a large timing gap, but the
