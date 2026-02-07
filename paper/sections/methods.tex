@@ -32,8 +32,8 @@ thread-size-conditioned summaries.
 \label{sec:methods:halflife}
 
 Our primary temporal estimand is the decay rate \(\beta\), reported as
-reply-kernel half-life \(h=\ln 2 / \beta\). For each parent comment \(m\) in
-thread \(j\), we define first-direct-reply survival time
+reply-kernel half-life \(h=\ln 2 / \beta\). For each at-risk parent comment
+\(m\) in thread \(j\), we define first-direct-reply survival time
 \begin{equation}
 \label{eq:survival-time}
 S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
@@ -82,18 +82,33 @@ Uncertainty is quantified with 95\% thread-cluster bootstrap intervals.
 \subsection{Periodicity Detection}
 \label{sec:methods:periodicity}
 
-To test for heartbeat-scale periodicity, we bin comment counts at 15-minute
-resolution in the longest contiguous segment after splitting the timeline at
-gaps larger than six hours. Let \(C_t\) denote binned counts; we transform and
-preprocess as
-\(Y_t=\log(C_t+1)\), 24-hour moving-average detrending, and Hanning windowing.
+To test for heartbeat-scale periodicity, we split the timeline at timestamp
+gaps \(>6\) hours, retain the longest contiguous segment, and bin comment counts
+\(C_t\) at 15-minute resolution (\(\Delta=0.25\) hours). Preprocessing is
+implemented as
+\[
+Y_t=\log(1+C_t)-\operatorname{MA}_{24\mathrm{h}}(t),
+\]
+where \(\operatorname{MA}_{24\mathrm{h}}\) is a centered 24-hour rolling mean
+(\(96\) bins at 15-minute resolution) with truncated edge windows
+(\texttt{min\_periods=1}), followed by mean-centering of \(Y_t\).
 
-We estimate power spectral density via Welch's method and test the target
-frequency \(f_\tau = 1/\tau \approx 0.25\,\mathrm{hr}^{-1}\) against an AR(1)
-red-noise null using 2,000 Monte Carlo simulations for Fisher's \(g\) and
-target-frequency power statistics. Robustness checks repeat target-frequency and
-dominant-frequency analyses at 5-, 15-, and 30-minute bin widths on the same
-contiguous segment.
+We estimate PSD with Welch's method on \(Y_t\), using a Hann window,
+\texttt{nperseg}\(=\min(128,T)\), \texttt{noverlap}\(=\min(64,\lfloor T/2\rfloor)\),
+and constant detrending within segments (\(T\): number of bins in the
+contiguous segment). We test the target frequency
+\(f_\tau = 1/\tau \approx 0.25\,\mathrm{hr}^{-1}\) using two statistics:
+Fisher's \(g=\max_f I(f)/\sum_f I(f)\), and target-frequency power
+\(T_\tau=I(f_\tau^\star)\), where \(I(f)\) is the positive-frequency periodogram
+of \(Y_t\) and \(f_\tau^\star\) is the nearest Fourier frequency to 0.25
+hr\(^{-1}\).
+
+Null calibration uses an AR(1) process fit directly to \(Y_t\):
+\(Y_t=\phi Y_{t-1}+\varepsilon_t\), with \(\phi\) estimated by least squares and
+innovation scale from residual standard deviation. We generate \(B=2{,}000\)
+AR(1) simulations and compute Monte Carlo exceedance \(p\)-values for both
+statistics. Robustness checks repeat the same procedure at 5-, 15-, and
+30-minute bin widths on the same contiguous segment.
 
 At agent level, we compute lagged autocorrelation on 15-minute activity series
 for agents with at least 10 comments in the contiguous segment and report the
