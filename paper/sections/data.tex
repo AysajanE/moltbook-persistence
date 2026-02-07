@@ -111,12 +111,12 @@ Re-entry rate & 0.19 & 0.17 & 0.21 & 0.00 & 0.98 \\
 \subsection{Reddit Full-Scale Corpus}
 \label{sec:data:reddit}
 
-To contextualize Moltbook dynamics, we analyze Reddit run
-\texttt{attempt\_scaled\_20260206-142651Z} from the curated pipeline.
+To contextualize Moltbook dynamics, we analyze a curated Reddit corpus collected
+via the Arctic Shift archive (run identifiers in \Cref{sec:reproducibility}).
 
 \subsubsection{Subreddit Selection}
 
-Run \texttt{attempt\_scaled\_20260206-142651Z} includes the following six subreddits:
+The Reddit corpus includes the following six subreddits:
 \begin{itemize}
     \item \texttt{r/MachineLearning},
     \item \texttt{r/Python},
@@ -128,15 +128,14 @@ Run \texttt{attempt\_scaled\_20260206-142651Z} includes the following six subred
 
 \subsubsection{Matched Sample Construction}
 
-Matched cross-platform construction follows \Cref{sec:methods:comparison} and is executed in
-\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} with run ID
-\texttt{run\_20260206-182842Z}. Using deterministic topic mapping, UTC posting-hour bins, and
+Matched cross-platform construction follows \Cref{sec:methods:comparison}
+(implementation details in \Cref{sec:reproducibility}). Using deterministic topic mapping, UTC posting-hour bins, and
 first-30-minute engagement bins, the run yields 813 one-to-one matched pairs across 118 shared
 strata.
 
 \subsubsection{Data Collection}
 
-Run \texttt{attempt\_scaled\_20260206-142651Z} contains 1,772 curated submissions and 9,878
+The corpus contains 1,772 curated submissions and 9,878
 curated comments, with 1,104 threads containing at least one comment. Comment timestamps span
 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z (UTC). Full run metadata are recorded in the
 run manifest (see \Cref{sec:reproducibility}).

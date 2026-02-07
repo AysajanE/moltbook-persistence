@@ -118,8 +118,8 @@ Reddit (overall) & 9,547 & 36.20 & 39.317 & 2.6066 & 38.70 \\
 \Cref{tab:reply-dynamics} separates event incidence from timing. On Moltbook, only
 9.00\% of parent comments receive any direct reply in-window, versus 36.20\% on the
 Reddit baseline. Conditional on receiving a reply, Moltbook replies arrive within seconds
-to minutes (overall median 0.076 minutes), while Reddit conditional timing is much slower
-(39.3 minutes median). The implied eventual percentages are model-diagnostic quantities
+to minutes (overall median 0.076~minutes, i.e., $\approx$4.6~seconds), while
+Reddit conditional timing is much slower (39.3~minutes median). The implied eventual percentages are model-diagnostic quantities
 under the exponential-kernel fit, not direct empirical estimands.
 
 \paragraph{Model check: conditional median vs.\ half-life.}
@@ -246,7 +246,7 @@ autocorrelation in 15-minute binned activity is 0.1106
 \subsection{Reddit Full-Scale Baseline}
 \label{sec:results:reddit-full-scale}
 
-The Reddit baseline run (\texttt{attempt\_scaled\_20260206-142651Z}) contains 1,772
+The Reddit baseline corpus (\Cref{sec:data:reddit}) contains 1,772
 submissions, 9,878 comments, and 1,104 threads with at least one comment. Comment timestamps
 span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
 
@@ -255,8 +255,7 @@ span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/depth_distribution_reddit.png}
-\caption{Distribution of maximum thread depth \(D_j\) for the Reddit run
-\texttt{attempt\_scaled\_20260206-142651Z}.}
+\caption{Distribution of maximum thread depth \(D_j\) for the Reddit baseline corpus.}
 \label{fig:depth-distribution-reddit}
 \end{figure}
 
@@ -315,16 +314,16 @@ test.
 
 \subsubsection{Run-Scoped Caveats}
 
-Two upstream caveats recorded in run manifests are carried into interpretation: 1,570 comments
-were dropped during curation due to missing submission IDs, and the request log includes 2
-non-200/error responses. These caveats do not invalidate the run, but they bound claims to the
-curated, observed corpus.
+Two upstream caveats from collection and curation are carried into interpretation:
+1,570 comments were dropped during curation due to missing submission IDs, and
+the request log includes 2 non-200/error responses. These caveats do not
+invalidate the run, but they bound claims to the curated, observed corpus.
 
 \subsection{Cross-Platform Comparison}
 \label{sec:results:comparison}
 
-We executed coarse exact matching on the pinned Moltbook and Reddit feature
-runs described in \Cref{sec:methods:comparison}.
+We executed coarse exact matching on the Moltbook and Reddit datasets described
+in \Cref{sec:methods:comparison}.
 
 \begin{figure}[t]
 \centering
@@ -393,31 +392,26 @@ thread-level survival effects.
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
-\begin{enumerate}
-    \item \textbf{Shallow structure}: Moltbook threads are strongly star-shaped
-    (mean depth 1.378; median depth 1; \(\hat{\mu}=0.154\)).
-    \item \textbf{Low reciprocity}: Bidirectional dyads are rare (0.998\%), and reciprocal
-    chains are short.
-    \item \textbf{Limited re-entry}: Thread-level re-entry is modest
-    (mean 0.195; median 0.167).
-    \item \textbf{Very short reply-kernel half-life}: Estimated half-life is 0.0133 hours
-    (0.80 minutes; 95\% CI: [0.53, 1.13] minutes) in the primary survival specification.
-    \item \textbf{Two-regime reply dynamics}: Moltbook observed direct-reply incidence is
-    9.00\% versus 36.20\% on Reddit; conditional timing differs by orders of magnitude.
-    \item \textbf{No statistically significant 4-hour spectral peak}: Although power at
-    0.25 hr\(^{-1}\) is elevated relative to local background, AR(1)-based tests are not
-    significant across 5/15/30-minute bin-width checks.
-    \item \textbf{Coarse matched cross-platform sample}: Exact matching on coarse topic,
-    UTC posting hour, and first-30-minute engagement bins produced 813 1:1 pairs across
-    118 strata. Maximum absolute SMD decreased from 3.886 to 0.052.
-    \item \textbf{Coarse matched differences}: In matched pairs, Moltbook threads are lower
-    on comments (\(-7.704\)), depth (\(-1.191\)), unique participants (\(-5.009\)),
-    duration (\(-8.606\) hours), and re-entry (\(-0.040\)); all Wilcoxon tests are
-    statistically significant.
-    \item \textbf{Matched-subset half-life contrast}: On matched-thread subsets, Moltbook
-    reply-kernel half-life is 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes)
-    versus 2.4448 hours for Reddit (95\% CI: [2.1298, 2.7926]).
-    \item \textbf{Reddit periodicity finding}: Dominant periodic component is 32 hours
-    (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test is not significant
-    (\(p=0.6845\)), while Fisher's \(g\) reports \(p<0.0005\) (0/2000 exceedances).
-\end{enumerate}
+Overall, Moltbook threads are strongly star-shaped (mean depth 1.378, median
+depth 1, \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
+modest re-entry (mean 0.195; median 0.167). The primary Moltbook survival
+specification yields a very short reply-kernel half-life of 0.0133 hours
+(0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply
+pattern in which observed direct-reply incidence is 9.00\% on Moltbook versus
+36.20\% on Reddit and conditional timing differs by orders of magnitude.
+Although power at the 4-hour target frequency is elevated relative to local
+background, AR(1)-based tests remain non-significant across 5/15/30-minute
+binning choices.
+
+In the coarse matched cross-platform design, exact matching on topic, UTC
+posting hour, and first-30-minute engagement yields 813 pairs across 118 shared
+strata, and the maximum absolute SMD decreases from 3.886 to 0.052. Within this
+matched sample, Moltbook threads are lower on comments (\(-7.704\)), depth
+(\(-1.191\)), unique participants (\(-5.009\)), duration (\(-8.606\) hours),
+and re-entry (\(-0.040\)); all corresponding Wilcoxon tests are statistically
+significant. On matched-thread subsets, Moltbook reply-kernel half-life is
+0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes), versus 2.4448 hours
+for Reddit (95\% CI: [2.1298, 2.7926]). For Reddit periodicity, the dominant
+component is 32 hours (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test
+is not significant (\(p=0.6845\)), while Fisher's \(g\) reports \(p<0.0005\)
+(0/2000 exceedances).
