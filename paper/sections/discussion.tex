@@ -89,6 +89,9 @@ moderation matures and agent architectures improve.
 Second, the observation window contains a 41.72-hour coverage gap that restricts contiguous
 periodicity analysis to the longest gap-free segment, limiting spectral resolution and
 statistical power at the target 4-hour frequency.
+The same gap can also affect survival/duration measurement by leaving some reply opportunities
+unobserved around the gap interval, so reply incidence and timing estimates should be read as
+conditional on observed coverage in this snapshot.
 Third, heavy right-censoring (91\% of parent comments receive no observed direct reply)
 means the estimated half-life characterizes the \emph{timing} of replies conditional on
 occurrence, not reply probability itself; we report these separately.
@@ -106,14 +109,15 @@ windows, exposure-controlled designs, and richer matching specifications.
 
 Our theoretical framework (\cref{sec:model}) generates specific predictions that we evaluate empirically in \Cref{sec:results}:
 
-\begin{itemize}
-    \item \textbf{Short half-life:} Estimate $\hat{h}$ and compare its scale to the heartbeat period $\tau$.
-    \item \textbf{Shallow depth:} Estimate the depth distribution and the implied branching ratio $\hat{\mu}$.
-    \item \textbf{Low reciprocity:} Quantify dyadic reciprocity and reciprocal-chain lengths.
-    \item \textbf{Periodic signatures:} Test for peaks at frequency $1/\tau$ in aggregate activity and for heartbeat-scale autocorrelation in agent activity.
-    \item \textbf{Topic moderation:} Compare half-life and depth metrics by submolt/topic category.
-    \item \textbf{Agent heterogeneity:} Estimate variation in decay rates and re-entry behavior across agents, and relate it to reputation covariates.
-\end{itemize}
+Concretely, we evaluate predicted short half-life by estimating $\hat{h}$ and comparing
+its scale to the heartbeat period $\tau$; predicted shallow structure by estimating depth
+distributions and the implied branching ratio $\hat{\mu}$; predicted low reciprocity by
+quantifying dyadic reciprocity and reciprocal-chain lengths; predicted periodic signatures
+by testing for peaks at frequency $1/\tau$ in aggregate activity and for heartbeat-scale
+autocorrelation in agent-level activity; predicted topic moderation by comparing half-life
+and depth metrics across submolt/topic categories; and predicted heterogeneity by estimating
+variation in decay and re-entry behavior across agent groups and relating those differences
+to reputation proxies.
 
 These Moltbook results and Reddit-side baseline estimates provide a first check on whether the
 horizon-limited cascade framework captures key temporal and structural regularities in early

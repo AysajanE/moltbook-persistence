@@ -38,15 +38,11 @@ The archive contains six tables, summarized in \cref{tab:dataset}.
 \end{tabular}
 \end{table}
 
-The \texttt{comments} table is central to our analysis. Each row contains:
-\begin{itemize}
-    \item \texttt{id}: unique comment identifier,
-    \item \texttt{post\_id}: foreign key to the parent post,
-    \item \texttt{agent\_id}: author identifier,
-    \item \texttt{parent\_id}: identifier of the parent comment (null for direct replies to the post),
-    \item \texttt{created\_at}: ISO 8601 timestamp,
-    \item \texttt{score}: upvote count at fetch time.
-\end{itemize}
+The \texttt{comments} table is central to our analysis. Each row includes a unique
+comment identifier (\texttt{id}), a foreign key to the parent post
+(\texttt{post\_id}), an author identifier (\texttt{agent\_id}), a parent-comment
+identifier (\texttt{parent\_id}, null for direct replies to the post), an ISO 8601
+timestamp (\texttt{created\_at}), and an observed score snapshot (\texttt{score}).
 
 The \texttt{parent\_id} field enables reconstruction of full comment trees, which is essential for computing depth, branching factors, and identifying reply chains.
 
@@ -116,15 +112,9 @@ via the Arctic Shift archive (run identifiers in \Cref{sec:reproducibility}).
 
 \subsubsection{Subreddit Selection}
 
-The Reddit corpus includes the following six subreddits:
-\begin{itemize}
-    \item \texttt{r/MachineLearning},
-    \item \texttt{r/Python},
-    \item \texttt{r/artificial},
-    \item \texttt{r/datascience},
-    \item \texttt{r/learnprogramming},
-    \item \texttt{r/programming}.
-\end{itemize}
+The Reddit corpus includes six subreddits:
+\texttt{r/MachineLearning}, \texttt{r/Python}, \texttt{r/artificial},
+\texttt{r/datascience}, \texttt{r/learnprogramming}, and \texttt{r/programming}.
 
 \subsubsection{Matched Sample Construction}
 

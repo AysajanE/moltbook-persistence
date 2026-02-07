@@ -11,23 +11,26 @@ Early observations of Moltbook revealed a striking pattern: agents appear substa
 
 We focus on a specific architectural feature that may explain these dynamics: the \emph{heartbeat mechanism}. Moltbook agents are typically configured to check the platform at regular intervals (approximately every four hours), creating a mechanically induced ``attention clock'' that synchronizes agent activity while limiting continuous engagement \citep{willison2026moltbook}. This design feature, combined with the finite context windows of underlying LLMs, suggests that agent conversations should exhibit characteristic temporal signatures distinct from human-driven platforms.
 
-Our central research questions are:
-\begin{enumerate}
-    \item \textbf{Interaction half-life:} How quickly does conversational engagement decay on Moltbook, and does this decay exhibit the hypothesized $\sim$4-hour characteristic timescale?
-    \item \textbf{Conversation geometry:} What structural properties (depth, branching, reciprocity) characterize Moltbook discussion trees, and how do these compare to human-platform baselines?
-    \item \textbf{Heterogeneity and coordination:} Which factors---topic domain, agent reputation, early engagement---predict extended conversational persistence?
-\end{enumerate}
+Our central research questions are how quickly conversational engagement decays
+on Moltbook and whether this decay shows a characteristic $\sim$4-hour timescale;
+which structural properties (depth, branching, reciprocity) characterize Moltbook
+discussion trees relative to human-platform baselines; and which factors---topic
+domain, agent reputation, and early engagement---are associated with extended
+conversational persistence.
 
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
 
-Guided by the horizon-limited cascade framework (\Cref{sec:model}) and prior qualitative observations \citep{willison2026moltbook, alexander2026afterweekend}, we test the following hypotheses:
-\begin{enumerate}
-    \item \textbf{H1 (Short half-life and attention clock).} We test whether Moltbook threads exhibit characteristically short reply-kernel half-lives consistent with architectural constraints, and whether aggregate comment activity shows periodic structure near the hypothesized heartbeat cadence ($\tau \approx 4$ hours).
-    \item \textbf{H2 (Shallow, star-shaped structure).} We test whether Moltbook comment trees are shallower and more root-concentrated than human-platform baselines, with lower reciprocity and re-entry rates.
-    \item \textbf{H3 (Topic moderates persistence).} We test whether persistence varies by topic/community, including whether some submolts systematically exhibit longer half-lives and deeper trees than others.
-    \item \textbf{H4 (Agent heterogeneity).} We test whether agent-level covariates (account claim status, follower count) predict variation in reply incidence and conversational persistence.
-\end{enumerate}
+Guided by the horizon-limited cascade framework (\Cref{sec:model}) and prior
+qualitative observations \citep{willison2026moltbook, alexander2026afterweekend},
+we test four hypotheses. H1 posits short reply-kernel half-lives consistent with
+architectural constraints and periodic structure near the hypothesized heartbeat
+cadence ($\tau \approx 4$ hours). H2 posits shallower, more root-concentrated
+Moltbook trees than human-platform baselines, with lower reciprocity and re-entry.
+H3 posits topic-level moderation of persistence, including systematic differences
+in half-life and depth across submolts. H4 posits that agent-level covariates
+(account claim status and follower count) are associated with variation in reply
+incidence and conversational persistence.
 
 We operationalize these hypotheses via the metrics and estimators described in \Cref{sec:methods} and evaluate them in \Cref{sec:results}.
 For H1's periodic component, non-significant evidence at the target frequency is interpreted

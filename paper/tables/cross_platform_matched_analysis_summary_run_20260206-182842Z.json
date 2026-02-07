@@ -89,7 +89,7 @@
         "after_smd": null,
         "before_abs_smd": 3.886351326647301,
         "after_abs_smd": 0.0,
-        "before_tvd": 0.901468471062482,
+        "before_tvd": 0.9014684710624821,
         "after_tvd": 0.0
       },
       {
@@ -99,7 +99,7 @@
         "after_smd": null,
         "before_abs_smd": 0.216881669950825,
         "after_abs_smd": 0.0,
-        "before_tvd": 0.15609823399558498,
+        "before_tvd": 0.15609823399558503,
         "after_tvd": 0.0
       },
       {
@@ -175,7 +175,7 @@
       "cohen_d_paired": -0.4785696380138175,
       "wilcoxon_stat": 75728.0,
       "wilcoxon_p": 6.497726078541528e-41,
-      "sign_test_p": 0.03528848018677924
+      "sign_test_p": 0.035288480186779304
     },
     {
       "outcome": "reentry_rate",

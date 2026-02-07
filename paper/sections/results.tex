@@ -18,13 +18,10 @@ one comment (\(N=34{,}730\)).}
 \label{fig:depth-distribution}
 \end{figure}
 
-Moltbook conversation trees are shallow (\cref{fig:depth-distribution}):
-\begin{itemize}
-    \item Mean depth: 1.378 (95\% bootstrap CI: [1.372, 1.383]),
-    \item Median depth: 1,
-    \item Proportion reaching depth 5+: 0.0058\% (95\% bootstrap CI: [0.0000\%, 0.0144\%]),
-    \item Proportion reaching depth 10+: 0.0000\%.
-\end{itemize}
+Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean depth is 1.378
+(95\% bootstrap CI: [1.372, 1.383]), median depth is 1, the proportion reaching depth 5+
+is 0.0058\% (95\% bootstrap CI: [0.0000\%, 0.0144\%]), and the proportion reaching depth 10+
+is 0.0000\%.
 
 Fitting the depth-tail relation \(\Prob(D_j \geq k) \leq \mu^k\) gives
 \(\hat{\mu}=0.154\), consistent with a strongly subcritical branching regime.
@@ -74,7 +71,7 @@ fitted exponential-kernel hazard overlay.}
 Using one survival unit per parent comment, the primary analysis sample includes 199,000
 comments (17,915 events; 181,085 right-censored), after excluding parents posted within 4
 hours of the dataset end to reduce boundary censoring bias.
-The fitted exponential model yields:
+The fitted exponential-kernel hazard model yields:
 \begin{align*}
 \hat{\beta} &= 52.209 \text{ hr}^{-1} \quad \text{(95\% bootstrap CI: [36.852, 78.524])}, \\
 \hat{h} &= \frac{\ln 2}{\hat{\beta}} = 0.0133 \text{ hr}
@@ -242,6 +239,11 @@ choices, but none imply a significant 4-hour peak.
 Among 1,076 agents with at least 10 comments in the contiguous segment, mean lag-4-hour
 autocorrelation in 15-minute binned activity is 0.1106
 (95\% bootstrap CI: [0.0997, 0.1221]).
+This does not contradict the non-significant aggregate 4-hour spectral peak:
+lag-4-hour autocorrelation reflects short-lag persistence and does not uniquely identify
+a 4-hour periodic driver, and it is consistent with weak or dephased heartbeat-like
+behavior that is not strong enough to produce a significant aggregate spectral peak
+in this short contiguous window.
 
 \subsection{Reddit Full-Scale Baseline}
 \label{sec:results:reddit-full-scale}
@@ -273,20 +275,17 @@ span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
 \label{fig:reentry-distribution-reddit}
 \end{figure}
 
-Conversation geometry is materially deeper than a pure star regime but still root-concentrated:
-\begin{itemize}
-    \item Mean maximum depth per thread: 2.169; median: 1,
-    \item \(\Prob(D \ge 5)=11.32\%\) and \(\Prob(D \ge 10)=1.54\%\),
-    \item Mean branching factor at depth 0: 4.305; at depth 1: 0.446,
-    \item Re-entry rate mean: 0.0938; median: 0.
-\end{itemize}
+Conversation geometry is materially deeper than a pure star regime but still root-concentrated.
+Mean maximum depth per thread is 2.169 (median 1), \(\Prob(D \ge 5)=11.32\%\),
+\(\Prob(D \ge 10)=1.54\%\), mean branching factor is 4.305 at depth 0 and 0.446 at depth 1,
+and re-entry has mean 0.0938 and median 0.
 
 \subsubsection{Reply-Kernel Half-Life}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/survival_curve_reddit.png}
-\caption{Kaplan--Meier survival curve and fitted exponential model for the Reddit run.}
+\caption{Kaplan--Meier survival curve and fitted exponential-kernel hazard model for the Reddit run.}
 \label{fig:survival-curve-reddit}
 \end{figure}
 
@@ -295,7 +294,7 @@ after excluding 329 parents within the 4-hour right-boundary window. The exponen
 gives a reply-kernel half-life of 2.6066 hours (95\% CI: [2.2933, 2.9539]). A no-boundary
 sensitivity estimate is similar at 2.5755 hours. The observed direct-reply probability is
 36.20\% (3,456/9,547), with implied eventual probability 38.70\% under the fitted
-exponential model.
+exponential-kernel hazard model.
 
 \subsubsection{Periodicity}
 
@@ -343,7 +342,9 @@ in \Cref{sec:methods:comparison}.
 After requiring matching covariates, all threads remained eligible. Exact overlap strata on
 \((\texttt{topic\_coarse},\texttt{hour},\texttt{early-bin})\) retained 2,641 Moltbook threads
 and 888 Reddit threads across 118 shared strata. Deterministic 1:1 matching yielded 813 pairs
-(813 threads per platform; \cref{fig:cross-platform-flow}).
+(813 threads per platform; \cref{fig:cross-platform-flow}). Only 2.34\% of Moltbook threads
+are in the final matched sample (813/34,730), so matched estimates should be interpreted as
+describing the overlap region rather than the full platform population.
 
 \textbf{Balance diagnostics.} The maximum absolute SMD across monitored covariates decreased
 from 3.886 pre-match to 0.052 post-match. By construction, matched support aligns on the
@@ -370,9 +371,8 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 \end{table}
 
 All paired differences are negative for Moltbook relative to Reddit under this coarse design.
-Wilcoxon signed-rank \(p\)-values are \(1.43\times10^{-49}\) (comments),
-\(5.16\times10^{-54}\) (depth), \(7.62\times10^{-45}\) (unique participants),
-\(6.50\times10^{-41}\) (duration), and \(4.77\times10^{-9}\) (re-entry).
+All two-sided Wilcoxon signed-rank tests reject at conventional levels
+(\(p < 10^{-8}\) for each outcome).
 
 \begin{figure}[t]
 \centering

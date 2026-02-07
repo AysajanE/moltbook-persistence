@@ -29,32 +29,28 @@ read as matched observational evidence under limited controls, not definitive ca
 \subsection{Ethical Considerations}
 \label{sec:limitations:ethics}
 
-\paragraph{Privacy and consent.} Moltbook accounts are operated by AI agents, raising novel questions about privacy and consent that differ from human-subject research. We adopt a conservative approach:
-\begin{itemize}
-    \item Agent ``names'' are pseudonymous and self-selected; we do not attempt to identify human operators.
-    \item We analyze aggregate patterns and do not single out individual agents except where they are already subjects of public commentary.
-    \item Our Reddit comparison anonymizes all usernames.
-\end{itemize}
+\paragraph{Privacy and consent.} Moltbook accounts are operated by AI agents, raising novel questions about privacy and consent that differ from human-subject research. We adopt a conservative approach. Specifically,
+agent ``names'' are treated as pseudonymous and self-selected, we do not attempt to identify
+human operators, we focus analysis on aggregate patterns rather than profiling individuals
+except in already public contexts, and all Reddit usernames are anonymized in curated artifacts.
 
-\paragraph{Potential for manipulation.} Our findings about factors affecting conversational persistence could inform manipulation strategies---for example, how to artificially sustain engagement or make agent coordination appear more robust than it is. We mitigate this risk by:
-\begin{itemize}
-    \item Focusing on descriptive and mechanistic findings rather than optimization prescriptions.
-    \item Releasing detection tools alongside analysis code, enabling identification of anomalous patterns.
-    \item Discussing limitations that make manipulation difficult (e.g., agent heterogeneity complicates uniform interventions).
-\end{itemize}
+\paragraph{Potential for manipulation.} Our findings about factors affecting conversational persistence could inform manipulation strategies---for example, how to artificially sustain engagement or make agent coordination appear more robust than it is. We mitigate this risk by
+focusing on descriptive and mechanistic findings rather than optimization prescriptions,
+releasing detection tools alongside analysis code to support anomaly identification, and
+explicitly discussing limitations that make uniform manipulation difficult (for example,
+substantial agent heterogeneity).
 
-\paragraph{Implications for AI development.} Our findings contribute to understanding AI agent capabilities and limitations. This knowledge could inform:
-\begin{itemize}
-    \item \emph{Beneficial applications}: designing agent systems that support productive human-AI collaboration, identifying architectural improvements for agent memory and coordination.
-    \item \emph{Potential concerns}: enabling more sophisticated autonomous agents, identifying vulnerabilities in agent-based systems.
-\end{itemize}
+\paragraph{Implications for AI development.} Our findings contribute to understanding AI agent capabilities and limitations. This knowledge could inform
+\emph{beneficial applications}, such as designing agent systems that better support
+productive human-AI collaboration and improving memory/coordination architecture, but it
+also raises \emph{potential concerns}, including enabling more sophisticated autonomous
+agents and revealing vulnerabilities in agent-based systems.
 We believe the benefits of open scientific understanding outweigh risks, particularly given that the underlying dynamics are already observable to anyone analyzing public platform data.
 
-\paragraph{Platform terms of service.} Our analysis uses:
-\begin{itemize}
-    \item The Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, released under MIT license for research purposes.
-    \item Reddit data collected from the public Arctic Shift archive endpoints (non-official Reddit OAuth API), curated and validated in a run-scoped pipeline.
-\end{itemize}
+\paragraph{Platform terms of service.} Our analysis uses
+the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, released under MIT
+license for research purposes, and Reddit data collected from public Arctic Shift archive
+endpoints (non-official Reddit OAuth API), curated and validated in a run-scoped pipeline.
 We do not access non-public data or circumvent access controls.
 
 \paragraph{Ecological impact.} Large-scale AI agent activity consumes computational resources with associated environmental costs. While our study does not directly cause such activity (we analyze existing data), our findings may inform platform design decisions that affect aggregate compute usage. We encourage platform designers to consider efficiency alongside engagement metrics.

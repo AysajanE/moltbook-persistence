@@ -48,15 +48,12 @@ The repository includes:
 \label{sec:reproducibility:environment}
 
 The Moltbook and Reddit results reported in \Cref{sec:results} were generated on:
-\begin{itemize}
-    \item OS/architecture: macOS 15.6.1 (arm64),
-    \item Python: 3.13.5 for canonical runs; code target/lint baseline is Python
-    3.11 (\texttt{ruff target-version = py311} in \texttt{pyproject.toml}),
-    \item Key packages: \texttt{numpy 2.4.2}, \texttt{pandas 2.3.3},
-    \texttt{scipy 1.17.0}, \texttt{lifelines 0.30.1},
-    \texttt{matplotlib 3.10.8}, \texttt{seaborn 0.13.2}.
-\end{itemize}
-Project dependencies and minimum versions remain listed in \texttt{requirements.txt}.
+macOS 15.6.1 (arm64) with Python 3.11.14 in this revision's canonical reruns, using
+\texttt{numpy 2.4.2}, \texttt{pandas 2.3.3}, \texttt{scipy 1.17.0},
+\texttt{lifelines 0.30.1}, \texttt{matplotlib 3.10.8}, and \texttt{seaborn 0.13.2}.
+Project dependencies and minimum versions remain listed in \texttt{requirements.txt},
+and lint compatibility targets Python 3.11 (\texttt{ruff target-version = py311}
+in \texttt{pyproject.toml}).
 
 \subsection{Reproducing Key Results}
 \label{sec:reproducibility:reproduce}
@@ -66,7 +63,7 @@ To reproduce the workflows reported in this manuscript version:
 \begin{enumerate}
     \item \textbf{Environment setup:}
     \begin{verbatim}
-    python -m venv .venv
+    python3.11 -m venv .venv
     source .venv/bin/activate
     pip install -r requirements.txt
     \end{verbatim}
@@ -120,7 +117,9 @@ To reproduce the workflows reported in this manuscript version:
 
 Canonical runs used for manuscript values in this revision are
 \texttt{run\_20260206-145240Z} (Moltbook) and
-\texttt{attempt\_scaled\_20260206-142651Z} (Reddit). Moltbook manifest:
+\texttt{attempt\_scaled\_20260206-142651Z} (Reddit), with matched comparison
+\texttt{run\_20260206-182842Z}. These run IDs were re-executed in Python 3.11.14
+on February 7, 2026 for environment-consistent reproducibility. Moltbook manifest:
 \texttt{outputs/moltbook\_only/run\_20260206-145240Z/run\_manifest.json}
 and summary:
 \texttt{outputs/moltbook\_only/run\_20260206-145240Z/tables/analysis\_summary.json}.
@@ -130,6 +129,10 @@ summary:
 \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json},
 and validation:
 \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}.
+Matched-analysis manifest:
+\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/run\_manifest.json}
+and summary:
+\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/tables/analysis\_summary.json}.
 
 \subsection{Versioning and Archival}
 \label{sec:reproducibility:versioning}
