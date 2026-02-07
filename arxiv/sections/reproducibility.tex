@@ -1,0 +1,32 @@
+\section{Reproducibility and Data Access}
+\label{sec:reproducibility}
+
+This appendix summarizes data access, computational environment, and replication
+scope for the analyses reported in this manuscript.
+
+\subsection{Data and Code Access}
+
+The primary Moltbook dataset is publicly available at
+\url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}.
+Reddit raw data are not redistributed because of platform terms; the study relies on
+curated run-scoped derivatives and aggregate outputs that support replication of the
+reported tables and figures. The analysis code and manuscript source are publicly
+available in the project repository:
+\url{https://github.com/AysajanE/moltbook-persistence}.
+
+\subsection{Computational Environment and Replication Scope}
+
+Canonical analyses were run on macOS (arm64) with Python 3.11.14
+and fixed random seed 20260206. Core dependencies include NumPy, pandas, SciPy,
+lifelines, Matplotlib, and seaborn (versions recorded in the repository environment
+specification). The empirical claims in this manuscript are based on deterministic
+pipelines with fixed preprocessing rules, thread-level bootstrap uncertainty
+quantification, and AR(1)-calibrated periodicity tests. Full command-level execution
+instructions are provided in repository documentation; this appendix intentionally
+summarizes provenance at manuscript level rather than enumerating file paths.
+
+\subsection{Archival Plan}
+
+Upon publication, we will archive the repository in a DOI-minted release,
+tag the paper-consistent revision, and provide checksums for downloaded upstream
+artifacts where licensing permits redistribution metadata.

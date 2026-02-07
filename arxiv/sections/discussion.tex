@@ -1,0 +1,73 @@
+\section{Discussion}
+\label{sec:discussion}
+
+This section interprets the empirical patterns in \Cref{sec:results} through the
+model framework in \Cref{sec:model}, focusing on implications for collective
+agent behavior, platform design, and identification scope.
+The strongest empirical signal is the joint pattern of minute-scale
+reply-kernel decay, ultra-fast conditional replies when they occur, and
+shallow non-root branching; the heartbeat mechanism remains a plausible driver
+but is not detected at aggregate scale in this short window.
+
+\subsection{Interpreting Minute-Scale Reply Decay}
+\label{sec:discussion:halflife}
+
+The primary Moltbook estimate is a sub-minute reply-kernel half-life, accompanied
+by heavy censoring. Together, these results indicate a bursty regime: when direct
+replies occur, they tend to occur quickly; most at-risk comments receive no
+observed direct reply during the observation window.
+
+This pattern is consistent with finite context retention, rapid task switching in
+high-volume feeds, and weak return-to-thread memory support. The Reddit baseline,
+by contrast, shows hour-scale reply-kernel half-life under the same estimator.
+Matched-subset half-life estimates preserve this large timing gap, but the matched
+design is intentionally coarse and overlap-restricted, so it is used as
+secondary contextual evidence rather than a core causal estimate.
+The matched Moltbook survival subset includes only 22 events on narrow overlap
+support, so its half-life estimate is noisy and not directly comparable with the
+overall Moltbook estimate.
+
+\subsection{Structural Signatures of Limited Persistence}
+\label{sec:discussion:structure}
+
+Shallow, root-heavy trees are consistent with a low effective depth-tail slope
+(\(\hat{\mu}=0.154\)) and rapidly decaying depth tails. Under a branching
+interpretation (\cref{sec:model:branching}), this pattern is compatible with low
+effective non-root reproduction. Low reciprocity and modest re-entry in the
+overall sample further support a broadcast-dominant interaction pattern, while
+the matched overlap subset shows that re-entry direction can change under
+conditioning.
+
+\subsection{Implications for AI Agent Coordination}
+\label{sec:discussion:coordination}
+
+These dynamics matter for multi-step coordination tasks. If engagement decays on
+minute timescales and repeated participation is limited, projects requiring
+extended deliberation or multi-day follow-through are difficult to sustain
+without explicit coordination scaffolds. Updated heterogeneity analyses suggest
+meaningful differences by account status in observed reply incidence, but
+follower-bin patterns remain non-monotonic and sparse in upper bins, so stronger
+hub claims require longer windows and richer controls.
+
+\subsection{Design Implications}
+\label{sec:discussion:design}
+
+The measured dynamics point to practical interventions that can be tested in
+future platform studies: memory scaffolding for active threads, summary-based
+re-entry support, feed prioritization of threads with prior participation, and
+incentive structures that reward sustained engagement rather than raw posting
+volume. Structured coordination interfaces (for example, commitments, milestones,
+and scheduled check-ins) are especially relevant if the default interaction
+regime remains fast-response-or-silence.
+
+\subsection{Broader Implications}
+\label{sec:discussion:broader}
+
+Interaction half-life is a portable metric for comparing collective persistence
+across agent communities and model generations. The current cross-platform
+results add overlap-region context beyond raw platform contrasts via
+deterministic matching, but are not a primary causal identification strategy.
+Stronger causal interpretation still requires richer exposure controls and more
+granular semantic alignment. Because Moltbook is rapidly evolving, longitudinal
+tracking is necessary to determine whether the persistence gap narrows as agents,
+moderation, and interface design mature.

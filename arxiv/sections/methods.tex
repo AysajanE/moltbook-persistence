@@ -1,0 +1,200 @@
+\section{Methods}
+\label{sec:methods}
+
+We estimate conversation geometry, reply-kernel decay, periodic signatures, and
+coarse matched cross-platform contrasts using a common set of deterministic
+preprocessing rules and fixed inferential settings.
+
+\subsection{Metric Glossary and Estimands}
+\label{sec:methods:def-est}
+
+Terminology in \Cref{sec:results,sec:discussion,sec:conclusion} follows this
+glossary to keep metric naming and estimand language consistent.
+
+\begin{center}
+\fbox{%
+\begin{minipage}{0.96\linewidth}
+\begin{itemize}
+\item \textbf{Maximum depth:} \(D_j := \max_n d_{jn}\) for thread \(j\), with \(d_{jn}\) defined in \cref{eq:depth}.
+\item \textbf{Direct-reply incidence:} \(p_{\mathrm{obs}} := N_{\mathrm{reply}}/N_{\mathrm{risk}}\), where
+\(N_{\mathrm{risk}}\) is the number of at-risk comments (candidate parents) and
+\(N_{\mathrm{reply}}\) is the number with at least one observed direct reply in-window.
+\item \textbf{Event indicator and censoring time (survival unit \(m\)):} let
+\(T_m\) be first-direct-reply time, \(C_m\) be right-censoring time (time from
+candidate parent comment to end of observable coverage), and
+\(s_m:=\min(T_m,C_m)\). The event indicator is
+\(\delta_m:=\mathbf{1}\{T_m\le C_m\}\).
+\item \textbf{Conditional median first-reply time among observed events:}
+\[
+\tilde{s}_{0.5}^{\mathrm{obs}}:=\operatorname{median}\{s_m:\delta_m=1\}.
+\]
+\item \textbf{Re-entry (comment-history, primary):}
+\[
+\mathrm{RE}_j^{\mathrm{comment}} := \frac{1}{N_j}\sum_{n=1}^{N_j}\mathbf{1}\!\left\{a_{jn}\in\{a_{j1},\ldots,a_{j,n-1}\}\right\}.
+\]
+\item \textbf{Re-entry (root-inclusive alternative):}
+\[
+\mathrm{RE}_j^{\mathrm{root+comment}} := \frac{1}{N_j}\sum_{n=1}^{N_j}\mathbf{1}\!\left\{a_{jn}\in\{a_{j0},a_{j1},\ldots,a_{j,n-1}\}\right\}.
+\]
+\item \textbf{Reply-kernel half-life:} \(h:=\ln 2/\beta\), where \(\beta\) is the age-decay rate in direct-reply hazard.
+\item \textbf{Model-diagnostic eventual-reply probability:}
+\[
+p_\infty:=1-\exp(-\hat{\alpha}/\hat{\beta}),
+\]
+reported as a fitted-model diagnostic quantity (not a direct empirical estimand).
+\item \textbf{At-risk comment (candidate parent):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
+\item \textbf{Missing author-ID handling:} participant counts use observed commenter IDs only; re-entry denominators include only comments with observed commenter IDs; reciprocity uses only edges where both source and parent IDs are observed; when no commenter IDs are observed in a thread, author-based thread metrics are left undefined (not imputed).
+\end{itemize}
+\end{minipage}%
+}
+\end{center}
+
+\subsection{Conversation Geometry}
+\label{sec:methods:geometry}
+
+For each thread \(j\), we compute node depths from \cref{eq:depth}, record the
+maximum depth \(D_j\), and summarize the empirical depth distribution with mean
+maximum depth, median maximum depth, and tail probabilities
+\(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\). Using the model implication in
+\cref{prop:depth-bound}, we estimate an effective tail-slope parameter
+\(\hat{\mu}\) by zero-intercept least squares on
+\(\log \Prob(D_j \ge k)\). Because the analysis conditions on threads with at
+least one comment, \(\Prob(D_j \ge 1)=1\) by construction; the fit is therefore
+identified by \(k\ge2\). Since \cref{prop:depth-bound} is an inequality,
+\(\hat{\mu}\) is reported as a descriptive depth-tail decay summary rather than
+as an exact reproduction-mean estimator; branching interpretations are heuristic
+(\cref{rem:two-type}).
+
+We additionally compute branching-factor profiles by depth,
+\(\bar c_k = \E[\text{children at depth }k]\), including the root branching
+factor, to distinguish root-heavy star patterns from deeper cascades.
+
+Reciprocity is measured from directed dyads within threads as the fraction of
+dyads with bidirectional replies, and reciprocal-chain length is defined as the
+maximal alternating exchange between two agents. For reciprocity, edges with a
+missing source or missing parent author ID are excluded. Re-entry is measured by
+\(\mathrm{RE}_j\) in \cref{eq:reentry-rate} over known commenter IDs only; if a
+thread has no known commenter IDs, re-entry is NA for that thread. We report
+thread-level distributions and thread-size-conditioned summaries under these
+deterministic rules.
+
+\subsection{Interaction Half-Life Estimation}
+\label{sec:methods:halflife}
+
+Our primary temporal estimand is the decay rate \(\beta\), reported as
+reply-kernel half-life \(h=\ln 2 / \beta\). For each at-risk comment (candidate parent)
+\(m\) in thread \(j\), we define first-direct-reply survival time
+\begin{equation}
+\label{eq:survival-time}
+S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
+\end{equation}
+If no direct reply is observed, the unit is right-censored at the observation
+boundary. Because the canonical timeline contains a 41.7-hour coverage gap,
+we do not impute unobserved replies across that interval; half-life and duration
+quantities are interpreted as conditional on observed coverage.
+
+Under \cref{eq:reply-intensity}, the survival hazard for parent age \(s\) is
+\begin{equation}
+\label{eq:hazard}
+\lambda(s \mid t_{jm}) = b(t_{jm}+s)\,\alpha_{a_{jm}}\,e^{-\beta_{a_{jm}}s}.
+\end{equation}
+The generative model permits time-varying \(b(t)\), but the half-life estimator
+uses \(b(t)=1\) as a timescale-separation approximation. Empirically, estimated
+reply-kernel half-lives are minute-scale, whereas the hypothesized heartbeat
+periodicity is about 4 hours; over short parent-age windows used to identify
+\(\beta\), \(b(t_{jm}+s)\) is approximately locally constant and absorbed into
+the level parameter \(\alpha\). Periodic modulation is therefore tested
+separately at aggregate level in \Cref{sec:methods:periodicity}.
+
+\begin{remark}[Estimand interpretation]
+\label{rem:estimand}
+The \emph{reply-kernel half-life} \(\hat h = \ln 2/\hat\beta\) is a kernel-decay
+timescale for direct-reply hazard. It is not a median thread lifetime.
+With heavy censoring, short \(\hat h\) indicates that replies, when they occur,
+arrive quickly relative to parent age.
+\end{remark}
+
+We estimate \((\alpha,\beta)\) by maximum likelihood under an exponential-kernel
+hazard model with constant \(b(t)=1\):
+\begin{equation}
+\label{eq:exponential-ll}
+\ell(\alpha,\beta)=\sum_m\left[\delta_m(\log\alpha-\beta s_m)-\frac{\alpha}{\beta}\left(1-e^{-\beta s_m}\right)\right].
+\end{equation}
+We also fit a Weibull alternative,
+\begin{equation}
+\label{eq:weibull-survival}
+S(s)=\exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right),
+\end{equation}
+to assess departures from exponential decay.
+
+Given high censoring, we report a decomposition of (i) observed in-window
+reply probability \(p_{\mathrm{obs}}\), (ii) conditional median
+first-reply time among observed events, and (iii) model-implied eventual reply
+probability \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) as a diagnostic quantity.
+We further report stratified pooled estimates by submolt category and agent
+proxies (claim status and follower-count bins).
+
+Uncertainty is quantified with 95\% thread-cluster bootstrap intervals.
+
+\subsection{Periodicity Detection}
+\label{sec:methods:periodicity}
+
+To test for heartbeat-scale periodicity, we split the timeline at timestamp
+gaps \(>6\) hours, retain the longest contiguous segment, and bin comment counts
+\(C_t\) at 15-minute resolution (\(\Delta=0.25\) hours). Preprocessing is
+implemented as
+\[
+Y_t=\log(1+C_t)-\operatorname{MA}_{24\mathrm{h}}(t),
+\]
+where \(\operatorname{MA}_{24\mathrm{h}}\) is a centered 24-hour rolling mean
+(\(96\) bins at 15-minute resolution) with truncated edge windows
+(\texttt{min\_periods=1}), followed by mean-centering of \(Y_t\).
+
+We estimate PSD with Welch's method on \(Y_t\), using a Hann window,
+\texttt{nperseg}\(=\min(128,T)\), \texttt{noverlap}\(=\min(64,\lfloor T/2\rfloor)\),
+and constant detrending within segments (\(T\): number of bins in the
+contiguous segment). We test the target frequency
+\(f_\tau = 1/\tau \approx 0.25\,\mathrm{hr}^{-1}\) using two statistics:
+Fisher's \(g=\max_f I(f)/\sum_f I(f)\), and target-frequency power
+\(T_\tau=I(f_\tau^\star)\), where \(I(f)\) is the positive-frequency periodogram
+of \(Y_t\) and \(f_\tau^\star\) is the nearest Fourier frequency to 0.25
+hr\(^{-1}\).
+
+Null calibration uses an AR(1) process fit directly to \(Y_t\):
+\(Y_t=\phi Y_{t-1}+\varepsilon_t\), with \(\phi\) estimated by least squares and
+innovation scale from residual standard deviation. We generate \(B=2{,}000\)
+AR(1) simulations and compute Monte Carlo exceedance \(p\)-values for both
+statistics. Robustness checks repeat the same procedure at 5-, 15-, and
+30-minute bin widths on the same contiguous segment.
+
+At agent level, we compute lagged autocorrelation on 15-minute activity series
+for agents with at least 10 comments in the contiguous segment and report the
+mean lag-4-hour autocorrelation with bootstrap confidence intervals.
+
+\subsection{Cross-Platform Comparison}
+\label{sec:methods:comparison}
+
+To contextualize Moltbook against a human-platform baseline, we run a coarse
+matched observational comparison with Reddit threads.
+
+Matching uses coarsened exact strata on three controls: first-30-minute
+action volume (bins \(\{0, 1\text{--}2, 3\text{--}5, 6\text{--}10, 11+\}\)),
+a deterministic coarse topic map (Moltbook and Reddit categories projected to
+\texttt{tech}/\texttt{meta}/\texttt{general}/\texttt{spam}), and exact UTC posting
+hour \((0,\ldots,23)\). Within each shared stratum, threads are sorted
+deterministically and paired one-to-one up to \(\min(n_M,n_R)\).
+
+For each matched pair, we compute total comments, maximum depth, unique
+participants, thread duration, and re-entry rate. Reply-kernel half-life is
+also estimated on matched-thread subsets for each platform (platform-level
+estimation, not thread-level paired survival effects).
+
+Inference uses two-sided Wilcoxon signed-rank tests on paired differences,
+paired Cohen's \(d\), and bootstrap 95\% confidence intervals for mean paired
+differences (1,000 matched-pair resamples). Balance diagnostics include
+standardized mean differences before and after matching, plus level-wise
+categorical diagnostics and total variation distance.
+
+All analyses are run in Python with fixed seeds and deterministic preprocessing;
+manuscript-level reproducibility metadata are provided in
+\Cref{sec:reproducibility}.

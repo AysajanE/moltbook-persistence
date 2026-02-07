@@ -1,0 +1,37 @@
+ArXiv source bundle manifest
+
+Included files (relative to arxiv/):
+figures/agent_group_reply_dynamics_moltbook.png
+figures/branching_by_depth_moltbook.png
+figures/branching_by_depth_reddit.png
+figures/cross_platform_matched_balance_love.png
+figures/cross_platform_matched_paired_effects.png
+figures/cross_platform_matched_sample_flow.png
+figures/depth_distribution_moltbook.png
+figures/depth_distribution_reddit.png
+figures/periodicity_bin_robustness_moltbook.png
+figures/psd_moltbook.png
+figures/psd_reddit.png
+figures/reentry_distribution_moltbook.png
+figures/reentry_distribution_reddit.png
+figures/reply_hazard_moltbook.png
+figures/survival_curve_reddit.png
+main.bbl
+main.tex
+references.bib
+sections/abstract.tex
+sections/appendix_additional_details.tex
+sections/background.tex
+sections/conclusion.tex
+sections/data.tex
+sections/discussion.tex
+sections/introduction.tex
+sections/limitations_ethics.tex
+sections/methods.tex
+sections/model.tex
+sections/reproducibility.tex
+sections/results.tex
+
+Notes:
+- Bundle built from LaTeX recorder dependencies (main.fls).
+- Build artifacts are excluded except main.bbl when present.

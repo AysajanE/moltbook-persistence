@@ -1,0 +1,119 @@
+\section{Data}
+\label{sec:data}
+
+We analyze the Moltbook Observatory Archive as the primary source for agent-driven
+conversations and use a run-scoped curated Reddit corpus as secondary contextual
+baseline data.
+
+\subsection{Moltbook Observatory Archive}
+\label{sec:data:moltbook}
+
+Our primary dataset is the Moltbook Observatory Archive
+\citep{simulamet2026observatoryarchive}, a publicly available snapshot covering
+January 28 to February 4, 2026, the first week after Moltbook's public launch.
+
+Because the archive is updated through incremental exports and possible backfills,
+we treat \texttt{dump\_date} (when available) as a snapshot identifier and construct a
+canonical latest-state view by deduplicating on primary keys and retaining the
+most recent record. The archive contains six relational tables summarized in
+\cref{tab:dataset}.
+
+\begin{table}[t]
+\centering
+\caption{Moltbook Observatory Archive structure in the curated first-week snapshot.}
+\label{tab:dataset}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+\textbf{Table} & \textbf{Description} & \textbf{Rows} & \textbf{Key Fields} \\
+\midrule
+\texttt{agents} & Agent profiles and metadata & 25,597 & \texttt{id}, \texttt{karma}, \texttt{follower\_count} \\
+\texttt{posts} & Root posts with scores & 119,677 & \texttt{id}, \texttt{agent\_id}, \texttt{submolt}, \texttt{created\_at\_utc} \\
+\texttt{comments} & Comments with parent links & 226,173 & \texttt{id}, \texttt{post\_id}, \texttt{parent\_id}, \texttt{created\_at\_utc} \\
+\texttt{submolts} & Community metadata & 3,678 & \texttt{name}, \texttt{subscriber\_count} \\
+\texttt{snapshots} & Periodic observatory metrics & 114 & \texttt{timestamp}, \texttt{total\_agents}, \texttt{active\_agents\_24h} \\
+\texttt{word\_frequency} & Hourly word counts & 15,346 & \texttt{word}, \texttt{hour}, \texttt{count} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{comments} table is central to our analysis. Each row includes a unique
+comment identifier, a post identifier, an author identifier, a parent-comment
+identifier (null for direct replies to the root post), a UTC timestamp, and an
+observed score snapshot. The parent linkage enables full thread-tree
+reconstruction for depth, branching, and reply-chain analyses.
+
+Preprocessing combines schema harmonization, deterministic tree reconstruction,
+and integrity checks before feature construction. In this snapshot, canonical
+comments contain 223,317 unique comment IDs from 226,173 raw comment rows.
+Referential checks pass: every \texttt{comments.post\_id} maps to a valid post,
+every non-null \texttt{comments.parent\_id} maps to a valid comment, and no
+negative parent or post lags are observed. Timestamps are normalized to UTC and
+each thread is shifted so that its root post is at \(t=0\). We classify submolts
+into six deterministic labels (Builder/Technical, Philosophy/Meta,
+Social/Casual, Creative, Spam/Low-Signal, Other) using a fixed keyword mapping
+to avoid post hoc relabeling.
+
+Author identifiers are nearly complete but not perfect. In this snapshot,
+906 of 223,317 comments (0.41\%) have missing author IDs, concentrated in 254
+threads where all comment authors are missing (0.73\% of threads). We retain
+these rows in canonical thread reconstruction, count resolved commenter IDs only
+for participant metrics, and treat author-based interaction metrics as undefined
+when no commenter IDs are observed.
+
+Event-time analyses use UTC timestamps. The canonical timeline contains a
+41.7-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
+analyses are run on contiguous segments rather than under a continuous-coverage
+assumption.
+
+\Cref{tab:descriptive} reports descriptive statistics for the analysis sample of
+threads with at least one comment.
+
+\begin{table}[t]
+\centering
+\caption{Descriptive statistics for processed Moltbook threads
+(\(N=34{,}730\) threads with at least one comment).}
+\label{tab:descriptive}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\
+\midrule
+Comments per post & 6.43 & 5 & 7.04 & 1 & 846 \\
+Maximum depth per thread & 1.38 & 1 & 0.49 & 1 & 5 \\
+Thread duration (hours) & 0.06 & 0.04 & 0.21 & 0 & 20.6 \\
+Unique agents per thread\textsuperscript{a} & 4.57 & 4 & 3.15 & 0 & 74 \\
+Re-entry rate\textsuperscript{b} & 0.19 & 0.17 & 0.21 & 0 & 0.98 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\raggedright\footnotesize\textsuperscript{a}Counts distinct resolved commenter identifiers
+(the post author is not counted separately). Threads where all commenter
+\texttt{agent\_id} values are null record zero.
+\textsuperscript{b}Computed on non-root comments only. Root-post authorship is
+not treated as prior participation unless the root author later appears in the
+comment sequence.
+\end{table}
+
+\subsection{Run-Scoped Curated Reddit Corpus}
+\label{sec:data:reddit}
+
+To contextualize Moltbook dynamics, we analyze a curated Reddit corpus drawn
+from six subreddits: \texttt{r/MachineLearning}, \texttt{r/Python},
+\texttt{r/artificial}, \texttt{r/datascience}, \texttt{r/learnprogramming}, and
+\texttt{r/programming}. The corpus includes 1,772 submissions and 9,878 comments,
+with 1,104 threads containing at least one comment; timestamps span
+2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
+
+Validation checks on curated tables pass, with two upstream caveats that bound
+interpretation: 1,570 comments were dropped during curation because submission
+IDs were missing, and collection logs record 2 non-200/error responses.
+
+This Reddit corpus is used in two ways in the present manuscript. First, we
+estimate Reddit-side geometry, survival, and periodicity metrics using the same
+estimators as for Moltbook (\Cref{sec:results:reddit-full-scale}). Second, we
+run a coarse matched observational comparison using deterministic alignment on
+topic, UTC posting hour, and early engagement, yielding 813 one-to-one pairs
+across 118 shared strata (\Cref{sec:results:comparison}). Ethical and terms-of-use
+considerations are discussed in \Cref{sec:limitations}.

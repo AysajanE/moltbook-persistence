@@ -1,0 +1,373 @@
+\section{Model: Horizon-Limited Interaction Cascades}
+\label{sec:model}
+
+We model conversation dynamics on agent social networks with a generative framework
+that combines age-dependent self-excitation, branching structure, and platform-level
+availability modulation. The core model components in this section correspond directly
+to the empirical estimands in \Cref{sec:methods}; richer formulations for hierarchical
+heterogeneity and visibility-weighted reply assignment are provided in
+\Cref{sec:model:extensions} in the appendix.
+
+\subsection{Setting and Notation}
+\label{sec:model:notation}
+
+Let \(\mathcal{J}\) denote the set of threads (root posts). For thread
+\(j\in\mathcal{J}\), events are indexed by \(n\in\{0,1,\ldots,N_j\}\), where
+\(n=0\) is the root post and \(n\ge1\) are comments. Each event is
+\((t_{jn},a_{jn},p_{jn})\), where \(t_{jn}\ge0\) is timestamp,
+\(a_{jn}\in\mathcal{A}\) is author (an AI agent account), and \(p_{jn}\in\{0,\ldots,n-1\}\) is
+parent index with \(p_{j0}=0\).
+
+These parent links define a rooted reply tree \(T_j\). Depth is defined recursively:
+\begin{equation}
+\label{eq:depth}
+d_{j0}=0, \qquad d_{jn}=d_{j,p_{jn}}+1 \quad (n\ge1).
+\end{equation}
+Maximum thread depth is \(D_j:=\max_{0\le n\le N_j} d_{jn}\).
+
+Let \(\mathcal{H}_j(t)\) be thread history up to \(t\), and
+\(N_j(t):=\sum_{n=1}^{N_j}\mathbf{1}\{t_{jn}\le t\}\) the cumulative
+comment count by time \(t\).
+
+\Cref{tab:notation} summarizes notation.
+
+\begin{table}[t]
+\centering
+\caption{Summary of notation.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$\calJ$ & Set of threads (root posts) \\
+$\calA$ & Set of agents \\
+$N_j$ & Number of comments in thread $j$ \\
+$t_{jn}$ & Timestamp of event $n$ in thread $j$ \\
+$a_{jn}$ & Author of event $n$ in thread $j$ \\
+$p_{jn}$ & Parent index of event $n$ in thread $j$ \\
+$d_{jn}$ & Depth of event $n$ in thread $j$ \\
+$D_j$ & Maximum depth of thread $j$ \\
+$\calH_j(t)$ & History of thread $j$ up to time $t$ \\
+$b(t)$ & Aggregate availability function (attention clock) \\
+$\alpha_i$ & Influence amplitude of agent $i$ \\
+$\beta_i$ & Decay rate of agent $i$ \\
+$h_i = \ln 2 / \beta_i$ & Half-life of agent $i$ \\
+$\mu$ & Effective branching ratio \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The Attention Clock: Availability and Staleness}
+\label{sec:model:attention}
+
+Agent interactions are governed by two distinct temporal mechanisms: platform-level
+availability and within-thread staleness.
+
+\begin{definition}[Availability]
+\label{def:availability}
+The \emph{aggregate availability function}
+\(b:\mathbb{R}_{\ge0}\to\mathbb{R}_{\ge0}\) represents active-agent mass
+at time \(t\), normalized so that
+\(\bar b:=\frac{1}{L}\int_0^L b(t)\,dt=1\) over a long window.
+\end{definition}
+
+\begin{remark}[Observability limit]
+\label{rem:availability-observability}
+In observatory data, \(b(t)\) is latent because per-account heartbeat events are
+not directly logged. We therefore infer heartbeat implications from aggregate
+periodic signatures in timestamped activity, not from direct heartbeat-event
+observation.
+\end{remark}
+
+For heartbeat-like scheduling, a tractable form is
+\begin{equation}
+\label{eq:availability-periodic}
+b(t)=1+\kappa\cos\!\left(\frac{2\pi}{\tau}t+\phi\right), \qquad |\kappa|<1,
+\end{equation}
+where \(\tau\) is the characteristic check-in period, \(\kappa\) amplitude,
+and \(\phi\) phase.
+
+\begin{definition}[Staleness decay]
+\label{def:staleness}
+Conditional on exposure, reply propensity decays with age. For content authored by
+agent \(i\) at time \(s\), staleness at \(t>s\) is
+\(\exp[-\beta_i(t-s)]\), with \(\beta_i>0\).
+\end{definition}
+
+Availability \((\tau,\kappa,\phi)\) and staleness \((\beta_i)\) govern different
+mechanisms and combine multiplicatively in event intensity.
+
+\subsection{Temporal Dynamics: Self-Exciting Reply Processes}
+\label{sec:model:temporal}
+
+We model direct replies with an age-dependent Hawkes-type construction
+\citep{hawkes1971spectra}.
+
+\begin{definition}[Direct-reply intensity]
+\label{def:reply-intensity}
+Conditional on \(\mathcal{H}_j(t)\), each existing node \(m\) generates direct
+replies as an inhomogeneous Poisson process with
+\begin{equation}
+\label{eq:reply-intensity}
+\lambda_{j,m}(t\mid\mathcal{H}_j(t))
+:= b(t)\,\alpha_{a_{jm}}\exp\!\left[-\beta_{a_{jm}}(t-t_{jm})\right]\mathbf{1}\{t>t_{jm}\},
+\end{equation}
+where \(\alpha_i>0\) is influence amplitude and \(\beta_i>0\) decay rate.
+\end{definition}
+
+Total thread intensity is superposition,
+\begin{equation}
+\label{eq:total-intensity}
+\lambda_j(t\mid\mathcal{H}_j(t)):=\sum_{m:t_{jm}<t}\lambda_{j,m}(t\mid\mathcal{H}_j(t)),
+\end{equation}
+and parent selection follows competing risks,
+\begin{equation}
+\label{eq:parent-selection}
+\Prob(p_{jn}=m\mid t_{jn}=t,\mathcal{H}_j(t))
+=\frac{\lambda_{j,m}(t\mid\mathcal{H}_j(t))}{\lambda_j(t\mid\mathcal{H}_j(t))}.
+\end{equation}
+
+\begin{remark}[Connection to standard Hawkes processes]
+\label{rem:hawkes}
+Marginalizing explicit parent labels yields a marked Hawkes process with kernel
+\(g_i(\Delta)=\alpha_i e^{-\beta_i\Delta}\) modulated by \(b(t)\). Hawkes-style
+self-excitation is well established in social-media dynamics, though kernel
+families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
+\end{remark}
+
+\begin{remark}[What is specific in this formulation]
+\label{rem:model-scope}
+The Hawkes kernel and branching interpretation are standard. The paper-specific
+step is mechanism mapping for agent platforms: heartbeat-style activation enters
+through \(b(t)\), context-window staleness enters through \(\beta_i\), and their
+implications are evaluated through three linked observables, reply-kernel
+half-life \((\ln 2/\beta)\), depth-tail decay \((\mu)\), and aggregate spectral
+power near \(1/\tau\). This is a mechanism-grounded measurement framework, not a
+new stochastic-process class.
+\end{remark}
+
+\subsection{Interaction Half-Life}
+\label{sec:model:halflife}
+
+\begin{definition}[Agent-level half-life]
+\label{def:halflife}
+For agent \(i\), interaction half-life is
+\begin{equation}
+\label{eq:halflife}
+h_i:=\frac{\ln 2}{\beta_i},
+\end{equation}
+so that \(e^{-\beta_i h_i}=1/2\).
+\end{definition}
+
+\begin{remark}[Estimation link]
+Under \cref{eq:reply-intensity}, first-reply waiting times have hazard proportional
+to \(e^{-\beta\Delta}\), so \(\beta\) is estimable by likelihood-based survival
+methods from parent-relative reply times. In that analysis, each non-root
+candidate parent comment is an at-risk unit (``at-risk comment'').
+\end{remark}
+
+\subsection{Structural Dynamics: Branching Process Interpretation}
+\label{sec:model:branching}
+
+The direct-reply process induces a branching interpretation in which each node
+produces offspring over continuous time.
+
+\subsubsection{Expected Offspring and Branching Ratio}
+
+For a node authored by \(i\) at time \(s\), expected direct replies are
+\begin{equation}
+\label{eq:offspring-mean}
+\mu_i(s):=\E[\#\{\text{direct replies}\}\mid a_{jm}=i,t_{jm}=s]
+=\int_0^{\infty} b(s+u)\,\alpha_i e^{-\beta_i u}\,du.
+\end{equation}
+A phase-averaged or slowly varying approximation gives
+\begin{equation}
+\label{eq:offspring-approx}
+\mu_i\approx \alpha_i\int_0^{\infty} e^{-\beta_i u}du=\frac{\alpha_i}{\beta_i}.
+\end{equation}
+
+\begin{proposition}[Influence--persistence trade-off]
+\label{prop:tradeoff}
+Expected replies are increasing in influence \((\alpha_i)\) and decreasing in
+staleness decay \((\beta_i)\). Thus, higher persistence (lower \(\beta_i\)) can
+sustain larger expected engagement even at moderate \(\alpha_i\).
+\end{proposition}
+Proof is provided in \Cref{app:proof-tradeoff}.
+
+Define effective branching ratio
+\begin{equation}
+\label{eq:branching-ratio}
+\mu(s):=\E_{i\sim\pi(s)}[\mu_i(s)],
+\end{equation}
+with author mixture \(\pi(s)\). Under normalization, \(\mu\approx\E[\alpha_i/\beta_i]\).
+
+\subsubsection{Subcriticality and Expected Thread Size}
+
+\begin{assumption}[Subcriticality]
+\label{ass:subcritical}
+The non-root effective branching ratio satisfies \(\mu<1\).
+\end{assumption}
+
+\begin{assumption}[Root-special branching regularity]
+\label{ass:thread-size-regularity}
+For thread-size calculations, \(N_j\) counts comments excluding the root post.
+Let \(X_0\) denote the root offspring count, and let non-root offspring counts
+be i.i.d. with mean \(\mu\) and finite expectation, independent across non-root
+nodes and independent of \(X_0\).
+\end{assumption}
+
+\begin{proposition}[Expected comment count with root-special branching]
+\label{prop:thread-size}
+Let \(\mu_0\) be expected direct replies to the root post and \(\mu<1\) the mean
+direct replies generated by a non-root comment. Then expected thread comment count is
+\begin{equation}
+\label{eq:expected-size}
+\E[N_j]\approx\mu_0\sum_{k=0}^{\infty}\mu^k=\frac{\mu_0}{1-\mu}.
+\end{equation}
+The single-type special case \(\mu_0=\mu\) recovers \(\E[N_j]=\mu/(1-\mu)\).
+\end{proposition}
+Proof is provided in \Cref{app:proof-thread-size}.
+
+In Moltbook-like trees, root fan-out is much larger than non-root reproduction,
+so this root-special form is the relevant approximation.
+
+\begin{remark}[Two-type branching interpretation]
+\label{rem:two-type}
+\Cref{prop:thread-size} corresponds to a two-type Galton--Watson process with root
+offspring mean \(\mu_0\) and non-root mean \(\mu\). When
+\(\mu_0\gg1\gg\mu\), trees are wide near depth 1 and shallow in deeper levels.
+Depth-tail estimates should therefore be read as an approximate non-root
+effective reproduction signal via tail decay, not an exact identity.
+\end{remark}
+
+\subsubsection{Depth Distribution and Tail Bounds}
+
+\begin{proposition}[Depth tail bound]
+\label{prop:depth-bound}
+Under the single-type approximation, let \(Z_k\) be the generation-\(k\)
+population size in the associated Galton--Watson process (\(Z_0=1\) at the
+root). Then
+\begin{equation}
+\label{eq:depth-tail}
+\Prob(D_j\ge k)\le \E[Z_k]=\mu^k.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+If \(D_j\ge k\), then generation-\(k\) population \(Z_k\ge1\). By Markov's
+inequality, \(\Prob(D_j\ge k)\le\E[Z_k]\). Under mean offspring \(\mu\),
+\(\E[Z_k]=\mu^k\).
+\end{proof}
+
+\begin{remark}[Implication for shallow threads]
+\label{rem:shallow}
+Deep threads become exponentially unlikely unless \(\mu\) is near one; high decay
+rates (large \(\beta_i\)) imply small \(\mu_i\) and thus shallow trees.
+\end{remark}
+
+\begin{remark}[Interpretation of \(\mu\) in depth tails]
+\label{rem:mu-tail-interpretation}
+\Cref{eq:depth-tail} is an upper bound, not an exact identity for the empirical
+depth tail. Accordingly, \(\hat{\mu}\) estimated from
+\(\log \Prob(D_j\ge k)\approx c+k\log\mu\) should be read as a descriptive
+effective tail-slope parameter motivated by the bound, rather than an exact
+equality-based estimator of reproduction mean.
+\end{remark}
+
+\subsection{Reciprocity, Re-Entry, and Agent Heterogeneity}
+\label{sec:model:heterogeneity}
+
+For thread \(j\), define directed interaction edges
+\begin{equation}
+\label{eq:edge-set}
+E_j:=\{(u,v): \exists n\ge1 \text{ with } a_{jn}=u,\ a_{j,p_{jn}}=v,\ u\neq v\}.
+\end{equation}
+Multiple replies in the same direction are collapsed to a single directed edge.
+Let
+\begin{equation}
+\label{eq:dyad-set}
+\Delta_j:=\{\{u,v\}: (u,v)\in E_j \ \text{or}\ (v,u)\in E_j\}
+\end{equation}
+be the unordered dyad set with at least one observed directional reply. We define
+thread-level reciprocity as
+\begin{equation}
+\label{eq:reciprocity-rate}
+\mathrm{R}_j
+:=\frac{1}{|\Delta_j|}\sum_{\{u,v\}\in\Delta_j}
+\mathbf{1}\{(u,v)\in E_j\ \text{and}\ (v,u)\in E_j\},
+\end{equation}
+with pooled reciprocity obtained by summing numerator and denominator over
+threads.
+
+We quantify sustained participation with thread-level re-entry rate
+\begin{equation}
+\label{eq:reentry-rate}
+\mathrm{RE}_j
+:=\frac{\#\{n: a_{jn}\in\{a_{j1},\ldots,a_{j,n-1}\}\}}{N_j}.
+\end{equation}
+Low \(\mathrm{RE}_j\) indicates broadcast-style interaction; higher values
+indicate repeated participation within threads.
+This definition uses comment-stream history only: root-post authorship
+\(a_{j0}\) is excluded from the prior-author set unless that account appears in
+the comment sequence. The scope aligns the numerator and denominator on
+non-root comments (\(N_j\)).
+
+Observed agent activity is heterogeneous. In this manuscript, empirical analysis
+uses stratified pooled summaries by observable proxies (claim status,
+follower-count bins), while richer hierarchical and re-entry-augmented
+specifications are formalized in \Cref{sec:model:extensions}.
+
+\subsection{Periodicity Signatures from the Attention Clock}
+\label{sec:model:periodicity}
+
+\begin{proposition}[Periodic mean intensity and periodogram detectability]
+\label{prop:periodicity}
+Suppose aggregate activity is generated by a point process with conditional
+intensity \(\lambda(t)=b(t)\,g(t)\), where \(b(t)\) is deterministic, bounded,
+and \(\tau\)-periodic, and \(g(t)\) is nonnegative and adapted with
+\(\E[g(t)]<\infty\) for all \(t\). If \(\E[g(t)]\) is \(\tau\)-periodic (in
+particular, approximately constant on the \(\tau\)-scale), then
+\(m(t):=\E[\lambda(t)]\) is \(\tau\)-periodic. Consequently, for long-window
+binned counts, expected periodogram/PSD estimates exhibit elevated power near
+frequencies \(\ell/\tau\) (\(\ell\in\mathbb{Z}\)), up to binning,
+finite-sample, and leakage effects.
+\end{proposition}
+Proof is provided in \Cref{app:proof-periodicity}.
+
+This prediction is tested with PSD-based target-frequency inference and
+agent-level autocorrelation diagnostics.
+
+\subsection{Connection to Platform Mechanisms}
+\label{sec:model:mechanisms}
+
+Model parameters map to design mechanisms. Heartbeat scheduling affects
+availability periodicity \(b(t)\) and therefore potential spectral structure.
+Memory limits and context loss affect \(\beta_i\), shifting half-life and
+branching depth. Interface visibility and ranking affect which parents attract
+replies; a formal visibility-weighted parent-assignment rule is given in
+\Cref{sec:model:extensions}.
+
+\subsection{Summary of Model Predictions}
+\label{sec:model:summary}
+
+\begin{table}[t]
+\centering
+\caption{Summary of model predictions and corresponding empirical tests.}
+\label{tab:predictions}
+\small
+\begin{tabular}{@{}p{4cm}p{5cm}p{4.5cm}@{}}
+\toprule
+\textbf{Prediction} & \textbf{Mechanism} & \textbf{Empirical Test} \\
+\midrule
+Short interaction half-life ($h = \ln 2/\beta$) & Context limits + task switching (staleness) & Survival analysis of inter-reply times \\
+Shallow conversation trees & High $\beta$ $\Rightarrow$ low $\mu$ $\Rightarrow$ exponential depth decay & Depth distribution analysis \\
+Star-shaped structure & Root-reply affordances + staleness decay & Branching factor by depth level \\
+Periodic activity patterns (near $\tau \approx 4$ hours) & Heartbeat synchronization $b(t)$ & Spectral analysis of timestamps \\
+Heterogeneous re-entry & Variable agent re-entry propensity & Re-entry rate distribution \\
+Topic moderation & Topic-conditioned persistence heterogeneity & Half-life by submolt category \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Row-level empirical readout is as follows: short interaction half-life \(\rightarrow\) \S\ref{sec:results:halflife}; shallow conversation trees \(\rightarrow\) \S\ref{sec:results:geometry}; star-shaped structure \(\rightarrow\) \S\ref{sec:results:geometry}; periodic activity near \(\tau\approx4\) hours \(\rightarrow\) \S\ref{sec:results:periodicity}; heterogeneous re-entry \(\rightarrow\) \S\ref{sec:results:geometry} (with overlap-region contrast in \S\ref{sec:results:comparison}); topic moderation \(\rightarrow\) \S\ref{sec:results:halflife}.

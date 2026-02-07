@@ -1,0 +1,107 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alexander(2026)]{alexander2026afterweekend}
+Scott Alexander.
+\newblock Moltbook: After the first weekend, 2026.
+\newblock URL
+  \url{https://www.astralcodexten.com/p/moltbook-after-the-first-weekend}.
+\newblock Accessed 2026-02-04.
+
+\bibitem[Aragon et~al.(2017)Aragon, Gomez, and Kaltenbrunner]{aragon2017thread}
+Pablo Aragon, Vicen{\c{c}} Gomez, and Andreas Kaltenbrunner.
+\newblock To thread or not to thread: The impact of conversation threading on
+  online discussion.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~11, pages 12--21, 2017.
+\newblock \doi{10.1609/icwsm.v11i1.14880}.
+
+\bibitem[Crane and Sornette(2008)]{crane2008robust}
+Riley Crane and Didier Sornette.
+\newblock Robust dynamic classes revealed by measuring the response function of
+  a social system.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 105\penalty0
+  (41):\penalty0 15649--15653, 2008.
+\newblock \doi{10.1073/pnas.0803685105}.
+
+\bibitem[Gleeson et~al.(2014)Gleeson, Ward, O'Sullivan, and
+  Lee]{gleeson2014competition}
+James~P. Gleeson, Jonathan~A. Ward, Kevin~P. O'Sullivan, and William~T. Lee.
+\newblock Competition-induced criticality in a model of meme popularity.
+\newblock \emph{Physical Review Letters}, 112\penalty0 (4):\penalty0 048701,
+  2014.
+\newblock \doi{10.1103/PhysRevLett.112.048701}.
+
+\bibitem[G{\'o}mez et~al.(2011)G{\'o}mez, Kappen, and
+  Kaltenbrunner]{gomez2013structure}
+Vicen{\c{c}} G{\'o}mez, Hilbert~J. Kappen, and Andreas Kaltenbrunner.
+\newblock Modeling the structure and evolution of discussion cascades.
+\newblock In \emph{Proceedings of the 22nd ACM Conference on Hypertext and
+  Hypermedia}, pages 181--190, 2011.
+\newblock \doi{10.1145/1995966.1995992}.
+
+\bibitem[Harris(1963)]{harris1963theory}
+Theodore~E. Harris.
+\newblock \emph{The Theory of Branching Processes}.
+\newblock Springer-Verlag, Berlin, 1963.
+
+\bibitem[Hawkes(1971)]{hawkes1971spectra}
+Alan~G. Hawkes.
+\newblock Spectra of some self-exciting and mutually exciting point processes.
+\newblock \emph{Biometrika}, 58\penalty0 (1):\penalty0 83--90, 1971.
+\newblock \doi{10.1093/biomet/58.1.83}.
+
+\bibitem[Meital et~al.(2024)Meital, Rokach, Vainshtein, and
+  Grinberg]{meital2024branch}
+Shai Meital, Lior Rokach, Roman Vainshtein, and Nir Grinberg.
+\newblock The branch not taken: Predicting branching in online conversations.
+\newblock \emph{arXiv preprint arXiv:2404.13613}, 2024.
+
+\bibitem[Park et~al.(2023)Park, O'Brien, Cai, Morris, Liang, and
+  Bernstein]{park2023generative}
+Joon~Sung Park, Joseph~C. O'Brien, Carrie~J. Cai, Meredith~Ringel Morris, Percy
+  Liang, and Michael~S. Bernstein.
+\newblock Generative agents: Interactive simulacra of human behavior.
+\newblock In \emph{Proceedings of the 36th Annual ACM Symposium on User
+  Interface Software and Technology}, pages 1--22, 2023.
+\newblock \doi{10.1145/3586183.3606763}.
+
+\bibitem[Rizoiu et~al.(2017)Rizoiu, Xie, Sanner, Cebri{\'a}n, Yu, and
+  Van~Hentenryck]{rizoiu2017expecting}
+Marian-Andrei Rizoiu, Lexing Xie, Scott Sanner, Manuel Cebri{\'a}n, Honglin Yu,
+  and Pascal Van~Hentenryck.
+\newblock Expecting to be {HIP}: Hawkes intensity processes for social media
+  popularity.
+\newblock In \emph{Proceedings of the 26th International Conference on World
+  Wide Web}, pages 735--744, 2017.
+\newblock \doi{10.1145/3038912.3052650}.
+
+\bibitem[{SimulaMet}(2026)]{simulamet2026observatoryarchive}
+{SimulaMet}.
+\newblock moltbook-observatory-archive, 2026.
+\newblock URL
+  \url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}.
+\newblock Hugging Face dataset. Accessed 2026-02-04.
+
+\bibitem[Willison(2026)]{willison2026moltbook}
+Simon Willison.
+\newblock Moltbook is the most interesting place on the internet right now,
+  January 2026.
+\newblock URL \url{https://simonwillison.net/2026/jan/30/moltbook/}.
+\newblock Accessed 2026-02-04.
+
+\bibitem[Zhao et~al.(2015)Zhao, Erdogdu, He, Rajaraman, and
+  Leskovec]{zhao2015seismic}
+Qingyuan Zhao, Murat~A. Erdogdu, Hera~Y. He, Anand Rajaraman, and Jure
+  Leskovec.
+\newblock {SEISMIC}: A self-exciting point process model for predicting tweet
+  popularity.
+\newblock In \emph{Proceedings of the 21st ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, pages 1513--1522, 2015.
+\newblock \doi{10.1145/2783258.2783401}.
+
+\end{thebibliography}
