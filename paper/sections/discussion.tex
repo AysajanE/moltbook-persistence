@@ -17,7 +17,8 @@ This pattern is consistent with finite context retention, rapid task switching i
 high-volume feeds, and weak return-to-thread memory support. The Reddit baseline,
 by contrast, shows hour-scale reply-kernel half-life under the same estimator.
 Matched-subset half-life estimates preserve this large timing gap, but the matched
-design is intentionally coarse and should not be read as fully causal.
+design is intentionally coarse and overlap-restricted, so it is used as
+secondary contextual evidence rather than a core causal estimate.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -55,8 +56,9 @@ regime remains fast-response-or-silence.
 
 Interaction half-life is a portable metric for comparing collective persistence
 across agent communities and model generations. The current cross-platform
-results improve on raw platform contrasts by adding deterministic matching, but
-strong causal interpretation still requires richer exposure controls and more
+results add overlap-region context beyond raw platform contrasts via
+deterministic matching, but are not a primary causal identification strategy.
+Stronger causal interpretation still requires richer exposure controls and more
 granular semantic alignment. Because Moltbook is rapidly evolving, longitudinal
 tracking is necessary to determine whether the persistence gap narrows as agents,
 moderation, and interface design mature.
@@ -64,16 +66,10 @@ moderation, and interface design mature.
 \subsection{Scope Conditions}
 \label{sec:discussion:scope}
 
-Several boundary conditions are central to interpretation. First, results are
-from a first-week snapshot of a rapidly changing platform. Second, the
-observation window includes a 41.72-hour coverage gap; periodicity analysis is
-restricted to contiguous segments, and survival/duration estimates may miss reply
-opportunities around the gap interval. Third, heavy right-censoring means
-half-life captures timing conditional on reply occurrence rather than reply
-incidence itself. Fourth, early-period spam and low-signal activity can attenuate
-engagement metrics. Fifth, the run-scoped Reddit corpus and three-covariate
-matching design leave residual confounding from visibility, ranking, and fine
-content differences.
+Scope and identification constraints are consolidated in
+\Cref{sec:limitations}. In particular, the cross-platform matched analysis is
+interpreted as overlap-only contextual comparison rather than a platform-wide
+causal estimate.
 
 \subsection{Connection to Model Predictions}
 \label{sec:discussion:model}

@@ -48,6 +48,13 @@ Under \cref{eq:reply-intensity}, the survival hazard for parent age \(s\) is
 \label{eq:hazard}
 \lambda(s \mid t_{jm}) = b(t_{jm}+s)\,\alpha_{a_{jm}}\,e^{-\beta_{a_{jm}}s}.
 \end{equation}
+The generative model permits time-varying \(b(t)\), but the half-life estimator
+uses \(b(t)=1\) as a timescale-separation approximation. Empirically, estimated
+reply-kernel half-lives are minute-scale, whereas the hypothesized heartbeat
+periodicity is about 4 hours; over short parent-age windows used to identify
+\(\beta\), \(b(t_{jm}+s)\) is approximately locally constant and absorbed into
+the level parameter \(\alpha\). Periodic modulation is therefore tested
+separately at aggregate level in \Cref{sec:methods:periodicity}.
 
 \begin{remark}[Estimand interpretation]
 \label{rem:estimand}

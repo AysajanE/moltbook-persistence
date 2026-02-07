@@ -136,6 +136,17 @@ self-excitation is well established in social-media dynamics, though kernel
 families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
 \end{remark}
 
+\begin{remark}[What is specific in this formulation]
+\label{rem:model-scope}
+The Hawkes kernel and branching interpretation are standard. The paper-specific
+step is mechanism mapping for agent platforms: heartbeat-style activation enters
+through \(b(t)\), context-window staleness enters through \(\beta_i\), and their
+implications are evaluated through three linked observables, reply-kernel
+half-life \((\ln 2/\beta)\), depth-tail decay \((\mu)\), and aggregate spectral
+power near \(1/\tau\). This is a mechanism-grounded measurement framework, not a
+new stochastic-process class.
+\end{remark}
+
 \subsection{Interaction Half-Life}
 \label{sec:model:halflife}
 

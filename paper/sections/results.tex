@@ -5,6 +5,12 @@ We report Moltbook results from the curated Observatory Archive snapshot
 and Reddit full-scale baseline results from the run-scoped curated Reddit
 (Arctic Shift) corpus.
 Reproducibility details are provided in \Cref{sec:reproducibility}.
+The presentation proceeds in five steps: we first characterize Moltbook
+conversation geometry, then decompose reply dynamics into incidence and timing
+through the half-life analysis, then test periodic structure at the
+hypothesized 4-hour frequency, then report the Reddit full-scale baseline, and
+finally present a coarse matched cross-platform comparison as secondary
+contextual evidence on overlap support.
 
 \subsection{Conversation Geometry on Moltbook}
 \label{sec:results:geometry}
@@ -328,8 +334,10 @@ invalidate the run, but they bound claims to the curated, observed corpus.
 \subsection{Cross-Platform Comparison}
 \label{sec:results:comparison}
 
-We executed coarse exact matching on the Moltbook and Reddit datasets described
-in \Cref{sec:methods:comparison}.
+This section is a secondary, context-setting analysis rather than a core
+causal identification pillar of the paper. We execute coarse exact matching on
+the Moltbook and Reddit datasets described in \Cref{sec:methods:comparison} to
+compare outcomes only within shared support.
 
 \begin{figure}[t]
 \centering
@@ -351,7 +359,8 @@ After requiring matching covariates, all threads remained eligible. Exact overla
 and 888 Reddit threads across 118 shared strata. Deterministic 1:1 matching yielded 813 pairs
 (813 threads per platform; \cref{fig:cross-platform-flow}). Only 2.34\% of Moltbook threads
 are in the final matched sample (813/34,730), so matched estimates should be interpreted as
-describing the overlap region rather than the full platform population.
+describing the overlap region rather than the full platform population or a
+platform-wide causal effect.
 
 \textbf{Balance diagnostics.} The maximum absolute SMD across monitored covariates decreased
 from 3.886 pre-match to 0.052 post-match. By construction, matched support aligns on the
@@ -394,7 +403,8 @@ the primary-sample half-life is 0.0628 hours on Moltbook (3.77 minutes; 95\% CI:
 [1.19, 7.06] minutes; \(n=1{,}841\) at-risk parent comments, 22 events) and 2.4448 hours on Reddit
 (95\% CI: [2.1298, 2.7926] hours; \(n=7{,}979\), 2,882 events). These half-life values are
 derived from matched-thread subsets but are estimated at platform level, not as paired
-thread-level survival effects.
+thread-level survival effects, and should be read as contextual overlap-region
+contrasts.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
@@ -417,7 +427,9 @@ strata, and the maximum absolute SMD decreases from 3.886 to 0.052. Within this
 matched sample, Moltbook threads are lower on comments (\(-7.704\)), depth
 (\(-1.191\)), unique participants (\(-5.009\)), duration (\(-8.606\) hours),
 and re-entry (\(-0.040\)); all corresponding Wilcoxon tests are statistically
-significant. On matched-thread subsets, Moltbook reply-kernel half-life is
+significant. These matched differences are secondary contextual estimates on
+overlap support, not platform-wide causal effects. On matched-thread subsets,
+Moltbook reply-kernel half-life is
 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes), versus 2.4448 hours
 for Reddit (95\% CI: [2.1298, 2.7926]). For Reddit periodicity, the dominant
 component is 32 hours (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test
