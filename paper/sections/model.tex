@@ -229,14 +229,17 @@ so this root-special form is the relevant approximation.
 \Cref{prop:thread-size} corresponds to a two-type Galton--Watson process with root
 offspring mean \(\mu_0\) and non-root mean \(\mu\). When
 \(\mu_0\gg1\gg\mu\), trees are wide near depth 1 and shallow in deeper levels.
-Depth-tail estimates should therefore be read as non-root effective reproduction.
+Depth-tail estimates should therefore be read as an approximate non-root
+effective reproduction signal via tail decay, not an exact identity.
 \end{remark}
 
 \subsubsection{Depth Distribution and Tail Bounds}
 
 \begin{proposition}[Depth tail bound]
 \label{prop:depth-bound}
-Under the single-type approximation,
+Under the single-type approximation, let \(Z_k\) be the generation-\(k\)
+population size in the associated Galton--Watson process (\(Z_0=1\) at the
+root). Then
 \begin{equation}
 \label{eq:depth-tail}
 \Prob(D_j\ge k)\le \E[Z_k]=\mu^k.
@@ -253,6 +256,15 @@ inequality, \(\Prob(D_j\ge k)\le\E[Z_k]\). Under mean offspring \(\mu\),
 \label{rem:shallow}
 Deep threads become exponentially unlikely unless \(\mu\) is near one; high decay
 rates (large \(\beta_i\)) imply small \(\mu_i\) and thus shallow trees.
+\end{remark}
+
+\begin{remark}[Interpretation of \(\mu\) in depth tails]
+\label{rem:mu-tail-interpretation}
+\Cref{eq:depth-tail} is an upper bound, not an exact identity for the empirical
+depth tail. Accordingly, \(\hat{\mu}\) estimated from
+\(\log \Prob(D_j\ge k)\approx c+k\log\mu\) should be read as a descriptive
+effective tail-slope parameter motivated by the bound, rather than an exact
+equality-based estimator of reproduction mean.
 \end{remark}
 
 \subsection{Reciprocity, Re-Entry, and Agent Heterogeneity}

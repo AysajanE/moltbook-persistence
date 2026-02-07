@@ -3,7 +3,7 @@
 
 We report Moltbook results from the curated Observatory Archive snapshot
 and Reddit full-scale baseline results from the run-scoped curated Reddit
-(Arctic Shift) corpus.
+corpus.
 Reproducibility details are provided in \Cref{sec:reproducibility}.
 The presentation proceeds in five steps: we first characterize Moltbook
 conversation geometry, then decompose reply dynamics into incidence and timing
@@ -26,12 +26,14 @@ one comment (\(N=34{,}730\)).}
 \end{figure}
 
 Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean maximum depth is 1.378
-(95\% bootstrap CI: [1.372, 1.383]), median depth is 1, the proportion reaching depth 5+
+(95\% bootstrap CI: [1.372, 1.383]), median maximum depth is 1, the proportion reaching depth 5+
 is 0.0058\% (95\% bootstrap CI: [0.0000\%, 0.0144\%]), and the proportion reaching depth 10+
 is 0.0000\%.
 
 Fitting the depth-tail relation \(\Prob(D_j \geq k) \leq \mu^k\) gives
-\(\hat{\mu}=0.154\), consistent with a strongly subcritical branching regime.
+\(\hat{\mu}=0.154\). We report \(\hat{\mu}\) as an effective tail-slope
+parameter (descriptive), indicating rapid depth-tail decay consistent with a
+strongly subcritical branching regime.
 
 \subsubsection{Branching Factor by Depth}
 
@@ -46,7 +48,8 @@ Fitting the depth-tail relation \(\Prob(D_j \geq k) \leq \mu^k\) gives
 replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
 respectively. This is the expected star-shaped pattern under rapid branching decay.
 Applying the root-special branching approximation (\cref{prop:thread-size}) with $\mu_0 \approx 5.57$ (root)
-and $\hat{\mu} \approx 0.154$ (non-root) gives $\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6$
+and descriptive \(\hat{\mu} \approx 0.154\) (non-root tail-slope proxy) gives the
+heuristic expectation \(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\)
 comments per thread, closely matching the observed mean of 6.43 (\cref{tab:descriptive}).
 
 \subsubsection{Reciprocity and Re-Entry}
@@ -147,7 +150,7 @@ reply timing.
 The Weibull model gives shape \(\hat{\gamma}=0.1115\) (95\% bootstrap CI:
 [0.1110, 0.1122]), far below 1. This indicates strong early-time hazard concentration and
 substantial departure from the fitted exponential decaying hazard
-\(\lambda(s)=\alpha e^{-\beta s}\), with additional excess concentration at very
+\(\lambda(s)=\alpha e^{-\beta s}\) (not from a constant-hazard baseline), with additional excess concentration at very
 small \(s\).
 
 \subsubsection{Stratification by Submolt Category}
@@ -289,7 +292,8 @@ span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
 \end{figure}
 
 Conversation geometry is materially deeper than a pure star regime but still root-concentrated.
-Mean maximum depth per thread is 2.169 (median 1), \(\Prob(D \ge 5)=11.32\%\),
+Mean maximum depth per thread is 2.169 (median maximum depth 1),
+\(\Prob(D \ge 5)=11.32\%\),
 \(\Prob(D \ge 10)=1.54\%\), mean branching factor is 4.305 at depth 0 and 0.446 at depth 1,
 and re-entry has mean 0.0938 and median 0.
 
@@ -389,6 +393,9 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 All paired differences are negative for Moltbook relative to Reddit under this coarse design.
 All two-sided Wilcoxon signed-rank tests reject at conventional levels
 (\(p < 10^{-8}\) for each outcome).
+This includes re-entry, where the matched contrast is negative even though the
+overall full-sample descriptive contrast is positive (Moltbook 0.195 vs.\ Reddit
+0.0938), indicating that conditioning on overlap strata can change direction.
 
 \begin{figure}[t]
 \centering
@@ -405,12 +412,15 @@ the primary-sample half-life is 0.0628 hours on Moltbook (3.77 minutes; 95\% CI:
 derived from matched-thread subsets but are estimated at platform level, not as paired
 thread-level survival effects, and should be read as contextual overlap-region
 contrasts.
+Because the Moltbook matched subset has only 22 events and narrow overlap
+support, its half-life estimate is noisy and not directly comparable with the
+overall Moltbook estimate.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
 Overall, Moltbook threads are strongly star-shaped (mean maximum depth 1.378, median
-depth 1, \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
+maximum depth 1, effective tail-slope parameter \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
 modest re-entry (mean 0.195; median 0.167). The primary Moltbook survival
 specification yields a very short reply-kernel half-life of 0.0133 hours
 (0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply
@@ -427,11 +437,15 @@ strata, and the maximum absolute SMD decreases from 3.886 to 0.052. Within this
 matched sample, Moltbook threads are lower on comments (\(-7.704\)), depth
 (\(-1.191\)), unique participants (\(-5.009\)), duration (\(-8.606\) hours),
 and re-entry (\(-0.040\)); all corresponding Wilcoxon tests are statistically
-significant. These matched differences are secondary contextual estimates on
-overlap support, not platform-wide causal effects. On matched-thread subsets,
+significant. This re-entry direction differs from the overall full-sample
+descriptive contrast, showing that overlap conditioning can reverse the sign.
+These matched differences are secondary contextual estimates on overlap support,
+not platform-wide causal effects. On matched-thread subsets,
 Moltbook reply-kernel half-life is
 0.0628 hours (3.77 minutes; 95\% CI: [1.19, 7.06] minutes), versus 2.4448 hours
-for Reddit (95\% CI: [2.1298, 2.7926]). For Reddit periodicity, the dominant
+for Reddit (95\% CI: [2.1298, 2.7926]); with only 22 Moltbook events in this
+matched subset, that half-life is noisy and not directly comparable to the
+overall estimate. For Reddit periodicity, the dominant
 component is 32 hours (0.03125 hr\(^{-1}\)); the 4-hour target-frequency test
 is not significant (\(p=0.6845\)), while Fisher's \(g\) reports \(p<0.0005\)
 (0/2000 exceedances).

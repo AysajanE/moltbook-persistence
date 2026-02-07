@@ -9,14 +9,17 @@ preprocessing rules and fixed inferential settings.
 \label{sec:methods:geometry}
 
 For each thread \(j\), we compute node depths from \cref{eq:depth}, record the
-maximum depth \(D_j\), and summarize the empirical depth distribution with mean,
-median, and tail probabilities \(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\).
-Using the model implication in \cref{prop:depth-bound}, we estimate an effective
-depth-tail parameter \(\hat{\mu}\) by zero-intercept least squares on
+maximum depth \(D_j\), and summarize the empirical depth distribution with mean
+maximum depth, median maximum depth, and tail probabilities
+\(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\). Using the model implication in
+\cref{prop:depth-bound}, we estimate an effective tail-slope parameter
+\(\hat{\mu}\) by zero-intercept least squares on
 \(\log \Prob(D_j \ge k)\). Because the analysis conditions on threads with at
 least one comment, \(\Prob(D_j \ge 1)=1\) by construction; the fit is therefore
-identified by \(k\ge2\), and \(\hat{\mu}\) is interpreted as an effective
-non-root reproduction parameter (\cref{rem:two-type}).
+identified by \(k\ge2\). Since \cref{prop:depth-bound} is an inequality,
+\(\hat{\mu}\) is reported as a descriptive depth-tail decay summary rather than
+as an exact reproduction-mean estimator; branching interpretations are heuristic
+(\cref{rem:two-type}).
 
 We additionally compute branching-factor profiles by depth,
 \(\bar c_k = \E[\text{children at depth }k]\), including the root branching
