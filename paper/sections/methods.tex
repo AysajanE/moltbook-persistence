@@ -40,6 +40,11 @@ p_\infty:=1-\exp(-\hat{\alpha}/\hat{\beta}),
 \]
 reported as a fitted-model diagnostic quantity (not a direct empirical estimand).
 \item \textbf{Parent comment (candidate parent / at-risk comment):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
+\item \textbf{Missing author-ID handling:} \texttt{n\_unique\_agents} counts non-null
+commenter IDs only; re-entry uses known-comment denominators
+(\texttt{known\_agent\_comment\_count}); reciprocity uses only edges where both
+source and parent IDs are observed; when no commenter IDs are known in a thread,
+author-based thread metrics are left undefined (NA) rather than imputed.
 \end{itemize}
 \end{minipage}%
 }
@@ -67,9 +72,12 @@ factor, to distinguish root-heavy star patterns from deeper cascades.
 
 Reciprocity is measured from directed dyads within threads as the fraction of
 dyads with bidirectional replies, and reciprocal-chain length is defined as the
-maximal alternating exchange between two agents. Re-entry is measured by
-\(\mathrm{RE}_j\) in \cref{eq:reentry-rate}, with thread-level distributions and
-thread-size-conditioned summaries.
+maximal alternating exchange between two agents. For reciprocity, edges with a
+missing source or missing parent author ID are excluded. Re-entry is measured by
+\(\mathrm{RE}_j\) in \cref{eq:reentry-rate} over known commenter IDs only; if a
+thread has no known commenter IDs, re-entry is NA for that thread. We report
+thread-level distributions and thread-size-conditioned summaries under these
+deterministic rules.
 
 \subsection{Interaction Half-Life Estimation}
 \label{sec:methods:halflife}
@@ -82,7 +90,7 @@ reply-kernel half-life \(h=\ln 2 / \beta\). For each at-risk parent comment
 S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
 \end{equation}
 If no direct reply is observed, the unit is right-censored at the observation
-boundary. Because the canonical timeline contains a 41.72-hour coverage gap,
+boundary. Because the canonical timeline contains a 41.7-hour coverage gap,
 we do not impute unobserved replies across that interval; half-life and duration
 quantities are interpreted as conditional on observed coverage.
 

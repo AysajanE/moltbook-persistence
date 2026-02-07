@@ -54,8 +54,17 @@ into six deterministic labels (Builder/Technical, Philosophy/Meta,
 Social/Casual, Creative, Spam/Low-Signal, Other) using a fixed keyword mapping
 to avoid post hoc relabeling.
 
+Author identifiers are nearly complete but not perfect. In the run-scoped
+thread-level artifact used for manuscript tables
+(\texttt{thread\_metrics.parquet}; run \texttt{20260206-145240Z}),
+906 of 223,317 comments (0.41\%) have missing \texttt{agent\_id}, concentrated in
+254 threads where all comment authors are missing (0.73\% of threads). We retain
+these rows in canonical thread reconstruction, count resolved commenter IDs only
+for participant metrics, and treat author-based interaction metrics as undefined
+when no commenter IDs are observed.
+
 Event-time analyses use \texttt{created\_at\_utc}. The canonical timeline contains a
-41.72-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
+41.7-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
 analyses are run on contiguous segments rather than under a continuous-coverage
 assumption.
 
@@ -72,11 +81,11 @@ threads with at least one comment.
 \toprule
 \textbf{Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\
 \midrule
-Comments per post & 6.43 & 5.00 & 7.04 & 1.00 & 846.00 \\
-Maximum depth per thread & 1.38 & 1.00 & 0.49 & 1.00 & 5.00 \\
-Thread duration (hours) & 0.06 & 0.04 & 0.21 & 0.00 & 20.60 \\
-Unique agents per thread\textsuperscript{a} & 4.57 & 4.00 & 3.15 & 0.00 & 74.00 \\
-Re-entry rate\textsuperscript{b} & 0.19 & 0.17 & 0.21 & 0.00 & 0.98 \\
+Comments per post & 6.43 & 5 & 7.04 & 1 & 846 \\
+Maximum depth per thread & 1.38 & 1 & 0.49 & 1 & 5 \\
+Thread duration (hours) & 0.06 & 0.04 & 0.21 & 0 & 20.6 \\
+Unique agents per thread\textsuperscript{a} & 4.57 & 4 & 3.15 & 0 & 74 \\
+Re-entry rate\textsuperscript{b} & 0.19 & 0.17 & 0.21 & 0 & 0.98 \\
 \bottomrule
 \end{tabular}
 
