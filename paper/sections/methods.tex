@@ -5,8 +5,11 @@ We estimate conversation geometry, reply-kernel decay, periodic signatures, and
 coarse matched cross-platform contrasts using a common set of deterministic
 preprocessing rules and fixed inferential settings.
 
-\subsection{Definitions and Estimands}
+\subsection{One-Page Metric Glossary and Estimands}
 \label{sec:methods:def-est}
+
+Terminology in \Cref{sec:results,sec:discussion,sec:conclusion} follows this
+glossary to keep metric naming and estimand language consistent.
 
 \begin{center}
 \fbox{%
@@ -14,11 +17,11 @@ preprocessing rules and fixed inferential settings.
 \begin{itemize}
 \item \textbf{Maximum depth:} \(D_j := \max_n d_{jn}\) for thread \(j\), with \(d_{jn}\) defined in \cref{eq:depth}.
 \item \textbf{Direct-reply incidence:} \(p_{\mathrm{obs}} := N_{\mathrm{reply}}/N_{\mathrm{risk}}\), where
-\(N_{\mathrm{risk}}\) is the number of at-risk parent comments and
+\(N_{\mathrm{risk}}\) is the number of at-risk comments (candidate parents) and
 \(N_{\mathrm{reply}}\) is the number with at least one observed direct reply in-window.
 \item \textbf{Event indicator and censoring time (survival unit \(m\)):} let
 \(T_m\) be first-direct-reply time, \(C_m\) be right-censoring time (time from
-parent comment to end of observable coverage), and
+candidate parent comment to end of observable coverage), and
 \(s_m:=\min(T_m,C_m)\). The event indicator is
 \(\delta_m:=\mathbf{1}\{T_m\le C_m\}\).
 \item \textbf{Conditional median first-reply time among observed events:}
@@ -39,7 +42,7 @@ parent comment to end of observable coverage), and
 p_\infty:=1-\exp(-\hat{\alpha}/\hat{\beta}),
 \]
 reported as a fitted-model diagnostic quantity (not a direct empirical estimand).
-\item \textbf{Parent comment (candidate parent / at-risk comment):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
+\item \textbf{At-risk comment (candidate parent):} any non-root comment that can receive a direct reply; each such candidate contributes one survival unit.
 \item \textbf{Missing author-ID handling:} \texttt{n\_unique\_agents} counts non-null
 commenter IDs only; re-entry uses known-comment denominators
 (\texttt{known\_agent\_comment\_count}); reciprocity uses only edges where both
@@ -83,7 +86,7 @@ deterministic rules.
 \label{sec:methods:halflife}
 
 Our primary temporal estimand is the decay rate \(\beta\), reported as
-reply-kernel half-life \(h=\ln 2 / \beta\). For each at-risk parent comment
+reply-kernel half-life \(h=\ln 2 / \beta\). For each at-risk comment (candidate parent)
 \(m\) in thread \(j\), we define first-direct-reply survival time
 \begin{equation}
 \label{eq:survival-time}

@@ -4,13 +4,17 @@
 This section interprets the empirical patterns in \Cref{sec:results} through the
 model framework in \Cref{sec:model}, focusing on implications for collective
 agent behavior, platform design, and identification scope.
+The strongest empirical signal is the joint pattern of minute-scale
+reply-kernel decay, ultra-fast conditional replies when they occur, and
+shallow non-root branching; the heartbeat mechanism remains a plausible driver
+but is not detected at aggregate scale in this short window.
 
 \subsection{Interpreting Minute-Scale Reply Decay}
 \label{sec:discussion:halflife}
 
 The primary Moltbook estimate is a sub-minute reply-kernel half-life, accompanied
 by heavy censoring. Together, these results indicate a bursty regime: when direct
-replies occur, they tend to occur quickly; most at-risk parent comments receive no
+replies occur, they tend to occur quickly; most at-risk comments receive no
 observed direct reply during the observation window.
 
 This pattern is consistent with finite context retention, rapid task switching in

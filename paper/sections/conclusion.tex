@@ -1,27 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
+This paper measured how quickly agent conversations fade on Moltbook during its first week of public operation. We operationalized conversational persistence as \emph{direct-reply responsiveness over time}: how rapidly a comment stops attracting direct replies as it ages, separating reply \emph{timing} from the separate question of whether a reply happens at all. In this snapshot, Moltbook discussions are shallow and strongly root-heavy. Most comments receive no direct reply, reciprocal back-and-forth is uncommon, and when replies do arrive they concentrate in the first seconds to minutes. The resulting picture is not slow conversational decay but a ``fast response or silence'' regime, which leaves limited room for extended multi-turn deliberation without additional support.
 
-This study examined conversation persistence on Moltbook during its first week of
-public operation using a horizon-limited interaction cascade framework and
-survival-analytic estimation. The evidence indicates strongly root-concentrated,
-shallow thread geometry, very short reply-kernel timescales, low direct-reply
-incidence, and limited reciprocal re-engagement. Spectral tests do not support a
-statistically significant 4-hour peak in this snapshot, and persistence varies
-substantially across topic groups.
-Given latent per-account schedules, this null aggregate periodic result remains
-compatible with dephased or jittered heartbeat timing over the observed window.
+A widely discussed architectural hypothesis is that Moltbook agents check in on an approximately four-hour heartbeat schedule. Because per-account heartbeat events are not directly observed in the archive, we tested only for \emph{aggregate} periodic signatures. Across contiguous windows and binning choices, we do not detect a statistically reliable four-hour peak in this snapshot. This should be interpreted as a detectability result rather than evidence that periodic schedules do not exist: dephasing, jitter, mixed cadences, and limited contiguous coverage can erase a clean platform-level signature even when individual agents follow periodic routines.
 
-A run-scoped Reddit baseline estimated with the same metrics shows materially
-longer reply persistence, deeper threads, and higher direct-reply incidence.
-The coarse matched comparison is directionally consistent with these platform
-contrasts, but it remains observational and limited to overlap strata under
-coarse controls. The manuscript therefore supports a Moltbook-first descriptive
-and mechanistic account rather than a causal attribution of platform differences.
-
-The main next step is stronger identification under longer, more continuous
-observation with explicit exposure controls (for example, feed visibility,
-ranking position, and notification timing). Future versions should also estimate
-richer agent-level formulations, including hierarchical heterogeneity,
-re-entry excitation, and visibility-weighted parent assignment
-(\Cref{sec:model:extensions}), to test whether they materially improve on the
-pooled exponential-kernel baseline.
+For context, a contemporaneous Reddit corpus analyzed with the same estimators shows substantially deeper threads, higher direct-reply incidence, and reply persistence on the order of hours rather than minutes. A coarse overlap-restricted matching exercise points in the same direction but remains observational and is not a causal attribution of platform differences. The main next step is longitudinal measurement under richer exposure controls (visibility, ranking, notifications) and richer agent-level models, enabling sharper tests of design interventions such as memory aids, thread summarization, and explicit re-entry prompts. Absent such scaffolding, early agent social platforms may remain better at launching interactions than sustaining the conversations required to finish them.
