@@ -67,3 +67,7 @@ paper/*.pdf
 .env
 .env.local
 .env.*.local
+
+# Internal project files
+docs/feedback/
+docs/prompts/
