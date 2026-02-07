@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{sec:introduction}
 
-The rapid advancement of large language models (LLMs) has enabled a new class of autonomous AI agents capable of sustained interaction with digital environments. A striking manifestation of this capability is \emph{Moltbook}, a social network launched in January 2026 that restricts posting privileges to AI agents while permitting human observation \citep{willison2026moltbook}. Within its first week, the platform accumulated over 25{,}000 agent accounts and 119{,}000 posts, generating rich datasets of agent-to-agent interaction unprecedented in scale and accessibility.
+The rapid advancement of large language models (LLMs) has enabled a new class of autonomous AI agents capable of sustained interaction with digital environments. A striking manifestation of this capability is \emph{Moltbook}, a social network launched in January 2026 that restricts posting privileges to AI agents while permitting human observation \citep{willison2026moltbook}. In the first archived week, the platform accumulated over 25{,}000 agent accounts and 119{,}677 posts \citep{simulamet2026observatoryarchive}, generating rich datasets of agent-to-agent interaction unprecedented in scale and accessibility.
 
 This emergence of agent-populated social platforms raises fundamental questions about collective AI behavior. Can autonomous agents sustain the extended, multi-turn dialogues necessary for meaningful collaboration? How do architectural constraints---particularly context-window limitations and periodic activation schedules---shape the temporal dynamics of agent discourse? And what distinguishes agent-driven conversations from human-driven ones in structural and temporal terms?
 
@@ -59,16 +59,15 @@ geometry, (2)~estimation of Moltbook temporal decay parameters via survival anal
 baseline analysis under the same estimators, and (5)~a coarse matched observational
 comparison with paired effect estimation.
 
-Our contributions are as follows:
-
-\paragraph{A portable metric for collective persistence.} We introduce \emph{interaction half-life} as a first-order descriptor of whether a multi-agent community can sustain coordination beyond single-shot posting. This metric is estimable from timestamped reply data and directly comparable across platforms.
-
-\paragraph{Mechanism-grounded explanation.} We link observed shallow conversation depth to measurable temporal decay, connecting platform-level scheduling (heartbeat cadence) and individual-level constraints (context limits) to emergent collective behavior.
-
-\paragraph{Design implications.} Our findings identify evidence-based levers---memory scaffolding, thread summarization, return-to-thread incentives---that could extend coordination horizons in agent-based systems.
-
-\paragraph{Reproducible workflow.} We provide code and documentation to support replication (data export, manuscript source, run manifests, and analysis scripts), including run-scoped Reddit validation and analysis entrypoints.
+Our contributions are fourfold. First, we introduce interaction half-life as a
+portable metric of collective persistence that is estimable from timestamped
+reply data. Second, we provide a mechanism-grounded explanation linking shallow
+conversation structure to measurable temporal decay under architectural
+constraints. Third, we identify design levers---including memory scaffolding,
+thread summarization, and return-to-thread incentives---that could extend
+coordination horizons in agent systems. Fourth, we provide a reproducible
+research workflow that makes the empirical claims auditable and extensible.
 
 \subsection{Paper Organization}
 
-The remainder of this paper is organized as follows. \Cref{sec:background} reviews related work on information cascades, conversation modeling, and emerging research on AI agent systems. \Cref{sec:model} presents our formal model of horizon-limited interaction cascades. \Cref{sec:data} describes our datasets and preprocessing pipeline. \Cref{sec:methods} details our empirical methodology. \Cref{sec:results} presents our findings. \Cref{sec:discussion} interprets results and discusses implications for platform design. \Cref{sec:limitations} addresses limitations and ethical considerations. \Cref{sec:conclusion} concludes with key takeaways and directions for future work. \Cref{sec:reproducibility} provides reproducibility details.
+The remainder of this paper is organized as follows. \Cref{sec:background} reviews related work on information cascades, conversation modeling, and emerging research on AI agent systems. \Cref{sec:model} presents our formal model of horizon-limited interaction cascades. \Cref{sec:data} describes our datasets and preprocessing pipeline. \Cref{sec:methods} details our empirical methodology. \Cref{sec:results} presents our findings. \Cref{sec:discussion} interprets results and discusses implications for platform design. \Cref{sec:limitations} addresses limitations and ethical considerations. \Cref{sec:conclusion} concludes with key takeaways and directions for future work. Appendix \Cref{sec:reproducibility} summarizes reproducibility details.

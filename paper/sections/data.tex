@@ -1,27 +1,25 @@
 \section{Data}
 \label{sec:data}
 
-We analyze the Moltbook Observatory Archive as our primary source for agent-driven conversations,
-and we include a run-scoped curated Reddit corpus for full-scale platform-side baseline
-estimation.
+We analyze the Moltbook Observatory Archive as the primary source for agent-driven
+conversations and use a curated Reddit corpus as secondary contextual baseline data.
 
 \subsection{Moltbook Observatory Archive}
 \label{sec:data:moltbook}
 
-Our primary dataset is the Moltbook Observatory Archive \citep{simulamet2026observatoryarchive}, a publicly available snapshot hosted on Hugging Face. The archive comprises multiple relational tables capturing platform activity from January 28 to February 4, 2026---the first week following Moltbook's public launch.
+Our primary dataset is the Moltbook Observatory Archive
+\citep{simulamet2026observatoryarchive}, a publicly available snapshot covering
+January 28 to February 4, 2026, the first week after Moltbook's public launch.
 
-\subsubsection{Acquisition, Versioning, and Backfill}
-
-We download and export the archive tables using our repository script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}), storing immutable exports under \texttt{data/raw/} along with an export manifest (download timestamp, dataset identifier, and export format). Because the archive is updated via incremental exports and may backfill recent days, we treat \texttt{dump\_date} (when present) as a snapshot identifier. When constructing a canonical ``latest state'' view for analysis, we deduplicate by primary key (e.g., \texttt{comments.id}) and keep the record from the most recent available \texttt{dump\_date}.
-
-\subsubsection{Dataset Structure}
-
-The archive contains six tables, summarized in \cref{tab:dataset}.
+Because the archive is updated through incremental exports and possible backfills,
+we treat \texttt{dump\_date} (when available) as a snapshot identifier and construct a
+canonical latest-state view by deduplicating on primary keys and retaining the
+most recent record. The archive contains six relational tables summarized in
+\cref{tab:dataset}.
 
 \begin{table}[t]
 \centering
-\caption{Moltbook Observatory Archive structure in curated snapshot
-\texttt{snapshot\_20260204-234429Z}.}
+\caption{Moltbook Observatory Archive structure in the curated first-week snapshot.}
 \label{tab:dataset}
 \small
 \begin{tabular}{@{}llrl@{}}
@@ -39,46 +37,29 @@ The archive contains six tables, summarized in \cref{tab:dataset}.
 \end{table}
 
 The \texttt{comments} table is central to our analysis. Each row includes a unique
-comment identifier (\texttt{id}), a foreign key to the parent post
-(\texttt{post\_id}), an author identifier (\texttt{agent\_id}), a parent-comment
-identifier (\texttt{parent\_id}, null for direct replies to the post), an ISO 8601
-timestamp (\texttt{created\_at}), and an observed score snapshot (\texttt{score}).
+comment identifier, a post identifier, an author identifier, a parent-comment
+identifier (null for direct replies to the root post), a UTC timestamp, and an
+observed score snapshot. The parent linkage enables full thread-tree
+reconstruction for depth, branching, and reply-chain analyses.
 
-The \texttt{parent\_id} field enables reconstruction of full comment trees, which is essential for computing depth, branching factors, and identifying reply chains.
+Preprocessing combines schema harmonization, deterministic tree reconstruction,
+and integrity checks before feature construction. In this snapshot, canonical
+comments contain 223,317 unique comment IDs from 226,173 raw comment rows.
+Referential checks pass: every \texttt{comments.post\_id} maps to a valid post,
+every non-null \texttt{comments.parent\_id} maps to a valid comment, and no
+negative parent or post lags are observed. Timestamps are normalized to UTC and
+each thread is shifted so that its root post is at \(t=0\). We classify submolts
+into six deterministic labels (Builder/Technical, Philosophy/Meta,
+Social/Casual, Creative, Spam/Low-Signal, Other) using a fixed keyword mapping
+to avoid post hoc relabeling.
 
-\subsubsection{Preprocessing Pipeline}
+Event-time analyses use \texttt{created\_at\_utc}. The canonical timeline contains a
+41.72-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
+analyses are run on contiguous segments rather than under a continuous-coverage
+assumption.
 
-We apply the following preprocessing steps:
-
-\paragraph{Schema discovery and column retention.} We ingest all columns in each table and generate a schema manifest (column names and types) to guard against upstream schema changes. Where field names differ across sources or versions, we map them via an explicit schema dictionary.
-
-\paragraph{Tree reconstruction.} For each post, we reconstruct the comment tree by linking comments via \texttt{parent\_id}. Comments with null \texttt{parent\_id} are direct children of the root post.
-
-\paragraph{Deduplication and integrity checks.} Before reconstruction, we use canonical
-``latest'' tables deduplicated by primary key using maximum \texttt{dump\_date}. In this
-snapshot, canonical comments contain 223,317 unique comment IDs (from 226,173 raw comment
-rows), and referential integrity checks pass: every \texttt{comments.post\_id} exists in
-\texttt{posts.id}, every non-null \texttt{comments.parent\_id} exists in \texttt{comments.id},
-and no negative parent or post lags are observed.
-
-\paragraph{Timestamp normalization.} We parse all timestamps to UTC and retain raw timestamp strings for audit. For modeling, we convert times to numeric representations (e.g., Unix epoch seconds) and shift each thread so that its root post occurs at $t = 0$. This normalization facilitates aggregation across threads with different start times.
-
-\paragraph{Agent resolution.} We join comments with the \texttt{agents} table to obtain author metadata (karma, follower count, and account age where available). If some comment authors are missing from the \texttt{agents} table, we retain these comments and handle missing covariates explicitly (e.g., missingness indicators, imputation, and sensitivity analyses).
-
-\paragraph{Submolt categorization.} We assign each submolt to one of six labels
-(\emph{Builder/Technical}, \emph{Philosophy/Meta}, \emph{Social/Casual},
-\emph{Creative}, \emph{Spam/Low-Signal}, \emph{Other}) via a deterministic
-keyword-based mapping in \texttt{analysis/06\_moltbook\_only\_analysis.py}. This avoids
-manual post hoc relabeling and keeps category assignments reproducible across runs.
-
-\paragraph{Coverage caveat.} Event-time analysis uses \texttt{created\_at\_utc}. We detect a
-single 41.72-hour gap in comment timestamps (from 2026-01-31 10:37:53Z to
-2026-02-02 04:20:50Z). As a result, periodicity analyses are computed on contiguous segments
-rather than assuming complete continuous coverage.
-
-\subsubsection{Descriptive Statistics}
-
-\Cref{tab:descriptive} presents summary statistics for the processed dataset.
+\Cref{tab:descriptive} reports descriptive statistics for the analysis sample of
+threads with at least one comment.
 
 \begin{table}[t]
 \centering
@@ -100,48 +81,28 @@ Re-entry rate & 0.19 & 0.17 & 0.21 & 0.00 & 0.98 \\
 
 \smallskip
 \raggedright\footnotesize\textsuperscript{a}Counts distinct resolved commenter identifiers
-(the post author is not counted separately).  Threads where all commenter
+(the post author is not counted separately). Threads where all commenter
 \texttt{agent\_id} values are null record zero.
 \end{table}
 
 \subsection{Reddit Full-Scale Corpus}
 \label{sec:data:reddit}
 
-To contextualize Moltbook dynamics, we analyze a curated Reddit corpus collected
-via the Arctic Shift archive (run identifiers in \Cref{sec:reproducibility}).
+To contextualize Moltbook dynamics, we analyze a curated Reddit corpus drawn
+from six subreddits: \texttt{r/MachineLearning}, \texttt{r/Python},
+\texttt{r/artificial}, \texttt{r/datascience}, \texttt{r/learnprogramming}, and
+\texttt{r/programming}. The corpus includes 1,772 submissions and 9,878 comments,
+with 1,104 threads containing at least one comment; timestamps span
+2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
 
-\subsubsection{Subreddit Selection}
+Validation checks on curated tables pass, with two upstream caveats that bound
+interpretation: 1,570 comments were dropped during curation because submission
+IDs were missing, and collection logs record 2 non-200/error responses.
 
-The Reddit corpus includes six subreddits:
-\texttt{r/MachineLearning}, \texttt{r/Python}, \texttt{r/artificial},
-\texttt{r/datascience}, \texttt{r/learnprogramming}, and \texttt{r/programming}.
-
-\subsubsection{Matched Sample Construction}
-
-Matched cross-platform construction follows \Cref{sec:methods:comparison}
-(implementation details in \Cref{sec:reproducibility}). Using deterministic topic mapping, UTC posting-hour bins, and
-first-30-minute engagement bins, the run yields 813 one-to-one matched pairs across 118 shared
-strata.
-
-\subsubsection{Data Collection}
-
-The corpus contains 1,772 curated submissions and 9,878
-curated comments, with 1,104 threads containing at least one comment. Comment timestamps span
-2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z (UTC). Full run metadata are recorded in the
-run manifest (see \Cref{sec:reproducibility}).
-
-\subsubsection{Validation and Curation Caveats}
-
-Run-scoped validation passed (no failed checks).
-Two caveats from manifests are carried into downstream interpretation: (1) 1,570 comments were
-dropped during curation because submission IDs were missing, and (2) the collection request log
-contains 2 non-200/error responses.
-
-\subsubsection{Use in This Manuscript}
-
-For this revision, we compute Reddit-side geometry, survival, and periodicity metrics using the
-same estimators as the Moltbook analysis and report them in \Cref{sec:results:reddit-full-scale}.
-We also report a coarse matched observational comparison in
-\Cref{sec:results:comparison}.
-
-Ethical considerations for data use, privacy, and platform terms of service are discussed in \Cref{sec:limitations}.
+This Reddit corpus is used in two ways in the present manuscript. First, we
+estimate Reddit-side geometry, survival, and periodicity metrics using the same
+estimators as for Moltbook (\Cref{sec:results:reddit-full-scale}). Second, we
+run a coarse matched observational comparison using deterministic alignment on
+topic, UTC posting hour, and early engagement, yielding 813 one-to-one pairs
+across 118 shared strata (\Cref{sec:results:comparison}). Ethical and terms-of-use
+considerations are discussed in \Cref{sec:limitations}.

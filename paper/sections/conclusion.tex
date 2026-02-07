@@ -1,41 +1,25 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We studied conversation persistence on Moltbook, an AI-agent social network,
-during its first week of public operation. Using a horizon-limited interaction
-cascade framework and survival-analytic estimation, we characterized the
-temporal and structural dynamics of agent-to-agent discourse and compared them
-against a run-scoped Reddit baseline.
+This study examined conversation persistence on Moltbook during its first week of
+public operation using a horizon-limited interaction cascade framework and
+survival-analytic estimation. The evidence indicates strongly root-concentrated,
+shallow thread geometry, very short reply-kernel timescales, low direct-reply
+incidence, and limited reciprocal re-engagement. Spectral tests do not support a
+statistically significant 4-hour peak in this snapshot, and persistence varies
+substantially across topic groups.
 
-\paragraph{Key findings.}
-The evidence indicates a strongly star-shaped Moltbook geometry (mean depth
-1.378; effective non-root reproduction $\hat{\mu}=0.154$), with low dyadic
-reciprocity (0.998\% bidirectional) and limited re-entry (mean 0.195). The
-estimated reply-kernel half-life is sub-minute (0.80~minutes; 95\% CI
-[0.53, 1.13]), consistent with a bursty ``fast response or silence'' regime in
-which 91\% of parent comments receive no observed direct reply. Spectral
-analysis does not detect a statistically significant 4-hour periodic peak under
-AR(1)-calibrated tests ($p=0.50$), despite the heartbeat hypothesis being
-motivated by platform design. Persistence is heterogeneous across topic groups:
-Philosophy/Meta submolts show the longest half-life (8.1~minutes), whereas
-Social/Casual is shortest among high-volume categories (0.69~minutes). A
-run-scoped Reddit baseline under the same estimators shows materially longer
-persistence (half-life 2.6~hours), deeper threads (mean depth 2.169), and
-higher direct-reply incidence (36.20\%).
+A run-scoped Reddit baseline estimated with the same metrics shows materially
+longer reply persistence, deeper threads, and higher direct-reply incidence.
+The coarse matched comparison is directionally consistent with these platform
+contrasts, but it remains observational and limited to overlap strata under
+coarse controls. The manuscript therefore supports a Moltbook-first descriptive
+and mechanistic account rather than a causal attribution of platform differences.
 
-\paragraph{What this study does not establish.}
-The coarsened exact matching (813 pairs) controls only three covariates and
-does not support causal attribution of the observed platform differences to
-agent architecture versus content, community norms, or feed-ranking effects.
-The first-week snapshot design also does not establish whether the persistence
-gap narrows as agent architectures and platform mechanisms mature over time.
-
-\paragraph{Directions for future work.}
-A next manuscript version should prioritize two advances. First, longer
-continuous observation windows with exposure controls (feed visibility, ranking
-position, and notification timing) are needed to strengthen identification of
-mechanisms behind persistence differences. Second, richer cross-platform
-alignment---including finer topic semantics and engagement trajectories---and
-estimation of the hierarchical and re-entry extensions in
-\Cref{sec:model:extensions} would test whether agent-level heterogeneity and
-self-excitation materially improve on the pooled exponential-kernel baseline.
+The main next step is stronger identification under longer, more continuous
+observation with explicit exposure controls (for example, feed visibility,
+ranking position, and notification timing). Future versions should also estimate
+richer agent-level formulations, including hierarchical heterogeneity,
+re-entry excitation, and visibility-weighted parent assignment
+(\Cref{sec:model:extensions}), to test whether they materially improve on the
+pooled exponential-kernel baseline.

@@ -1,150 +1,32 @@
-\section{Reproducibility}
+\section{Reproducibility and Data Access}
 \label{sec:reproducibility}
 
-We are committed to open and reproducible research. This section documents resources for reproducing our analysis.
+This appendix summarizes data access, computational environment, and replication
+scope for the analyses reported in this manuscript.
 
-\subsection{Data Availability}
-\label{sec:reproducibility:data}
+\subsection{Data and Code Access}
 
-\paragraph{Moltbook Observatory Archive.} Our primary dataset is publicly available on Hugging Face:
-\begin{center}
-\url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}
-\end{center}
-The dataset is released under the MIT license. We provide a download/export script (\texttt{scripts/download\_moltbook\_observatory\_archive.py}) that fetches and exports the required tables to local storage and writes an export manifest (timestamp, dataset identifier, and exported splits).
+The primary Moltbook dataset is publicly available at
+\url{https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive}.
+Reddit raw data are not redistributed because of platform terms; the study relies on
+curated run-scoped derivatives and aggregate outputs that support replication of the
+reported tables and figures. The analysis code and manuscript source are publicly
+available in the project repository:
+\url{https://github.com/AysajanE/moltbook-persistence}.
 
-\paragraph{Reddit comparison data.} Due to Reddit's terms of service, we cannot redistribute raw Reddit data. Instead, we provide run-scoped curated artifacts and manifests. For the Reddit full-scale run in this manuscript
-(\texttt{attempt\_scaled\_20260206-142651Z}), we provide:
-\begin{itemize}
-    \item Curated submissions/comments tables partitioned by \texttt{run\_id},
-    \item Validation output
-    (\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}),
-    \item Analysis summary and run manifest
-    (\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json},
-    \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json}),
-    \item Derived features and manuscript-facing figures/tables under
-    \texttt{data\_features/reddit\_only/attempt\_scaled\_20260206-142651Z/} and
-    \texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/}.
-\end{itemize}
+\subsection{Computational Environment and Replication Scope}
 
-\paragraph{Processed datasets.} We intend to release processed intermediate datasets (thread trees, survival times, computed metrics) in Parquet format to enable reproduction without re-running preprocessing, subject to platform terms of service and licensing constraints.
+Canonical analyses for this revision were rerun on macOS (arm64) with Python 3.11.14
+and fixed random seed 20260206. Core dependencies include NumPy, pandas, SciPy,
+lifelines, Matplotlib, and seaborn (versions recorded in the repository environment
+specification). The empirical claims in this manuscript are based on deterministic
+pipelines with fixed preprocessing rules, thread-level bootstrap uncertainty
+quantification, and AR(1)-calibrated periodicity tests. Full command-level execution
+instructions are provided in repository documentation; this appendix intentionally
+summarizes provenance at manuscript level rather than enumerating file paths.
 
-\subsection{Code Availability}
-\label{sec:reproducibility:code}
+\subsection{Archival Plan}
 
-All code associated with this manuscript is available in our repository:
-\begin{center}
-\url{https://github.com/AysajanE/moltbook-persistence}
-\end{center}
-
-The repository includes:
-\begin{itemize}
-    \item \texttt{scripts/}: Data download/export and arXiv bundling utilities.
-    \item \texttt{analysis/}: Analysis entrypoints (added as the pipeline stabilizes; see \texttt{analysis/README.md} for current status).
-    \item \texttt{paper/}: \LaTeX{} source for this manuscript.
-    \item \texttt{requirements.txt}: Python dependencies (minimum versions).
-\end{itemize}
-
-\subsection{Computational Environment}
-\label{sec:reproducibility:environment}
-
-The Moltbook and Reddit results reported in \Cref{sec:results} were generated on:
-macOS 15.6.1 (arm64) with Python 3.11.14 in this revision's canonical reruns, using
-\texttt{numpy 2.4.2}, \texttt{pandas 2.3.3}, \texttt{scipy 1.17.0},
-\texttt{lifelines 0.30.1}, \texttt{matplotlib 3.10.8}, and \texttt{seaborn 0.13.2}.
-Project dependencies and minimum versions remain listed in \texttt{requirements.txt},
-and lint compatibility targets Python 3.11 (\texttt{ruff target-version = py311}
-in \texttt{pyproject.toml}).
-
-\subsection{Reproducing Key Results}
-\label{sec:reproducibility:reproduce}
-
-To reproduce the workflows reported in this manuscript version:
-
-\begin{enumerate}
-    \item \textbf{Environment setup:}
-    \begin{verbatim}
-    python3.11 -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
-    \end{verbatim}
-
-    \item \textbf{Data download:}
-    \begin{verbatim}
-    python scripts/download_moltbook_observatory_archive.py \
-        --out-dir data/raw/moltbook-observatory-archive
-    \end{verbatim}
-
-    \item \textbf{Run Moltbook-only analysis (produces derived tables/figures/manifest):}
-    \begin{verbatim}
-    python analysis/06_moltbook_only_analysis.py \
-        --snapshot-root data_curated/hf_archive/snapshot_20260204-234429Z \
-        --data-features-root data_features/moltbook_only \
-        --outputs-root outputs/moltbook_only \
-        --run-id run_20260206-145240Z \
-        --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
-    \end{verbatim}
-
-    \item \textbf{Validate curated Reddit run \texttt{attempt\_scaled\_20260206-142651Z}:}
-    \begin{verbatim}
-    python analysis/05_reddit_validate.py \
-        --curated-root data_curated/reddit \
-        --run-id attempt_scaled_20260206-142651Z \
-        --request-log data_raw/reddit/2026-02-06/request_log/attempt_scaled_20260206-142651Z.jsonl \
-        --out outputs/reddit_only/attempt_scaled_20260206-142651Z/validation_results_20260206T_orchestrator.json
-    \end{verbatim}
-
-    \item \textbf{Run Reddit-only analysis entrypoint 07:}
-    \begin{verbatim}
-    python analysis/07_reddit_only_analysis.py \
-        --curated-root data_curated/reddit \
-        --run-id attempt_scaled_20260206-142651Z \
-        --outputs-root outputs/reddit_only \
-        --data-features-root data_features/reddit_only \
-        --ops-root outputs/ops \
-        --seed 20260206 --bootstrap-reps 400 --ar1-sims 2000
-    \end{verbatim}
-
-    \item \textbf{Build the paper PDF (requires a local \LaTeX{} toolchain):}
-    \begin{verbatim}
-    make paper
-    \end{verbatim}
-
-    \item \textbf{Build a timestamped arXiv source bundle:}
-    \begin{verbatim}
-    make arxiv-bundle
-    \end{verbatim}
-\end{enumerate}
-
-Canonical runs used for manuscript values in this revision are
-\texttt{run\_20260206-145240Z} (Moltbook) and
-\texttt{attempt\_scaled\_20260206-142651Z} (Reddit), with matched comparison
-\texttt{run\_20260206-182842Z}. These run IDs were re-executed in Python 3.11.14
-on February 7, 2026 for environment-consistent reproducibility. Moltbook manifest:
-\texttt{outputs/moltbook\_only/run\_20260206-145240Z/run\_manifest.json}
-and summary:
-\texttt{outputs/moltbook\_only/run\_20260206-145240Z/tables/analysis\_summary.json}.
-Reddit manifest:
-\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json},
-summary:
-\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/tables/analysis\_summary.json},
-and validation:
-\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/validation\_results\_20260206T\_orchestrator.json}.
-Matched-analysis manifest:
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/run\_manifest.json}
-and summary:
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/tables/analysis\_summary.json}.
-
-\subsection{Versioning and Archival}
-\label{sec:reproducibility:versioning}
-
-Upon publication, we will:
-\begin{itemize}
-    \item Archive the repository on Zenodo with a permanent DOI.
-    \item Tag the release corresponding to the published paper version.
-    \item Include checksums for downloaded data files to verify integrity.
-\end{itemize}
-
-\subsection{Contact}
-\label{sec:reproducibility:contact}
-
-For questions about reproducing this work, please contact the corresponding author or open an issue on the GitHub repository.
+Upon publication, we will archive the repository in a DOI-minted release,
+tag the paper-consistent revision, and provide checksums for downloaded upstream
+artifacts where licensing permits redistribution metadata.

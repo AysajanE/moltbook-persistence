@@ -1,0 +1,23926 @@
+Expecting to be HIP: Hawkes Intensity Processes for
+Social Media Popularity
+Marian-Andrei Rizoiu†♯, Lexing Xie†♯, Scott Sanner‡
+Manuel Cebrian♯, Honglin Yu†♯, Pascal Van Henteryck♭
+†Australian National University,♯Data61 CSIRO,‡University of Toronto,♭University of Michigan
+ABSTRACT
+Modeling and predicting the popularity of online content is
+a signiﬁcant problem for the practice of information dissem-
+ination, advertising, and consumption. Recent work ana-
+lyzing massive datasets advances our understanding of pop-
+ularity, but one major gap remains: To precisely quantify
+the relationship between the popularity of an online item
+and the external promotions it receives. This work supplies
+the missing link between exogenous inputs from public social
+media platforms, such as Twitter, and endogenous responses
+within the content platform, such as YouTube. We develop
+a novel mathematical model, the Hawkes intensity process,
+which can explain the complex popularity history of each
+video according to its type of content, network of diﬀusion,
+and sensitivity to promotion. Our model supplies a proto-
+typical description of videos, called an endo-exo map. This
+map explains popularity as the result of an extrinsic factor
+– the amount of promotions from the outside world that the
+video receives, acting upon two intrinsic factors – sensitiv-
+ity to promotion, and inherent virality. We use this model
+to forecast future popularity given promotions on a large
+5-months feed of the most-tweeted videos, and found it to
+lower the average error by 28.6% from approaches based on
+popularity history. Finally, we can identify videos that have
+a high potential to become viral, as well as those for which
+promotions will have hardly any eﬀect.
+1. INTRODUCTION
+The popularity of an online cultural item is described by
+the amount of attention it receives, and the popularity dy-
+namics refers to its evolution over time. Popularity is a crit-
+ical measure of information dissemination for content pro-
+ducers, and a way to manage information overload for con-
+tent consumers. Understanding and predicting popularity
+have been active topics in both research and practice, but
+many fundamental questions remain open, such as: What
+describes the most viral items? What do the popularity dy-
+namics of news, music, ﬁlms look like, and what are their
+© 2017 International World Wide Web Conference Committee
+(IW3C2), published under Creative Commons CC BY 4.0 License.
+WWW 2017, April 3–7, 2017, Perth, Australia.
+ACM 978-1-4503-4913-0/17/04.
+http://dx.doi.org/10.1145/3038912.3052650
+diﬀerences and similarities? Can we promote an item to
+increase its popularity, and how much promotion is needed?
+Building upon recent research progress in understanding
+popularity, we identify three important questions that are
+still open. The ﬁrst one concerns modeling popularity. One
+set of approaches describe popularity dynamics as stylis-
+tic prototypes, such as being power-law shapes from either
+an exogenous shock or endogenous relaxation [13], a com-
+bination of power-law and exponential decay [24], multiple
+power-law decays with periodicity [27] or a collection of re-
+currence peaks [10]. However, one question remains: How
+would popularity evolve under continuous external
+inﬂuence? Especially, how one can explain complex rise
+and fall patterns that do not follow the prescribed proto-
+types. The second questions concerns virality. Content and
+initial diﬀusion have both been identiﬁed as key factors that
+inﬂuence popularity. Here content factors include positive
+sentiment [2], emotional arousal [5], publishing venue [3],
+visibility [6]; and factors of diﬀusion history include [9] net-
+work structure, information about the original poster and
+re-sharers, the timing of the early posts. However, describ-
+ing viral content in the light of external promotions is still
+an open problem, and in particular: Can something go
+viral if promoted? The third questions involves predict-
+ing future popularity. It is known that the approaches that
+use the popularity history [30, 34] produce competitive esti-
+mates about future popularity over time. Also, timing fea-
+tures have been shown to be more predictable than content,
+structure, and user features [9], and prediction without ini-
+tial history is generally shown as a hard problem [26]. How-
+ever, these recent insights do not answer: How to forecast
+future popularity given planned promotions?
+In this work, we answer all three questions above, using
+a large dataset that connects popularity in one social me-
+dia platform – 81.9 million YouTube videos – to discussions
+about each of these digital items in an external platform –
+in 1.06 billion tweets over a six-month period.
+To describe complex popularity dynamics under contin-
+uous external inﬂuence, we propose a new mathematical
+model that reveals an analytical relationship between en-
+dogenous and exogenous demand factors, called the Hawkes
+Intensity Process (HIP). HIP extends the well-known Hawkes
+point-process [19], by taking the expectation over stochas-
+tic event histories so as to describe expected event volumes,
+rather than a set of event times. Figure 1 illustrates the HIP
+model. On the top left is the volume of exogenous promo-
+tions over time, which drives the endogenous response de-
+termined by the HIP (middle); the output on the right is the
+arXiv:1602.06033v8  [cs.SI]  8 Sep 2017
+exogenous promotion
+Hawkes Point Process
+event intensitys(t) ξ(t)
+external events endogenous response
+expectation over event history
+ ( t )
+Hawkes Intensity Process
+ˆ⇠ ( t )
+Figure 1: Linking endogenous and exogenous factors of pop-
+ularity using the Hawkes Intensity Process. Top row: The
+input are volumes of exogenous promotion or discussions
+s(t), that engender endogenous reactions from the online
+social networks described by the impulse response function
+ˆξ(t) (middle box, deﬁned in Sec 2.5), to generate the total
+popularity series ξ(t). Bottom row: The endogenous reac-
+tions are self-exciting point processes, widely used in recent
+literature [4, 23, 28, 31, 33, 39]. Here each event triggers
+subsequent events with memory kernels φ(t). Such point
+process models can incorporate individual external stimulus
+(show on the left) which in turn lead to a larger number of
+events in response (shown on the right). Middle arrow: The
+proposed HIP model is a result of taking the expectation
+over all stochastic event history of the Hawkes process in
+the bottom.
+popularity series. The popularity series modeled through the
+Hawkes intensity process matches closely with the observed
+view count series, even for videos with complex popularity
+lifecycles (Section 2).
+To answer the second question, on whether or not an item
+will go viral if promoted, we derive two new metrics based
+on HIP – the endogenous response and exogenous sensitivity.
+These two metrics naturally lend to a novel two-dimensional
+visualization tool, dubbed the endo-exo map (Section 4).
+On this map, one can identify online videos that have high
+potential but are not yet popular. In other words, video with
+high sensitivity to external promotions and high endogenous
+response are expected to go viral if promoted. On the other
+hand, one can also identify videos for which promotion is
+unlikely to have an eﬀect, such as those scoring very low in
+either the endo- or exo- dimension.
+Finally, the HIP model can be used to help forecast fu-
+ture popularity given (known or planned) promotions. HIP
+model parameters are estimated on the ﬁrst 90 days of each
+video’s history, and forecasts are made for the next 30 days.
+We evaluate forecasting on a collection of 13K+ most ac-
+tively discussed YouTube videos over a six-month period,
+and found that estimates made with the HIP lower the aver-
+age percentile error by 28.6% from state-of-the-art methods
+based on popularity history (Section 5).
+The main contributions of this work include:
+•The HIP model, a volume based version of the Hawkes
+point process. Its essential novelty is to regard popular-
+ity as externally-driven, with exogenous events activat-
+ing endogenous responses inside the social environment
+which may, or may not, amplify the exogenous signal.
+•The exogenous sensitivity and the endogenous response,
+two new metrics to quantify two distinct aspects of a
+video’s inherent tendency to be popular. They are com-
+bined in the endo-exo map, a tool used to comparatively
+explain popularity and identify potentially viral videos.
+•A method to forecast popularity gain after promotion.
+Evaluated on a large set of YouTube videos, it signiﬁ-
+cantly outperforms approaches using popularity history.
+•A new dataset of tweeted videos that links online videos
+to their external discussions, available at https://github.
+com/andrei-rizoiu/hip-popularity.
+2. THE MODEL
+We introduce a model for the evolution of online atten-
+tion under external inﬂuence. We start by discussing the
+problem setting of aggregated attention under external pro-
+motion (in Sec. 2.1), the key concepts of the Hawkes process
+and its use to link the ongoing eﬀect of external stimuli to
+the word-of-mouth spread of attention (Sec. 2.2). Next, we
+propose HIP, a model to explain the observed popularity his-
+tory from daily volumes when the underlying viewing events
+are unobserved (Sec. 2.3). Lastly, we introduce two key met-
+rics derived from the HIP model, the endogenous response
+and exogenous sensitivity, to quantify the viral potential of
+a video (Sec. 2.5).
+2.1 Problem setting: views under promotion
+This paper aims to model the popularity of videos un-
+der external promotion. Here popularity is measured in the
+number of total views after the video being online for a cer-
+tain number of days (e.g. up to 120 days). External pro-
+motion is harder to measure, since by deﬁnition, it needs to
+capture data from other platforms. In this paper, we have
+two diﬀerent views of promotion, due to the data collection
+setting described in Sec 3. The ﬁrst is shares, tracked by
+YouTube via the share button under each video that allows
+a user to share a link of the video on a selection of pop-
+ular social network sites – 13 at the time of this writing.
+The second view is tweets, tracked with twitter streaming
+API with keyword ﬁlters that retrieve tweets that link to a
+video. Neither source is complete – with the distributed na-
+ture of the Internet, one can see that a complete capture of
+all discussions is practically impossible. The shares captures
+external promotions from a diverse set of sources, but is far
+from complete in any one source. The tweets captures an
+almost-complete feed of video promotions in one platform.
+In the rest of this paper, both of these sources are collec-
+tively referred to as external promotions about a video. In
+our evaluations, the results obtained using each source are
+presented separately.
+2.2 Hawkes process for social events
+We model online attention as an exogenously-driven self-
+exciting process – each viewing event is triggered either by
+a previous event or as a result of external inﬂuence. We
+assume that viewing events of a YouTube video follow a
+Hawkes point process [19], a type of non-homogeneous point
+process in which the arrival of an event increases the likeli-
+hood of future events. Although variants of point processes
+have recently been used to model events in social media, all
+existing work focus on learning point process model from
+one information source, such retweeting [39, 23], arrival of
+citations [33], or endogenous response after an initial exter-
+nal shock [13]. To the best of our knowledge, this is the ﬁrst
+work that models the continuous interaction of two sources
+– exogenous stimuli and endogenous response.
+ξ(t)
+May 2014 Jul 2014 Sep 2014 Nov 2014 Jan 2015
+0 5000 10000 15000 20000
+0 50 150 250
+Observed #views Fitted popularity Unobserved exo. stimuli Daily endogenous reactionsExogenous stimuli (#shares)
+#shares
+2014−08−19 2014−09−16 2014−10−14 2014−11−11 2014−12−09
+µ = 79.85,θ=5.37
+c= 0.46,C=0.008
+γ=301.5,η= 4336
+Aξ=1.88
+Number of shares
+12000 160008000 6000
+48277
+291760
+2014−06−15 2014−07−13 2014−08−10 2014−09−07 2014−10−05
+4000 30002000 10000
+(a) Examples of observed and ﬁtted popularity series
+bUORBT9iFKc WKJoBeeSWhc
+s(t)
+(b) Sliced ﬁtting graph
+0 5 10 15 20 25 30
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Number of views
+µ = 42.85, θ = 0.41
+c = 3.26,  C = 0.95
+γ = 13.16,  η = 4.35 10
+−10
+Aξ=1.72 10
+19
+Figure 2: Explaining popularity dynamics using the Hawkes intensity model. (a) Number of shares (red), observed popularity
+history (black dashed) and popularity as explained by the HIP (blue) on two examples videos: a music video bUORBT9iFKc
+and a News & Politics video WKJoBeeSWhc. The multi-phased popularity history cannot be explained by current models
+such as [13], while the HIP tracks the complex dynamics well. (b) A sliced ﬁtting graph of a music video (Youtube ID
+0bR4L0Y94AQ) – using the impulse response ˆξ(t) and exogenous stimuli s(t) to explain observed popularity. Each alternating
+gray and white area under the ﬁtted (blue) curve is a slice of endogenous reaction generated by the external inﬂuence in a
+given day. The left inset zooms-in one of the early months in the video’s evolution, in May 2014. The total event intensity
+(blue solid line) is a sum of temporally shifted and scaled versions of ˆξ(t), which tracks the long-term trends in observed
+popularity well (dashed line). The period around the ﬁrst larger exogenous peak is shown magniﬁed so that its corresponding
+endogenous response is clearly visible. (right inset) Example of the impulse response ˆξ(t) to one unit of external excitation.
+The area under this function, Aˆξ, quantiﬁes the endogenous reaction of a video – it is the total number of views after each
+unit of exogenous excitation.
+In particular, the arrival rate of viewing events λ(t), a
+measure of how likely a viewing event will occur in a in-
+ﬁnitesimal interval around time t, is determined by two ad-
+ditive components in Eq (1). The ﬁrst component is pro-
+portional to a measure of external inﬂuence s(t) scaled by
+a constant µ. Here s(t) represents the volume of external
+discussion (or promotion) over time. The second compo-
+nent represents the rate of views triggered by a previous
+event i, which occurred at time ti with magnitude mi >0,
+according to a time-decaying triggering kernel φmi (t−ti).
+Furthermore, each event ti < tadds to λ(t) independently.
+The following equations describe the event rate of such a
+marked Hawkes process:
+λ(t) = µs(t) +
+∑
+ti<t
+φmi (t−ti) (1)
+φm(τ) = κmβ(τ + c)−(1+θ), τ∈R+ (2)
+Eq. 2 describes the triggering kernel φ(τ). In this work it is
+designed to capture several key quantities inﬂuencing popu-
+larity. Parameter κ is a scaling factor for video quality. m
+describes the relative inﬂuence of the user who generated
+the event, i.e., mi in Eq. 1 when multiple events are con-
+cerned. The user inﬂuence exponent β, newly introduced in
+this work, accounts for the nonlinearity between observed
+metrics of inﬂuence (such as the number of followers) and
+popularity. This particular form allows both ﬂexibility in
+modeling how much eﬀect some observed metric of inﬂu-
+ence (e.g. number of followers) has on views (e.g. β = 0
+would be no eﬀect), and at the same time computing ex-
+pectations over stochastic event history analytically, as will
+be shown in the next subsection. Time interval τ = t−ti
+is the elapsed time since the parent event at ti; c >0 is a
+cutoﬀ term to keep φm(τ) bounded when τ is small; 1 + θ
+(for θ >0) is the power-law exponent for social memory –
+the larger θ is, the sooner the reaction to an event will stop.
+We use a power-law kernel for φm(τ), as recent work [28]
+observed it to have better performance on social media data
+than popular variants like the exponential kernel.
+This model is an instance of a marked Hawkes process [19].
+An illustration of the Hawkes process with external excita-
+tion is in the bottom row of Figure 1. A set of input events of
+diﬀerent magnitudes trigger new events through the kernel
+φ(t), which then trigger oﬀspring events themselves, result-
+ing in the observed event sequence.
+2.3 From Hawkes to HIP
+The Hawkes point-process faces a few modeling challenges
+in large-scale applications. In terms of data source, what we
+often observe is the volume of total attention in a given in-
+terval (e.g. daily views on YouTube), rather than the times
+and properties of individual actions, due to constraints in
+user privacy and data volume. In terms of computation, full
+estimation of the Hawkes process is quadratic in the num-
+ber of events. Therefore, the full estimation quickly becomes
+expensive when the number of events is in the hundred thou-
+sands or millions – this is where the most popular videos are
+(see Sec 3.2). It is very desirable if one could estimate video
+popularity with daily data, which is typically a few dozens
+to a few hundred data points.
+To this end, we introduce the Hawkes intensity ξ(t), the
+expectation of the event rate λ(t) over the event history Ht,
+consisting of the set of (random) event times and magnitudes
+up to time t.
+Theorem 2.1. Hawkes Intensity Process (HIP)Given
+a marked Hawkes process described in Equations (1) and (2).
+Its event history
+Ht = {(t1,m1),..., (tn,mn)}tn<t
+contains all event times and marks before time t, where each
+mark m is drawn iid from a power-law distribution p(m) =
+(α−1)m−α. We deﬁne event intensity as the expectation of
+the event rate over the event history ξ(t) = EHt [λ(t)], then
+ξ(t) follows the following self-consistent integral equation:
+ξ(t) = µs(t) + C
+∫ t
+0
+ξ(t−τ)(τ + c)−(1+θ)dτ . (3)
+Here constant C = κ(α−1)
+α−β−1 , and κ and β are as in Eq (2).
+Intuitively, this expression of event intensity ξ(t) at time
+t is determined by the external stimulus s(t), and a convo-
+lution of its own history with a power-law memory kernel
+(τ+c)−(1+θ). Theorem 2.1 can be intuitively understood by
+breaking down the expectation into several parts. Noteµs(t)
+is non-random and does not change after expectation. We
+compute analytically the expectation over stochastic history,
+with a random number of events at random times, by de-
+composing EHt into expectations over binary variablesdNt,
+which indicates whether or not there is an event in a small
+interval around time t. This trick discretizes time, and con-
+verts the sum over past events in Eq (1) into an integration
+seen in Eq (3). Note that the expectation of the user in-
+ﬂuence warping term mβ over the power-law distribution of
+the mark m has an analytical form, leading to the constant
+C. Due to space limitations, we include the full proof in the
+online appendix [1].
+Here (µ,θ,C,c ) are video-dependent parameters estimated
+from the popularity history of each video. Note that α> 0
+is the power-law exponent of user inﬂuence distribution, es-
+timated as α = 2 .016 from a large Twitter sample using
+standard ﬁtting procedures [11]. The two power law expo-
+nents α and θ in HIP are distinct in meaning and function,
+θdeﬁnes memory decay over time, while αis determined by
+the user distribution at large.
+Compared to existing models of data volume, HIP cap-
+tures the ongoing interactions of exogenous and endogenous
+eﬀects. Hence it is able to explain complex popularity series
+with multiple rises and falls (as shown in Figure 2). Helm-
+stetter and Sornette [20] ﬁt the observed event rate after an
+initial shock, and Crane and Sornette [13] produce a curve
+ﬁt on the long-term approximation of the endogenous de-
+cay with no exogenous input. SpikeM [27] models volumes
+of events both prior and after a single considered shock,
+without accounting for external inﬂuences. The work most
+related to ours on computing expectations over stochastic
+event histories is th work of Farajtabar et al. [16], who mod-
+eled co-excitation on Twitter and computed the equivalent
+of ξ(t) on multivariate Hawkes process with exponential ker-
+nels, which admits a closed-form solution. In contrast, our
+work uses a univariate Hawkes process focused on modeling
+the impact of Twitter on individual Youtube videos and a
+power law kernel. De et al. [14] further develop the work
+in [16] by combining a Markov process with a multivariate
+Hawkes process for modeling opinion dynamics.
+2.4 Estimating HIP from data
+We discuss key steps for estimating HIP from observed
+series of views and external promotions over time.
+Discretizing over time . We observe that behavioral
+statistics are aggregated over ﬁxed and discrete intervals –
+for YouTube, the public API provides the daily history of
+the number of views ¯ξ[t] and number of shares ¯s[t] for t =
+1,...,T . Expressing HIP (Eq (3)) over discrete time gives:
+ξ[t] = µs[t] + C
+t∑
+τ=1
+ξ[t−τ](τ + c)−(1+θ) . (4)
+Here we use square brackets to denote discrete time, e.g.ξ[t],
+and round brackets to denote continuous time, e.g. ξ(t).
+Accounting for unobserved external inﬂuence. In
+addition to the observed external promotions ¯s[t] in tweets
+or shares, we model the unobserved external excitation as an
+initial shock (at t= 0) and a constant background excitation
+(for t> 0).
+s[t] = γ
+µ1[t= 0] + η
+µ1[t> 0] + ¯s[t] , (5)
+where 1(arg) is the standard impulse function – taking the
+value 1 when arg is true and 0 otherwise. In the absence
+of a parametric model of generic external inﬂuence, the ini-
+tial impulse and the constant component require the least
+amount of assumptions about how unobserved inﬂuence evolves.
+Here γand ηare additional parameters estimated from data.
+In our experiments, adding estimates for such unobserved in-
+ﬂuence components improves the ﬁtting for a large number
+of videos.
+The loss function For each video, we ﬁnd an optimal
+set of model parameters ( µ,θ,C,c ) and of unobserved ex-
+ternal inﬂuence ( γ and η). This is done by minimizing the
+square error between the observed viewcount series ¯ξ[t] and
+the model ξ[t], t = 1 : T. The corresponding optimization
+problem is as follows:
+min
+µ,θ,C,c,γ,η
+J = 1
+2
+T∑
+t=0
+(
+ξ[t] −¯ξ[t]
+)2
+(6)
+We use L-BFGS [25] with analytical gradients and random
+restarts to minimize this non-linear loss function. Gradient
+computation is detailed in the appendix [1].
+Three example ﬁts are shown in Figure 2. Visibly, the
+event intensity model in Equation 3 links the exogenous
+and the endogenous eﬀects of the social system, resulting
+in a tight ﬁt between the model and the observed popular-
+ity history. For the Brazilian music video bUORBT9iFKc
+the memory kernel decays fast ( θ= 5.37), and the resulting
+intensity series tracks the temporal dynamics of the stimuli
+closely. For news video WKJoBeeSWhc, the memory kernel
+decays slowly ( θ = 0 .41), hence the delayed accumulation
+of exogenous promotion via the memory kernel results in an
+overall rising trend. We can see that only by capturing the
+non-obvious joint eﬀects from within and outside a social
+network can a model produce both ﬁne-grained short-term
+dynamics and accurate long-term trends.
+2.5 Properties of the HIP
+In this section, we examine the key property of HIP of
+being a linear time-invariant system, which leads to two
+important metrics for measuring two distinct aspects of a
+video’s viral potential – the exogenous sensitivity and the
+endogenous response.
+Exogenous sensitivity µ. As shown in Eq 3, the total
+attention that a video receives consists of two parts: the
+input from the exogenous stimuli, and the endogenous re-
+sponse corresponding to non-linear eﬀects accumulated through
+the integral equation. The scaling parameter µ quantiﬁes a
+video’s sensitivity to external stimuli s(t). When µ →0,
+external promotion would have no eﬀect; when µ is large,
+each unit of external promotion leads to a large number of
+new views.
+HIP as an LTI system. We observe an important prop-
+erty of the HIP model.
+Corollary 2.2. The HIP model, as deﬁned in Eq (4)
+and (3), is a linear time-invariant (LTI) system for t> 0.
+Being an LTI system [29] is to say that if ξ[t] is the event
+intensity function for input s[t], then (for the same video)
+the event intensity function for a shifted and scaled version
+of the input as[t−t0] is aξ[t−t0] for a >0,t0 ≥0, i.e.,
+scaled and shifted by the same amount.
+It is easy to see linearity holds by multiplying both sides
+of Eq 3 by the same constant. For time invariance, change
+of variable and then using the fact that ξ[t] = 0 when t< 0.
+A full proof is in the appendix [1].
+Impulse response function ˆξ[t]. One important de-
+scriptor of an LTI system is the impulse response function,
+the response to the unit impulse function 1[t], which takes
+the value 1 when t = 0, and 0 otherwise. We deﬁne ˆξ[t]
+as the impulse response of the HIP model. It follows from
+Eq. (4) that ˆξ[t] is the solution to the following self-consistent
+equation:
+ˆξ[t] = 1[t] + C
+T∑
+t=0
+ˆξ[t−τ](τ + c)−(1+θ) , (7)
+For each video, ˆξ[t] completely characterizes the endoge-
+nous response of the HIP model:
+Lemma 2.3. Sliced Responses The intensity function
+ξ[t] of HIP can be written as the sum of impulse responses,
+scaled and shifted by the corresponding external input.
+ξ[t] =
+T∑
+τ=0
+s[τ]ˆξ[t−τ] (8)
+To see that this is true, ﬁrst notice that external inputs[t]
+can be expressed as a sum of shifted and scaled impulses.
+s[t] =
+T∑
+τ=0
+s[τ]1[t−τ] (9)
+Combining Eq (7) and (9) will lead to Eq (8). In other words,
+the total popularity at time T can be obtained as the sum of
+the unfolding through the endogenous reaction, of the exter-
+nal stimuli having occurred at times 1,2,...,T −1. Fig 2(b)
+illustrates this property using a sliced and stacked popular-
+ity graph. The alternating white and gray slices are scaled
+(and shifted) versions of the impulse response represented in
+the right inset. For each discrete time point t′corresponds a
+slice, scaled by the external stimuli s(t′), which adds to the
+slices constructed at previous times t<t ′. Adding all these
+slices together recovers the overall intensity ξ(t) as in Eq 3
+(blue line), which tracks closely the long-term dynamics of
+the observed popularity (dashed line). The LTI property
+and its related quantities provides the mathematical ground
+to deﬁne our second important measure.
+Endogenous response Aˆξ. We deﬁne the total endoge-
+nous response generated from a single unit of exogenous ex-
+citation, computed as Aˆξ = ∑∞
+t=0
+ˆξ[t]. In this work, we
+compute Aˆξ by taking the sum over 10,000 time steps. Aˆξ
+is ﬁnite when the underlying HIP is so-called sub-critical.
+Other HIP-derived quantities, such as scaling parameter C
+or memory exponent θ could potentially serve to describe
+video virality. We ﬁnd, however, that despite being related,
+the non-linear interactions among HIP parameters render
+them inaccurate in explaining popularity compared to Aˆξ.
+Detailed discussions on the convergence criteria for Aˆξ, and
+visualizations of other parameters are in the appendix [1].
+Together with exogenous sensitivityµ, this is the second key
+quantity for measuring video virality. They will be used to
+compare individual and collections of videos in Sec. 4.
+3. THE TWEETED VIDEOS DATASET
+A key component in linking the exogenous inﬂuence and
+the endogenous response is to obtain data for the exogenous
+component, preferably both inside and outside the studied
+social network. We describe a new dataset across Twitter
+and Youtube networks, linked via the unique video ids, in
+which the volumes of tweets and Youtube shares serve as
+exogenous signals. We then introduce the popularity scale, a
+mapping between the number of views (or shares, or tweets)
+and the percentile ranking of a video, which will be used for
+visualizing popularity and for evaluating popularity forecast.
+3.1 Dataset construction
+We collect a dataset of tweeted videos by streaming tweets
+(via Twitter API) published between 2014-05-29 and 2014-
+12-26 which mentions YouTube videos. This yields a large
+and diverse set of over 81.9 million videos mentioned in 1.06
+billion tweets. We obtain from YouTube their video meta-
+data, including upload date, author and video category, as
+well as the time series consisting of the daily number of views
+and shares. The video categories are a one-level YouTube
+classiﬁcation of videos, example of such categories being Mu-
+sic, Gaming or Film & Animation. Along with the daily
+number of tweets, we have three attention-related time se-
+ries for each video: (views[t], shares[t] and tweets[t]), where
+t indexes time with the unit of a day.
+In order to study videos with non-trivial popularity and
+promotion activities, we construct a subset, denoted as the
+Active dataset, by restricting to videos that are still online
+and that have their popularity and sharing series at least
+120 days long, since the upload and until the crawling date.
+Furthermore, we restrict the set of videos to those that re-
+ceived at least 100 tweets and 100 shares by the 120th day,
+in order to obtain videos twitted and shared enough to esti-
+mate the external inﬂuence on popularity. We also remove
+6 rare categories containing less than 1% videos (and their
+corresponding videos). The Active dataset contains 13,738
+videos across 14 categories and it is used in both explaining
+and forecasting popularity in Sec. 5. Reasons for the dras-
+tic dataset reduction from 81M to Active include: videos
+uploaded earlier than 2014-05-29 (and hence without a com-
+plete tweet history), videos that are no longer online, those
+do not make viewcount history public, and the long-tailed
+distribution of tweets and shares – more than half of the
+videos are tweeted only once. Note that when they exist,
+the popularity and the sharing series do not contain miss-
+ing data. A proﬁle of the tweeted videos dataset and more
+details about its construction are given in the appendix [1].
+We use the ﬁrst 90 days of each videos’ viewing and shar-
+ing/tweeting history to estimate the HIP parameters.
+3.2 The popularity scale
+It is well-known that network measurements such as the
+number of views and shares follow a long-tailed distribution.
+We quantify video popularity on an explicit popularity per-
+centile scale, with 0 .0% being the least popular, and 100%
+being the most popular. Fig. 3(a) and (b) show the popular-
+shares: Popularity scale at 60 days
+Popularity percentile
+#shares
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105
+(a)
+views: Popularity scale at 60 days
+Popularity percentile
+#views
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+102
+103
+104
+105
+106
+107 (b)
+Evolution of popularity percentiles
+Popularity perc. at 60 days
+Popularity perc. at 30 days
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100% (c)
+Figure 3: The popularity scale of YouTube videos, computed on the Active dataset. The total numbers of shares (a) and
+views (b) obtained by each video in the ﬁrst 60 days after upload are divided into 40 equally spaced bins (i.e. each with 2 .5%
+of the videos). Boxplots of shares/views in each bin are shown. The 2 .5% most popular videos span more than one order of
+magnitude for both views and shares. Note that outliers in this bin are not represented, as the most popular videos in the
+collection have ∼108 views and ∼106 shares. (c) Evolution of the views popularity between 30 (y-axis) and 60 (x-axis) days.
+Boxplots show where each 2.5% of videos at 60 days came from (in terms of percentile position at 30 days). The outliers are
+videos that have improved their popularity signiﬁcantly.
+ity scale as boxplots (in log-scale) over the Active dataset,
+after 60 days of video life for shares and views, respectively.
+The shape of the scale is similar for both shares and views,
+and it reﬂects their long tail distribution. The only notable
+diﬀerence is the scale of the y-axis, as videos tend to accumu-
+late less shares than views. The popularity scale for tweets
+is very similar to the one for shares, and shown in the ap-
+pendix [1]. Based on the shares and views popularity scales,
+we deﬁne two mapping functionsSt(x),Pt(x) : R+ −→[0,1].
+Each function takes an argument – the number of shares for
+St(x) or the number of views for Pt(x) – and outputs the
+percentile value on the corresponding popularity scale con-
+structed at time t.
+In Fig. 3(c) we explore the change of views popularity
+of each video from 30 days (y-axis) to 60 days (x-axis).
+Formally, we plot the relation between P30
+(∑30
+1
+¯ξ[t]
+)
+and
+P60
+(∑60
+1
+¯ξ[t]
+)
+, where ¯ξ[t] is the number of views at time t
+(here the t-th day). Note that most videos retain a simi-
+lar rank (in the boxes along the 45 degree diagonal line), or
+have a slight rank decrease as they are overtaken by other
+videos (slightly above the diagonal in the plot). No outliers
+exist in the upper-left part of the graph, since a video cannot
+lose viewcount that it already gained. Most notably, we can
+see that videos from any bin can jump to the top popularity
+bins between 30 and 60 days of age, such as the outliers for
+the few boxes on the far right. This phenomenon elicits two
+important questions: how did these videos go viral, and is
+this phenomenon related to external promotions?
+4. THE ENDO-EXO MAP
+Using two quantities deﬁned in Sec 2.5, we construct a
+2-dimensional map with endogenous response Aˆξ as the x-
+axis and exogenous sensitivity µ as the y-axis. We call this
+plot the endo-exo map. This section presents example uses
+of this map for explaining video popularity, and identifying
+videos that are not promotable.
+Explaining popularity. Intuitively, a video with a large
+endogenous response Aˆξ and a high exogenous sensitivity µ
+has high potential to become viral. Speciﬁcally, each unit of
+exogenous excitation will generate µAˆξ events through the
+Hawkes intensity process. On the endo-exo map, videos in
+close proximity have similar potentials to become popular
+and the diﬀerences in their popularity would be due solely
+to the diﬀerence in exogenous attention. Fig 4(a) illustrates
+this phenomena using four videos. Videos v 1 and v 2 are
+very similar in both Aˆξ and µ; the fact that v 1 has 4.61x
+more views is explained by it receiving 3.22x more exoge-
+nous promotions. On the same map, v 4 received a similar
+amount of promotion as v1 and their diﬀerences in popular-
+ity are explained by v 4 being less endogenously responsive
+(smaller Aˆξ) than v 1. Moreover, v 3 has a similar endoge-
+nous response and sees similar amounts of promotion as v 1;
+the diﬀerence between their popularities is explained by v 3
+being less exogenously sensitive, with a lower µ. The endo-
+exo map provides two distinct aspects from which a video’s
+popularity can be analyzed, which are detailed next.
+What describes the most popular videos? One
+may wonder whether higher popularity can be attributed
+to higher exogenous sensitivity, higher endogenous response
+or a combination of both. We examine a collection contain-
+ing diverse video categories and ﬁnd that the explanation
+varies. We draw on the endo-exo map all the videos that
+belong to the same category in the Active dataset and we
+visualize them as two-dimensional density plots. Fig. 4 (c)
+and (d) compares the plots for the videos inGaming and Film
+& Animation, to that of the top 5% most popular videos in
+these two categories, respectively. Visibly, while most pop-
+ular videos in Film & Animation are described by higher
+exogenous sensitivity (shifting upwards), the most popular
+Gaming videos have higher endogenous response – their den-
+sity mass is shifted to the right of the endo-exo map. Other
+categories such as Comedy or News & Politics (shown in
+the appendix [1]) present two dense regions, one for higher
+Aˆξ and one for higher µ. These observations show that the
+most popular videos in diﬀerent categories diﬀer in terms of
+the two main factors that drive popularity.
+Identifying unpromotable videos. The endo-exo map
+can be used to readily identify an interesting class of videos:
+the ones which are very diﬃcult to promote. Given that the
+quantity µAˆξ describes the number of views that one unit of
+external promotion (via sharing or tweeting) will generate
+under the joint inﬂuence of endo- and exo- factors – a very
+small µAˆξ (e.g., µAˆξ < 1e−3) is a hallmark of a video
+being unpromotable. Fig. 4(b) contains a zoomed-out view
+(c)
+(d) Gaming: all Gaming: top 5%
+Film and animation: top 5%
+Exogenous sensitivityµ
+Endogenous response Aξ Endogenous response Aξ
+Exogenous sensitivityµ
+Endogenous response Aξ
+Film and animation: all
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+100.4
+10
+101.5
+0.2
+0.4
+0.6
+0.8
+1.0
+100.5 100.6 100.7 100.8 100.9
+101.6
+101.7
+101.8
+101.9
+102
+102.1
+102.2
+0.4 0.6 0.85
+v4
+v2
+v1
+v3
+(a) The endo-exo map
+(b) Unpromotable videos on the endo-exo map
+●●
+●
+●● ●
+●
+●●● ●
+●
+● ●●
+●
+●●●
+●
+● ●
+●
+●●
+●
+●
+●
+●
+●
+●
+● ●
+●● ●
+●●
+●
+●●
+●
+●
+●
+●●
+●
+●●
+●
+● ●
+●
+● ●
+●
+● ●
+●
+●
+● ●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ●
+● ●
+●
+●
+●
+●
+●
+●●● ●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●● ●●
+●
+●
+●
+●
+●
+●● ●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+● ● ●●● ●● ●
+●
+●
+●
+● ●
+●
+●
+● ●●
+●● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●●●●●
+●
+●
+●
+●● ●
+●
+●
+● ●● ●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●● ● ●
+●
+●●
+●
+●
+●●
+●
+●●●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+● ●●
+●
+●● ●
+●● ●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●●
+●●● ●
+●
+●
+● ●
+●
+● ● ●
+●
+●
+●
+●
+●
+● ●● ● ● ●
+●●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+● ●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ● ●
+●●●
+●
+●
+●● ●●
+●●
+●
+●●●● ●
+●
+●
+●
+●
+● ●●● ●
+●
+●
+●●●
+●●
+●
+●
+●●
+●
+●● ●
+●
+● ●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+● ● ● ●●●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+● ●● ●● ●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+● ●● ●
+●●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+● ●●●
+●
+●
+●
+●
+●
+●
+●
+● ●● ● ●●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ●
+●
+●
+●
+●
+●
+● ●● ●●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●● ●●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●● ●
+●
+●
+●●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●● ●
+●
+●
+●
+●●●●●
+●
+●
+●
+● ●● ● ●● ● ●
+●
+● ●●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●
+●●●
+●
+●
+●
+●
+●
+●
+●●
+●●● ●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+● ●
+●
+● ●
+●
+●
+●
+●●●
+●●●●
+●
+●
+●
+● ● ●●●● ●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●●
+●● ● ● ●
+●
+●
+●
+●●
+●●●●
+●
+● ●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●● ●
+●
+●●
+●
+●
+●
+● ●
+● ●
+●
+●●
+●
+● ●● ● ●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●● ●
+●
+●
+●
+●● ●
+● ●
+●
+● ●
+● ●
+●
+●● ●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●●
+●●●
+●
+●
+●
+●
+●
+●●
+● ●● ●
+●
+●●●
+●
+●
+●
+●●● ●●
+●
+●
+●
+●
+●
+●●●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●● ●●● ●
+●●
+●●
+●
+●●
+●●●
+●
+●●●
+●
+●
+●
+●
+●
+●●
+● ●●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ● ●●
+●
+●●● ● ●● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●●
+●
+●
+●
+●● ●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+● ●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ● ●
+●
+●
+●
+●●
+● ●
+●
+●
+●● ●
+●
+●
+● ●●
+●● ●●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●● ●
+●
+● ●
+●
+●
+●
+●
+●●
+●●
+●
+●●●
+●
+●●●
+●
+●●
+●
+●●●●
+●
+● ● ●
+●
+●●
+●
+●
+●
+●
+● ●●
+●
+● ●
+●
+●
+●
+●
+●
+● ●●
+●
+●●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●●
+● ●●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ● ●●
+●
+●●
+● ●
+●●
+● ●
+●●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●● ●●
+●●
+●
+●●● ●
+● ●●●
+● ●
+●● ●●
+●
+● ●● ●
+●
+● ●
+●
+●
+● ●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●● ●
+● ●
+●
+● ●
+●●●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+● ●●●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+● ●●● ●● ●● ●
+●
+● ●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●● ● ●●
+●
+●●
+●
+●
+●
+●
+● ●●
+●
+● ●
+●
+●
+●
+●
+●
+● ●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+● ●● ●●●
+●●
+●
+●
+●●
+●
+●
+●●
+●
+●● ● ●●
+●
+●
+●
+● ● ● ●
+●
+●●●●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●● ●
+●
+●●● ● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+● ● ●
+●●
+● ●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+● ●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+● ●●
+●●● ●
+●
+●
+● ● ●●
+●
+●●●
+●
+●
+●
+● ●
+●
+●
+● ●
+●
+●
+●
+●
+●● ●●
+●
+●
+●
+●
+●● ●●
+●
+● ●
+●
+● ● ●
+●
+●● ●
+●
+●● ●●
+●
+●
+●●
+●● ●● ●
+●
+●
+●
+YID: 
+8DcM1NSpn94
+1010
+105
+100
+10-5
+10-15
+10-10
+100 102101 103 104 105
+Endogenous response Aξ
+Endogenous response Aξ
+Exogenous sensitivityµ Exogenous sensitivityµ
+Endogenous response Aξ
+Figure 4: Visualizing video virality and video popularity using the endo-exo map. (a) Four example videos on the endo-exo
+map. X-axis Aˆξ: the magnitude of endogenous reaction; Y-axis µ: sensitivity to exogenous stimuli. The radius of each circle
+is proportional to the popularity percentile Pt(·) of each video after t = 120 days, with values between 0.0 (least popular)
+and 1.0 (most popular). The color represents the amount (percentile) of total shares received, denoted as St(·), with values
+between 0.0 (no promotion) and 1.0 (receiving the most promotions). v 1 and v2 present similar endogenous reaction and
+exogenous sensitivity, being at the same position on the endo-exo map. The diﬀerence in their popularity (size) is explained
+by the fact that v1 received 3.22 times more promotions than v2. Both v 3 and v4 receive similar amounts of promotion (color)
+as v1, but they achieve lower popularity (smaller size) due to their less privileged position on the endo-exo map: v 3 is less
+sensitive to external stimuli than v 1 and v2, while v 4 has a smaller endogenous reaction than v 1 and v2. Information about
+the four example videos are as follows, with their popularity percentile P120 and shares percentile S120: v1 is a short Gaming
+video, YoutubeID 0lTTWeavl1c, P120(634,370 views) = 85%, S120(351 shares = 65%; v2 is a collection of “ALS ice bucket
+challenge” videos, YoutubeID 3hSIh-tbiKE, P120(137,481) = 40%, S120(109) = 10%; v3 is a funny science video, explaining
+types of inﬁnity in math, YoutubeID23I5GS4JiDg, P120(193,052) = 60%, S120(356) = 65%; v4 is from a Portuguese youtuber,
+YoutubeID 0ndmJzEIcgU, P120(93,959) = 40% , S120(311) = 60%. (b) A zoomed-out scatter plot of the endo-exo map of
+the videos in the People & Blogs category. The shaded portion of this map consists of videos with low values of total
+response µAˆξ < 10−3 and hence dubbed unpromotable videos. Thumbnail of an example video 8DcM1NSpn94 is included,
+with µ= 2.88 ×10−15 and Aˆξ = 1. (c) Density plot for all (left) vs the most popular 5% (right) Film & Animation videos.
+(d) Density plot for all (left) vs the most popular 5% (right) Gaming videos. Popular Film and Animation videos tend to
+have a higher exogenous sensitivity, while those for Gaming have mainly a higher endogenous response.
+of the endo-exo map associated with the category People
+& Blogs. We found 63 videos ( ∼ 3.2%) in this category
+to be unpromotable. Overall, 549 ( ∼3.9%) videos in the
+Active set are deemed unpromotable. The thumbnail of
+one example video (a teenager video blog) is shown. It has
+µ= 2.88 ×10−15 and Aˆξ = 1, hence each online promotion
+is expected to generate 0 views. In contrast, for video v 1 in
+Fig. 4(a), each promotion is expected to generate 598 views.
+5. FORECASTING POPULARITY GROWTH
+Via the endo-exo map, the Hawkes intensity process pre-
+scribes a video’s expected popularity dynamics under exter-
+nal promotions. This section explores the predictive power
+of such a model. We ﬁrst illustrate the setting for popu-
+larity forecasts using video examples, and then present a
+quantitative evaluation.
+5.1 A video that will go viral
+We use HIP to identify videos that are not already popular
+but have a high potential to become so. This is similar to the
+phenomenon of delayed recognition in science [21]. Note that
+this approach is predictive in that we aim to ﬁnd such poten-
+tially viral items before they become popular, rather than
+a measurement-driven approach that analyzes viral items in
+past history. Video 1PuvXpv0yDM in Fig. 5(a) is such an
+example, it received 15,687 views after being online for 90
+days. The HIP model deems it to have a high endogenous
+response (Aˆξ = 6.94×1072) and a high exogenous sensitivity
+(µ= 119.02). Between days 91 and 120, the video received
+an additional 229 shares, more than 6 times the number
+0.00 0.02 0.04 0.06
+Mean absolute percentile errorHIP
+(#shares)
+MLR MLR
+(#shares)
+MLR
+(#tweets)
+(c) Comparison of popularity forecasts
+20000 40000 60000 80000
+#views
+2014−05−12 2014−06−09 2014−07−07 2014−08−04 2014−09−01
+155 607 # shares
+Observed #views
+Fitted #views on training set
+Predicted viewcounts
+Exogenous stimuli (#shares)
+(b) Forecasting popularity for video 0qMJ_zhat_E 
+μ= 78.352, θ= 0.066
+c = 0.174, C = 0.167
+(a) An example video with high virality
+2014−07−07 2014−08−04 2014−09−01 2014−09−29 2014−10−27
+0 27 54
+Observed #views
+Fitted #views on observed 90 days
+Exogenous stimuli (#shares)
+# shares
+5
+4x10
+5
+3x10
+5
+1x10
+5
+2x10
+0
+µ= 119.02
+Aξ = 6.94x10
+72
+#views
+1500
+1000
+500
+0
+4.96% 5.35%
+7.07% 6.94% 6.94%
+HIP
+(#tweets)
+Figure 5: Popularity forecasting using the Hawkes intensity process. (a) Popularity series for video 1PuvXpv0yDM, explaining
+a brain disorder. The video receives a total of 36 shares and 15,687 views in the ﬁrst 90 days (see inset), it is estimated to
+have a high exogenous sensitivity and a high endogenous response ( µ= 119.02, Aˆξ = 6.94 ×1072). Between day 91 and day
+120, this video jumped from a popularity percentile of 5.85% to 94.9%, receiving 229 shares and gaining 2.42 million views.
+(b) Forecasting popularity for video 0qMJ zhat E. Black dotted line: viewcounts series from day 1 to 120 after video upload.
+Red line: exogenous simuli s(t), also used in parameters estimation. Left of the the gray dashed vertical line at T ≤90 days:
+time period used for parameters estimation. Blue line: ﬁtted viewcounts for T ≤90 days, generated using Eq 3. Magenta line:
+viewcount forecast for day 91 to 120. (c) Comparison of average forecasting errors on the Active set. y-axis: Forecasting
+errors, calculated as the absolute diﬀerence between the popularity percentile at day 120 and that forecasted by each approach.
+x-axis, left to right: Hawkes intensity model, using either #shares or #tweets as s(t); multivariate linear regression (MLR),
+using only popularity history, or #shares and #tweets, respectively.
+of shares during its ﬁrst 90 days. Consequently, the video
+gained 2.42 million views, drastically improving its ranking
+on the popularity percentile scale from 5.85% to 94.9%.
+5.2 Evaluation of forecast
+The HIP model takes as input the exogenous promotion
+s[t] to produce estimates of the viewcount ξ[t]. To construct
+ξ[t] in the future, s[t] needs to be either estimable or known.
+We call this forecasting popularity, as opposed to predict-
+ing popularity where no information about future exoge-
+nous stimuli is assumed. Forecasting popularity has broad
+applications, such as estimating the eﬀect of intended (pro-
+motional) interventions, and making decisions about when
+to promote.
+Evaluating popularity forecast on temporal hold-
+out data. We design a protocol to quantitatively evaluate
+the predictive power of HIP. We use historical data held-out
+over time, thus avoiding the practical diﬃculty of generat-
+ing realistic promotions and responses in a large-scale social
+network. Using (known) exogenous promotion s[t], we fore-
+cast the popularity ∑120
+91 ξ[t] during the evaluation period
+(in purple) using Eq (4). Fig. 5(b) illustrates this setting
+with an example music video. A vertical line divides the
+observation period, day 1 to 90, and the evaluation period,
+day 91 to 120. The viewcount and the sharing history in
+the observation period is used to ﬁt model parameters and
+explain observed popularity (in blue). For this example, the
+forecast and the actual views are fairly similar.
+Percentile-error metric. We obtain a predicted total
+viewcount over the evaluation period, i.e, ∑120
+91 ξ[t], and we
+evaluate the performances by comparing it to the actual to-
+tal viewcount ∑120
+91
+¯ξ[t]. Commonly-used performance error
+metrics, such as root-mean-square-error (RMSE) or the nor-
+malized RMSE, are skewed by the large number of outliers
+in a long-tailed viewcount distribution and we chose not to
+use them. Instead, we map the forecasted number views to
+a popularity scale constructed as shown in Sec. 3.2, on the
+period 91-120 days of video life. We normalize the number
+of views into a metric between 0 and 1 and we compute
+the absolute error of the predicted percentile. When com-
+pared to the error metrics based on the diﬀerence in views
+(like RMSE), this metric focuses on ranking videos correctly
+with respect to a large collection and is as useful as the broad
+class of learning to rank applications.
+Baseline algorithms. The state-of-the-art approach for
+popularity prediction uses multivariate linear regression (MLR),
+based on the observation that historic viewcounts are pre-
+dictive for future viewcounts [30, 34]. We train linear re-
+gressors to predict daily viewcounts for each day between
+91 and 120, using a 90-dimensional feature corresponding to
+the number of views in days 1 to 90. To give the MLR fore-
+cast the same amount of information as the HIP model, we
+build two enhanced baselines, denoted by MLR (#shares)
+and MLR (#tweets), by introducing the exogenous inﬂu-
+ence as additional variables, both in the training and in
+the prediction. Note that the HIP models for each video
+are learned and evaluated independently, all baselines are
+trained on Active and we obtain predictions for each video
+using cross-validation.
+5.3 Forecasting results
+Fig. 5(c) summarizes forecasting performance for HIP and
+the MLR baselines. The forecasts made using HIP have
+lower average error compared to the linear regression with
+or without exogenous stimuli (#shares, #tweets). The best
+forecast obtained an average percentile error of 4 .96% (me-
+dian 3%) for HIP (#shares) and 6 .94% (median 3.75%) for
+the MLR (#shares), corresponding to a 28.6% relative re-
+duction of error. These diﬀerences are statistically signiﬁ-
+cant with paired t-test p< 0.001, and with a medium eﬀect
+size according to Cohen’s d [12]. Within the HIP variants,
+we found that using the number of shares generates slightly
+better forecast than the number of tweets, but the diﬀer-
+ences are not statistically signiﬁcant at p= 0.001 (more de-
+tails about eﬀect sizes and statistical tests can be found in
+the online appendix [1]). We speculate that the diﬀerence in
+forecasting performance is due to the nature of the sources of
+exogenous excitation: shares capture the promotion behav-
+ior via a multitude of environments, whereas tweets count
+the volume of promotion in Twitter only.
+We also observe that the performance gap doubles when
+forecasting popularity on more diﬃcult videos – videos with
+a large exogenous shock in the forecasting period, deﬁned
+as the mean number plus 100 times the standard devia-
+tion of the number of shares during the observed period.
+Fig. 5(a) shows an example of such a video. There are 4006
+such videos in the Active dataset, for which HIP (#shares)
+achieves a mean percentile error of 5 .11% (median 3 .25%),
+whereas MLR (#shares) achieves a mean error of 9.24% (me-
+dian 6.5%). A typical situation when HIP misses the fore-
+cast is when none or very little external inﬂuence is recorded
+during the observed period and during which the popularity
+is likely to have been driven by unseen exogenous sources.
+Lastly, a note about causality: HIP is linear control sys-
+tem with feedback loop, it iscausal in a linear system sense [29]
+in that future tweets cannot change past views, but does not
+directly correspond to the causal inference paradigm about
+whether a control variable will change a response variable
+in the presence of other confounding factors. Nonetheless,
+we conducted statistical tests using the well-known Granger
+Causality [18] on the shares and view series (details in the
+appendix [1]); they do not show consistent results for either
+shares inﬂuencing views or vice versa.
+6. RELATED WORK
+Popularity modeling and prediction. Early measure-
+ment studies linked popularity with user inﬂuence in Twit-
+ter [7, 36] and with the speed and spread of information in
+social networks [8]. More recently, generative methods, usu-
+ally based on point-processes, were introduced for popularity
+modeling [13, 15, 38] and prediction [4, 28]. In their seminal
+work, Crane and Sornette [13] showed how a Hawkes point-
+process can account for popularity bursts and decays. Sub-
+sequently, more sophisticated models have been proposed
+to model and simulate popularity in microblogs [38] and
+videos [15], by accounting for phenomena such as the “rich-
+get-richer”phenomenon and social contagion. Shen et al. [33]
+employ reinforced Poisson processes, modeling three phe-
+nomena: ﬁtness of an item, a temporal relaxation function
+and a reinforcement mechanism. Zhao et al. [39] propose
+SEISMIC, which employs a double stochastic process, one
+accounting for infectiousness and the other one for the ar-
+rival time of events. TiDeH [23] is an extension of SEIS-
+MIC, which aims at estimating future number of views as a
+function of time, instead of just the ﬁnal total cascade size.
+HIP diﬀers from the above applications in two fundamen-
+tal ways. First, most of the models [4, 23, 28, 31, 39] deal
+with single diﬀusion cascades, that is the reaction to single
+shocks. HIP models popularity as a continuous endogenous-
+exogenous intertwining, allowing it to closely ﬁt complex
+evolutions. Second, typical point-process based methods re-
+quire to observe each individual event during the training
+period, whereas HIP models volumes of attention directly.
+Modeling volumes of popularity. A number of mod-
+els have been proposed to describe the shape and evolution
+of the volume of social media activity over time. The semi-
+nal meme-tracker [24] system uses a curve with polynomial
+increase followed by exponential decay to describe sawtooth-
+shaped volume of news mentions. The SpikeM [27] system
+uses a ﬁxed memory component, modulated by a periodic
+component, however it does not explicitly account for exter-
+nal inﬂuence. Most recently, Tsytsarau et al. [35] model the
+popularity volume as the convolutions two sequences, news
+event importance and media response, which are assumed
+to have predeﬁned shapes. Yang et al. [37] propose a gen-
+erative model to describe sequences that have multiple pro-
+gression stages along with algorithms to estimate model pa-
+rameters and to segment existing sequences. Being based a
+self-excited Hawkes process, HIP simultaneously addresses a
+series of shortcomings of the above approaches: it is adapted
+to forecast total popularity, it can recover all parameters
+from data, and it explains additional, non-stationary varia-
+tions from linked data sources of external activities.
+Inﬂuence estimation and maximization are some-
+what related research problems, but distinct from the one
+approached in this paper. Inﬂuence estimation [17] aims to
+learn probabilities of inﬂuence between pairs of users, start-
+ing from a social graph and a log of actions of its users.
+Inﬂuence maximization [16, 22, 32] ﬁnds the subset of users
+who, if convinced to promote a piece of content, would max-
+imize its diﬀusion. The main diﬀerence between this line
+of work and HIP is that we measure the volume of promo-
+tion and use it to forecast popularity, rather than taking
+a graph-centric view based on network structure and user
+interactions.
+7. SUMMARY AND DISCUSSION
+This research establishes a novel mathematical model to
+systematically link the endogenous response to the exoge-
+nous stimuli of a social system. The model developed here
+provides a nuanced view of the continued interactions of en-
+dogenous and exogenous eﬀects that generate complex and
+multi-phased popularity dynamics over time. We validate
+the model on the popularity and promotion history of a large
+set of YouTube videos. We quantify the endogenous virality
+and exogenous sensitivity for each video, and we them to
+explain the properties of the most popular videos, as well
+as to identify videos that will respond well to promotions
+and those that will not. Such detailed analysis is possi-
+ble because the aggregated attention and promotion data
+are available from YouTube or inferred from public sources
+such as Twitter. Note however that HIP does not make
+any platform-dependent assumption and that it can function
+with any popularity and promotion series generated by ag-
+gregated human behavior. We envision that the same kind
+of attention dynamics would hold for other content types,
+such as webpage views, podcasts, or blogs.
+There are a number of simplifying assumptions and limi-
+tations of the proposed model, which can become fruitful di-
+rections of further investigation. The Hawkes intensity pro-
+cess captures popularity dynamics that are reﬂected only in
+the observed external promotion series, and does not capture
+other factors such as (daily or weekly) seasonality. What this
+model also focuses on is the expected inﬂuence over all users
+rather than individual inﬂuence. Both of these observations
+suggest extensions that could incorporate seasonality com-
+ponents as well as taking into account individual inﬂuences.
+Lastly, media items are inﬂuenced by a variety of sources
+in the open world and there are many sources of online or
+oﬄine promotion that are unobserved or diﬃcult to obtain
+data from. A well-known example is that gaming videos are
+known to be discussed intensively in topic-speciﬁc forums.
+Tracking and estimating diverse or even unknown sources of
+exogenous inﬂuence is another open research question.
+Acknowledgments. This material is based on research spon-
+sored by the Air Force Research Laboratory, under agreement
+number FA2386-15-1-4018. We thank the National Computa-
+tional Infrastructure (NCI) for providing computational resources,
+supported by the Australian Government. We thank Alban Grastien,
+Richard Nock and Christian Walder for insightful discussions.
+8. REFERENCES
+[1] Appendix: Expecting to be HIP: Hawkes intensity
+processes for social media popularity, 2017.
+https://arxiv.org/pdf/1602.06033.pdf#page=11.
+[2] E. Bakshy, J. M. Hofman, W. A. Mason, and D. J. Watts.
+Everyone’s an inﬂuencer. In WSDM ’11, page 65, feb 2011.
+[3] R. Bandari, S. Asur, and B. A. Huberman. The pulse of
+news in social media: Forecasting popularity. In Sixth
+International AAAI Conference on Weblogs and Social
+Media, 2012.
+[4] P. Bao, H.-W. Shen, X. Jin, and X.-Q. Cheng. Modeling
+and Predicting Popularity Dynamics of Microblogs using
+Self-Excited Hawkes Processes. In WWW, pages 9–10, 2015.
+[5] J. Berger and K. L. Milkman. What makes online content
+viral? Journal of marketing research, 49(2):192–205, 2012.
+[6] J. Berger and E. M. Schwartz. What drives immediate and
+ongoing word of mouth? Journal of Marketing Research,
+48(5):869–880, 2011.
+[7] M. Cha, H. Haddadi, F. Benevenuto, and K. P. Gummadi.
+Measuring User Inﬂuence in Twitter: The Million Follower
+Fallacy. In ICWSM ’10, volume 10, pages 10–17, 2010.
+[8] M. Cha, A. Mislove, and K. P. Gummadi. A
+measurement-driven analysis of information propagation in
+the ﬂickr social network. In WWW, pages 721–730, 2009.
+[9] J. Cheng, L. Adamic, P. A. Dow, J. M. Kleinberg, and
+J. Leskovec. Can cascades be predicted? In WWW ’14,
+pages 925–936. ACM, 2014.
+[10] J. Cheng, L. A. Adamic, J. M. Kleinberg, and J. Leskovec.
+Do cascades recur? In WWW, pages 671–681, 2016.
+[11] A. Clauset, C. R. Shalizi, and M. E. J. Newman.
+Power-Law Distributions in Empirical Data. SIAM Review,
+51(4):661–703, Nov. 2009.
+[12] J. Cohen. Statistical Power Analysis for the Behavioral
+Sciences. Hillsdale, NJ, 2nd edition, 1988.
+[13] R. Crane and D. Sornette. Robust dynamic classes revealed
+by measuring the response function of a social system.
+PNAS ’08, 105(41):15649–15653, oct 2008.
+[14] A. De, I. Valera, N. Ganguly, S. Bhattacharya, and M. G.
+Rodriguez. Learning and forecasting opinion dynamics in
+social networks. In NIPS’16, pages 397–405, 2016.
+[15] W. Ding, Y. Shang, L. Guo, X. Hu, R. Yan, and T. He.
+Video Popularity Prediction by Sentiment Propagation via
+Implicit Network. In CIKM ’15, pages 1621–1630, oct 2015.
+[16] M. Farajtabar, N. Du, M. G. Rodriguez, I. Valera, H. Zha,
+and L. Song. Shaping social activity by incentivizing users.
+In NIPS’14, pages 2474–2482, 2014.
+[17] A. Goyal, F. Bonchi, and L. V. Lakshmanan. Learning
+inﬂuence probabilities in social networks. In WSDM ’10,
+pages 241–250. ACM, 2010.
+[18] C. W. Granger. Some recent development in a concept of
+causality. Journal of Econom., 39(1):199–211, 1988.
+[19] A. G. Hawkes. Spectra of some self-exciting and mutually
+exciting point processes. Biometrika, 58(1):83–90, 1971.
+[20] A. Helmstetter and D. Sornette. Subcritical and
+supercritical regimes in epidemic models of earthquake
+aftershocks. Journal of Geophysical Research: Solid Earth,
+107(B10):ESE 10–1–ESE 10–21, 2002.
+[21] Q. Ke, E. Ferrara, F. Radicchi, and A. Flammini. Deﬁning
+and identifying sleeping beauties in science. PNAS,
+112(24):7426–7431, 2015.
+[22] D. Kempe, J. Kleinberg, and ´E. Tardos. Maximizing the
+spread of inﬂuence through a social network. In KDD ’03,
+pages 137–146. ACM, 2003.
+[23] R. Kobayashi and R. Lambiotte. TiDeH: Time-Dependent
+Hawkes Process for Predicting Retweet Dynamics. In
+ICWSM 2016, number ICWSM, 2016.
+[24] J. Leskovec, L. Backstrom, and J. Kleinberg.
+Meme-tracking and the dynamics of the news cycle. In
+KDD ’09, pages 497–506. ACM, 2009.
+[25] D. C. Liu and J. Nocedal. On the limited memory BFGS
+method for large scale optimization. Mathematical
+Programming, 45(1-3):503–528, aug 1989.
+[26] T. Martin, J. M. Hofman, A. Sharma, A. Anderson, and
+D. J. Watts. Exploring limits to prediction in complex
+social systems. In WWW ’16, pages 683–694, 2016.
+[27] Y. Matsubara, Y. Sakurai, B. A. Prakash, L. Li, and
+C. Faloutsos. Rise and fall patterns of information
+diﬀusion: Model and implications. KDD ’12, 2012.
+[28] S. Mishra, M.-A. Rizoiu, and L. Xie. Feature Driven and
+Point Process Approaches for Popularity Prediction. In
+CIKM ’16, page 10, 2016.
+[29] A. Oppenheim, A. Willsky, and S. Nawab. Signals and
+Systems. Prentice Hall, 1997.
+[30] H. Pinto, J. M. Almeida, and M. A. Gon¸ calves. Using early
+view patterns to predict the popularity of youtube videos.
+In WSDM ’13, pages 365–374. ACM, 2013.
+[31] J. C. L. Pinto, T. Chahed, and E. Altman. Trend detection
+in social networks using hawkes processes. In
+ASONAM ’15, pages 1441–1448, 2015.
+[32] V. Raghavan, G. Ver Steeg, A. Galstyan, and A. G.
+Tartakovsky. Modeling Temporal Activity Patterns in
+Dynamic Social Networks. IEEE Transactions on
+Computational Social Systems, 1(1):89–107, mar 2014.
+[33] H.-W. Shen, D. Wang, C. Song, and A.-L. Barab´ asi.
+Modeling and Predicting Popularity Dynamics via
+Reinforced Poisson Processes. In AAAI, page 291, 2014.
+[34] G. Szabo and B. A. Huberman. Predicting the popularity
+of online content. Com. of the ACM, 53(8):80–88, 2010.
+[35] M. Tsytsarau, T. Palpanas, and M. Castellanos. Dynamics
+of news events and social media reaction. KDD ’14, 2014.
+[36] J. Weng, E.-P. Lim, J. Jiang, and Q. He. Twitterrank:
+ﬁnding topic-sensitive inﬂuential twitterers. In WSDM ’10,
+pages 261–270. ACM, 2010.
+[37] J. Yang, J. McAuley, J. Leskovec, P. LePendu, and
+N. Shah. Finding progression stages in time-evolving event
+sequences. In WWW ’14, pages 783–794, 2014.
+[38] L. Yu, P. Cui, F. Wang, C. Song, and S. Yang. Uncovering
+and predicting the dynamic process of information cascades
+with survival model. Know. and Inf. Syst., page 10, 2016.
+[39] Q. Zhao, M. A. Erdogdu, H. Y. He, A. Rajaraman, and
+J. Leskovec. SEISMIC: A Self-Exciting Point Process
+Model for Predicting Tweet Popularity. In KDD ’15, 2015.
+Appendix: Expecting to be HIP:
+Hawkes Intensity Processes for Social Media Popularity
+Marian-Andrei Rizoiu, Lexing Xie, Scott Sanner,
+Manuel Cebrian, Honglin Yu, Pascal Van Hentenryck
+DOI: 10.1145/3038912.3052650
+Contents
+1 Details of HIP . . . . . . . . . . . . . . . . . . . 11
+1.1 Event rate in marked Hawkes processes . . 11
+1.2 Proof of Theorem 2.1: ξ(t) for unobserved
+point processes . . . . . . . . . . . . . . . . 12
+1.2.1 Preliminaries: event rate, counting
+process . . . . . . . . . . . . . . . . 12
+1.2.2 Expected event rate for unmarked
+Hawkes . . . . . . . . . . . . . . . . 12
+1.2.3 Expected event rate for marked Hawkes 14
+1.3 Branching factor and endogenous response 15
+1.4 HIP as an LTI system . . . . . . . . . . . . 15
+2 Details about ﬁtting HIP . . . . . . . . . . . . . 16
+2.1 The loss function . . . . . . . . . . . . . . . 16
+2.2 Computing gradients . . . . . . . . . . . . 17
+2.3 Adding an L2 regularizer . . . . . . . . . . 17
+2.4 Properties of the model estimates . . . . . 18
+3 Data . . . . . . . . . . . . . . . . . . . . . . . . 18
+3.1 The 5Mo and Active datasets . . . . . . 18
+3.2 The popularity scale over time . . . . . . . 19
+4 Understanding popularity dynamics . . . . . . . 19
+4.1 Behavior across groups of videos: categories
+and channels . . . . . . . . . . . . . . . . . 20
+4.2 Categories of longer versus shorter memory 21
+4.3 Model parameters and popularity . . . . . 22
+4.4 Potential causal connection between the
+views, tweets and shares series . . . . . . . 23
+5 Popularity forecasting and comparison to baseline 24
+5.1 Additional results . . . . . . . . . . . . . . 24
+5.2 Comparing performance . . . . . . . . . . . 24
+5.3 Forecasting performance on diﬃcult videos 26
+1 Details of HIP
+Given time t ∈[0,∞), we denote by λ(t) the event rate
+of an online resource at time t. The goal of this section is
+to derive the expected event rate, denoted as ξ(t), as the
+average response rate from a large network.
+There are two sources of events in the social system
+– exogenous events originating outside the system and
+endogenous events spawned from within the system as the
+response to previous events (that are either exogenous
+or endogenous). For example, a public speech held by
+a famous politician can be an exogenous source for the
+number of views of relevant Youtube videos on politics; on
+the other hand, the views on trailers prior to the release of
+new movies exhibits a rich-get-richer eﬀect for attention
+distribution that are characteristic of endogenous word-
+of-mouth diﬀusion.
+1.1 Event rate in marked Hawkes pro-
+cesses
+The Hawkes process [5], as deﬁned in main text Eq. (1), is
+a non-homogeneous Poisson process with self-excitation,
+its event rate λ(t), or instantaneous conditional intensity
+r(t|Ht) is:
+λ(t) := r(t|Ht) = µs(t) +
+∑
+ti<t
+φmi(t−ti) (11)
+Here t >0 denotes time; Ht = {(mi,ti); ti < t}is the
+event history before time t; s(t) is the rate of exogenous
+events. µ is a scaling factor for exogenous stimulus, and
+φm(τ) is a time-decaying trigger kernel that is determined
+by the magnitude of each event mi.
+Our Hawkes intensity model is a type ofmarked Hawkes
+process, as also used in [6, 12]. In marked Hawkes pro-
+cesses, each event ihas an occurrence time ti and a mag-
+nitude mi (or mark), which captures the relative ampliﬁ-
+cation of the likelihood of an event to spawn future events.
+Intuitively, the mark can represent the magnitude of an
+earthquake when modeling the occurrence of aftershocks
+of an earthquake, or the number of people an event can
+subsequently inﬂuence when modeling social networks.
+This can be approximated, say, with the number of fol-
+lowers (on Twitter) or friends (on Facebook). The trig-
+gering kernel φm(τ), as deﬁned in main text Eq. (2), can
+be written as the product of two separable terms: b(m)
+modeling the inﬂuence of event marks and φ(τ) modeling
+the temporal decay:
+φm(τ) = κmβˆτ−(1+θ) := b(m)φ(τ) ,
+with b(m) = κmβ,φ(τ) = ˆτ−(1+θ),ˆτ = τ + c. (12)
+Note ˆτ = τ + c introduced for the sake of brevity in the
+calculations in the following sections.
+11
+In this work, we focus on modeling the total attention
+– commonly known as popularity, that closely connects
+to the average event rate across the whole network. We
+extract the number of followers m for a large sample of
+users from our dataset described in Sec. 3 and ﬁt a power-
+law distribution p(m) = (α−1)m−α following the method
+in [1]. We obtain α= 2.016 and we use it throughout the
+experiments. As noted in the main text, the two power
+law exponents are distinct in meaning and function, θ
+deﬁnes memory decay over time, whileαis determined by
+the user distribution at large. αis estimated from a large
+Twitter sample. θand other video-dependent parameters
+are estimated from popularity history as detailed in Sec 2
+below.
+1.2 Proof of Theorem 2.1: ξ(t) for unob-
+served point processes
+In this section we give the proof of the main text The-
+orem 2.1. More precisely, we derive the expected event
+rate ξ(t) over time, speciﬁed in the main text Eq. (3).
+This is done in three steps: we ﬁrst include a prelimi-
+nary description of the event rate λ(t) in terms of the un-
+derlying counting process over inﬁnitesimal intervals, we
+then derive the expected event rate for unmarked Hawkes
+processes, and ﬁnally we build upon these to derive the
+expected event rate for marked Hawkes processes.
+1.2.1 Preliminaries: event rate, counting process
+It is well known in stochastic process literature [8] that the
+event rate λ(t), or the conditional intensity speciﬁcation
+r(t|Ht) of a point process is completely characterized by
+the corresponding counting process N(t). Here N(t) is
+the total number of events observed between time 0 and
+t.
+Given an inﬁnitesimal interval δat time t, the relation-
+ship between N(t) and r(t|Ht) is described as:
+P(N(t+ δ) −N(t) = 1|Ht) = r(t|Ht)δ+ o(δ) ,
+P(N(t+ δ) −N(t) >1|Ht) = o(δ) ,
+with lim
+δ↓0
+o(δ)
+δ = 0 . (13)
+Here P denotes the probability of a discrete random vari-
+able. The intuition of the expression above is that r(t|Ht)
+is proportional to the probability thatN(t) increments by
+1, and that it is “very unlikely” for N(t) to increment by
+more than one.
+Let dNt be the counting increment N(t+ δ) −N(t) as
+δ↓0. From Eq. (13), we can describe dNt as a Bernoulli
+random variable, with:
+P(dNt = 1|Ht) = r(t|Ht)δ ,
+P(dNt = 0|Ht) = 1 −r(t|Ht)δ ,
+for δ↓0 .
+It follows from the above that
+EdNt|Ht[dNt] = r(t|Ht)δ, for δ↓0.
+Using the shorthand λ(t) for event rate and putting the
+above together, we can see that Hawkes processes can be
+speciﬁed as:
+λ(t) := r(t|Ht) = lim
+δ↓0
+P(N(t+ δ) −N(t) = 1|Ht)
+δ
+= lim
+δ↓0
+P(dNt = 1|Ht)
+δ
+= lim
+δ↓0
+EdNt|Ht [dNt]
+δ , (14)
+Note that Eq. (14) is an alternate formulation of Eq. (11)
+through the counting process N(t). Eq. (14) holds for
+all non-homogeneous Poisson processes. Hawkes pro-
+cesses (marked and unmarked) are special cases of non-
+homogeneous Poisson processes.
+1.2.2 Expected event rate for unmarked Hawkes
+We ﬁrst study the simpler case of an unmarked Hawkes
+processes λu(t), and derive its expected event rate ξu(t)
+over possible event histories. While it is not strictly nec-
+essary to breakdown the derivation into two parts, this
+helps illustrate the main ideas underlying the derivation
+for marked processes in the next subsection. The key idea
+in this subsection is converting the conditional expecta-
+tion of event history into increments of the counting pro-
+cess, and using conditional expectations to link the expec-
+tations of counting increments to the expected rate ξu(t)
+via λu(t). The next subsection will use exactly the same
+treatment for the history of event times, and performs a
+similar treatment for a history of event magnitudes.
+Let an unmarked Hawkes process be:
+λu(t) := r(t|Ht) = µs(t) +
+∑
+ti<t
+φ(t−ti). (15)
+Here φ(τ) is a memory kernel speciﬁed in Eq. (12), scaling
+constant κ is omitted without loss of generality. Note
+Eq. (14) still holds. Here i = 1 ,...,N (t) is the event
+index, and N(t) is a random variable, representing the
+total number of events before time t, i.e. the counting
+process. It is worth noting that there are two equivalent
+expressions of the event history Ht. The ﬁrst one is Ht
+being a random set of time stamps of the events which
+took place between [0 ,t), Ht = {t1:N(t)}. Note that the
+cardinality of Ht is N(t), hence random. The second
+deﬁnition expresses Ht with the counting process N(τ) as
+a piece-wise constant function between [0 ,t). Here each
+jump point in N(τ) correspond to an event time, and the
+number of jumps is random variableN(t). It is easy to see
+that the two deﬁnitions are equivalent. For convenience,
+we write Ht = {N(τ),0 <τ <t}.
+12
+We deﬁne the expected event rate ξu(t) as a function
+over time, obtained by taking expectations of λu(t) over
+the event history, note that this is an unmarked process,
+all event magnitudes are the same (i.e. 1). Note that tak-
+ing expectations over Ht can be thought of as either over
+a set of random variables ti with a random dimensional-
+ity N(t), or as over random piece-wise constant functions
+over time, i.e. N(τ), for 0 <τ <t.
+ξu(t) :=EHt [λu(t)]
+=EHt
+[
+µs(t) +
+∑
+ti<t
+φ(t−ti)
+]
+6(a) =µs(t) + Et1:N(t)
+
+
+N(t)∑
+i=1
+φ(t−ti)
+
+
+6(b) =µs(t)+
++ E{N(τ),0<τ<t}
+[
+lim
+δ↓0
+K∑
+k=1
+1(dNkδ = 1)φ(t−kδ)
+]
+6(c) =µs(t)+
++ lim
+δ↓0
+EdNkδ,k=1:K
+[K∑
+k=1
+1(dNkδ = 1)φ(t−kδ)
+]
+(16)
+Here step 6(a) is due to µs(t) being not random, and
+that expectations over all t1:N(t) are equivalent to taking
+expectations over event history Ht.
+In step 6(b), we divide time interval (0,t) into K equal-
+sized inﬁnitesimal intervals of size delta, with Kδ = t.
+1(dNkδ = 1) is the indicator function that takes value
+1 when there is an event in the interval [( k −1)δ,kδ),
+or dNkδ = 1, and 0 otherwise. Note that we replaced
+each arrival time ti from line 6(a) with kδ, since event i
+occurred in the time interval [(k−1)δ,kδ). Consequently,
+the term φ(t−ti) became φ(t−kδ).
+In step 6(c), we ﬁrst exchange the order of the limit
+lim
+δ↓0
+and expectation. We note that taking expectation
+over the counting process {N(τ),0 < τ < t}is equiv-
+alent to taking expectation over its Bernoulli increments
+{dNτ, 0 <τ <t}, or it’s discretized version over inﬁnites-
+imal intervals dNkδ,k=1:K.
+We then unroll the sum over all intervals. For an inter-
+val k′δ, or [(k′−1)δ,k′δ), the indicator function becomes
+1(dNk′δ = 1), the kernel φ(t−k′δ), and the expectation
+is taken over dNkδ,k=1:k′ since the process is causal – i.e.
+current events are only inﬂuenced by the past and not the
+future.
+EdNkδ,k=1:K
+[K∑
+k=1
+1(dNkδ = 1)φ(t−kδ)
+]
+= EdNkδ,k=1 [1(dN1δ = 1)φ(t−1δ)]
++ EdNkδ,k=1,2 [1(dN2δ = 1)φ(t−2δ)]
++ ...
++ EdNkδ,k=1:k′[1(dNk′δ = 1)φ(t−k′δ)]
++ ...
++ EdNkδ,k=1:K [1(dNKδ = 1)φ(t−Kδ)] (17)
+Each expectation term in Eq. (17) can be computed as
+follows.
+EdNkδ,k=1:k′[1(dNk′δ = 1)φ(t−k′δ)]
+(8a) = EH(k′−1)δEdNk′δ|H(k′−1)δ [1(dNk′δ = 1)] φ(t−k′δ)
+(8b) = δEH(k′−1)δ [λu(k′δ)] φ(t−k′δ)
+(8c) = δξu(k′δ)φ(t−k′δ) ; (18)
+Step (18a) is due to the kernels term φ(t−k′δ) being
+non-random and thus becoming constants. Also note that
+each expectation EdNkδ,k=1:k′[1(dNk′δ = 1)] can be com-
+puted by breaking down the joint distributiondNkδ,k=1:k′
+into the conditional distribution dNk′δ|H(k′−1)δ and the
+prior distribution over H(k′−1)δ. We write the prior in
+terms of event history for notational convenience. Due
+to the two equivalent deﬁnitions of event history, taking
+the expectation over the history EH(k′−1)δ is equivalent
+to taking the expectation over increments of the counting
+process EdNkδ,k=1:(k′−1).
+Step (18b) is due to Eq. (14), the inner expectation can
+be written as EdNk′δ|H(k′−1)δ [1(dNk′δ = 1)] = δλu(k′δ) as
+δ↓0.
+Step (18c) is due to the deﬁnition of the expected event
+rate ξu(t) in Eq. (16). The expectation of event rate
+λu(k′δ) over H(k′−1)δ becomes ξu(k′δ) as δ↓0.
+Applying the result of Eq. (18) back to Eq. (17), we
+get:
+EdNkδ,k=1:K
+[K∑
+k=1
+1(dNkδ = 1)φ(t−kδ)
+]
+=
+K∑
+k=1
+δξu(kδ)φ(t−kδ) (19)
+Applying Eq. (19) to the end of Eq. (16), and taking
+the limit δ↓0, we have:
+ξu(t) := EHt [λu(t)]
+t=Kδ = µs(t) + lim
+δ↓0
+K∑
+k=1
+δξu(kδ)φ(t−kδ)
+= µs(t) +
+∫ t
+0
+ξu(τ)φ(t−τ)dτ (20)
+13
+Performing a change of variable τ ←t−τ, we obtain the
+integral equation specifying the expected event rate for
+unmarked Hawkes process.
+ξu(t) = µs(t) +
+∫ t
+0
+ξu(t−τ)φ(τ)dτ (21)
+To the best of our knowledge, this deﬁnition of the in-
+tensity function, along with the derivation of its analytical
+form is new. The original paper by Hawkes [5] presents
+an integral equation of similar form, but it is for the co-
+variance density and not the event intensity function.
+1.2.3 Expected event rate for marked Hawkes
+The expected event rate functionξ(t) for a marked Hawkes
+process is deﬁned as the expectation of the event rate
+function λ(t) over the set of event times and magnitudes
+before time t. In this subsection we work with the event
+rate as speciﬁed in Eq. (11):
+λ(t) := r(t|Ht) = µs(t) +
+∑
+ti<t
+φmi(t−ti)
+In this subsection, we augment the deﬁnition of the
+event history with the event magnitudes, i.e., Ht =
+{(ti,mi),i=1:N(t) }, In other words, each event consists of
+a (random) jump time ti and a (random) event magni-
+tude mi, and there are N(t) (another random quantity)
+such time-magnitude pairs before time t.
+We assume that any event magnitude mi is drawn
+i.i.d. from the same power-law distribution p(m) =
+(α−1)m−α,m> 0, once the event time ti is determined.
+That is to say, for an event spawned through the endoge-
+nous process, the magnitude of the event is independent
+of the magnitude of its parent event.
+We deﬁne the expected event rate ξ(t) for the marked
+Hawkes processes λ(t) as follows. Step (22a) below is due
+to µs(t) being non-random.
+ξ(t) := EHt [λ(t)]
+= EHt
+[
+µs(t) +
+∑
+ti<t
+φmi(t−ti)
+]
+Eq.12 = EHt
+[
+µs(t) +
+∑
+ti<t
+b(mi)φ(t−ti)
+]
+(12a) = µs(t) + EHt
+
+
+N(t)∑
+i=1
+b(mi)φ(t−ti)
+
+ (22)
+In order to unroll this expectation into K small inter-
+vals of size δ, we need a set of auxiliary variables, called
+mk,k = 1 : K. For each interval [( k−1)δ,kδ), we draw
+mk ∼p(m). If indicator function 1(dNkδ = 1) = 1, then
+mk is kept; otherwise when 1(dNkδ = 1) = 0, mk is thrown
+away as no event happened in this interval. One can eas-
+ily verify that this process of generating i.i.d. draws of
+mk is equivalent to obtaining i.i.d. draws of the original
+mi. We use this to re-write the expectation in Eq. (22),
+and exchange the order of the expectation and the limit.
+EHt
+
+
+N(t)∑
+i=1
+b(mi)φ(t−ti)
+
+
+=EHt
+[
+lim
+δ↓0
+K∑
+k=1
+1(dNkδ = 1)b(mk)φ(t−kδ)
+]
+=lim
+δ↓0
+EHt
+[K∑
+k=1
+1(dNkδ = 1)b(mk)φ(t−kδ)
+]
+(23)
+We exchange the order of the expectation and the sum-
+mation, and unroll the sum over all intervals. This is
+similar to Eq. (17). A marked Hawkes process respects
+event sequencing in time (also called causal in linear
+systems), this means that the expectation of each term
+[1(dNkδ = 1)b(mk)φ(t−kδ)]k=k′ only depends on event
+history Hk′δ, and not after.
+EHt
+[K∑
+k=1
+1(dNkδ = 1)b(mk)φ(t−kδ)
+]
+=EH1δ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=1
++ EH2δ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=2
++ ...
++ EHk′δ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=k′
++ ...
++ EHKδ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=K (24)
+We now compute the expectation term when k = k′.
+Step (15a) is due to φ(t−k′δ) being non-random. Step
+(15b) breaks down the expectation over the entire history
+Hk′δ into the part over the current event (and its magni-
+tude if happens) dNk′δ,mk′ conditioned on prior history
+H(k′−1)δ and over the prior history itself. This is similar
+to Eq. (18) for the unmarked process.
+EHk′δ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=k′
+(15a) =EHk′δ [1(dNk′δ = 1)b(mk′)] φ(t−k′δ)
+(15b) =EH(k′−1)δEdNk′δ,mk′|H(k′−1)δ
+[1(dNk′δ = 1)b(mk′)]φ(t−k′δ) (25)
+Note that the middle conditional expectation term de-
+composes into two parts. Note that 1(dNk′δ = 1) is inde-
+pendent of mk′, therefore
+EdNk′δ|H(k′−1)δ1(dNk′δ = 1) = δλ(k′δ); as δ↓0 (26)
+The expectation of function b(m) is the same and only
+depends on p(m) whenever dNk′δ = 1. This is due to the
+generating assumption of event magnitudes at the begin-
+ning of this subsection.
+EdNk′δ,mk′|H(k′−1)δb(mk′) = Em[b(m)] (27)
+14
+Furthermore, we see that Em[b(m)] can be computed in
+closed form, we call this modeling constant C (also de-
+ﬁned in main text Theorem 2.1).
+Em[b(m)] = Em[κmβ] = κ
+∫ ∞
+1
+p(m)mβdm
+= κ
+∫ ∞
+1
+(α−1)m−αmβdm= κ(α−1)
+α−β−1 := C
+(28)
+Plugging in the result of Eq. (26)–28 back to Eq.25, we
+notice EH(k′−1)δ[λ(k′δ)] = ξ(k′δ) due to the deﬁnition of
+ξ(t) in Eq. (22), which yields
+EHk′δ [1(dNkδ = 1)b(mk)φ(t−kδ)]k=k′ = C·δξ(k′δ).
+(29)
+Applying this result to Eq. (24) and then to Eq.22, fol-
+lowed by taking the limit δ↓0, we have:
+ξ(t) := EHt [λ(t)]
+t=Kδ = µs(t) + lim
+δ↓0
+K∑
+k=1
+C·δξ(kδ)φ(t−kδ)
+= µs(t) + C
+∫ t
+0
+ξ(τ)φ(t−τ)dτ
+τ←t−τ = µs(t) + C
+∫ t
+0
+ξ(t−τ)φ(τ)dτ
+φ(τ)=ˆτ−(1+θ)
+= µs(t) + C
+∫ t
+0
+ξ(t−τ)ˆτ−(1+θ)dτ (30)
+Eq. (30) is Eq. (3) in the main text Theorem 2.1.
+1.3 Branching factor and endogenous re-
+sponse
+We derive two quantities from the Hawkes Intensity Pro-
+cess in order to better visualize and explain the diverse
+behavior of video popularity.
+Branching factor n The ﬁrst key parameter is the
+branching factor n, deﬁned as the mean number of daugh-
+ter events generated by a mother event. For a marked
+Hawkes point process, the branching factor is computed
+by integrating the triggering kernel over time and taking
+the expectation over the magnitude m.
+n=
+∫ ∞
+mmin
+∫ ∞
+0
+p(m)φm(τ)dτdm =
+= C
+θcθ, for β <α−1 and θ> 0 .
+n< 1 implies a subcritical regime, i.e., the instantaneous
+rate of events decreases over time and new events will
+eventually cease to occur (in probability); n >1 implies
+a supercritical regime, i.e. each new event generates more
+than one direct descendant, which in turn generates more
+descendants, unless the network condition changes, the
+total number of events is expected to be inﬁnity.
+Endogenous response Aˆξ The second quantity Aˆξ,
+as deﬁned in the main text Sec. 2.5, is the total number
+of (direct and indirect) descendants generated from one
+event. In the main text, Aˆξ is deﬁned in the discrete form,
+however it can also be deﬁned as an integral over the con-
+tinuous form of the impulse response as Aˆξ =
+∫∞
+0
+ˆξ(t)dt.
+Although deﬁned separately, we can see that Aˆξ is
+closely related to branching factor n: the initial exoge-
+nous event will generate n events as ﬁrst-generation di-
+rect descendants. Each of these events will generate an
+expected n events (n2 events in the second generation),
+and each of these will in turn generatenevents (n3 events
+in the third generation), . . . . Herenk is the average num-
+ber of events in the kth generation, and so on. This leads
+to an equivalent deﬁnition of Aˆξ.
+Aˆξ = 1 + n+ n2 + ... + nk + ... =
+= lim
+k→∞
+1 −nk
+1 −n =
+=
+{
+1
+1−n ,n< 1
+∞ ,n> 1 (31)
+While both capturing the endogenous property of the
+Hawkes Intensity model, Aˆξ and nemphasize diﬀerent in-
+tuitions. We chose to visualize Aˆξ in the endo-exo map,
+because it has a direct correspondence to the sliced LTI
+system view in main text Eq. (7) and Fig. 2(b), and
+that Aˆξ has better numerical resolution for the more viral
+videos – i.e., when n is close to 1. In the main text, we
+obtain estimates of Aˆξ by numerically summing ˆξ[t] in the
+main text Eq. (7) over 10 ,000 discrete time steps.
+Crane and Sornette [3] showed that the Hawkes Inten-
+sity Process in a super-critical state could explain some
+rising patterns of popularity observed in social media. We
+note, however, that ﬁnite resources in the real world, such
+as collective human attention [10], are bound to be ex-
+hausted and online systems cannot stay indeﬁnitely in a
+supercritical regime. We argue, most online media items
+are aﬀected by a continued interaction of exogenous stim-
+uli and endogenous reaction (that may be sub- or super-
+critical), leading to continued rise in popularity, or mul-
+tiple phases of rising and falling patterns.
+1.4 HIP as an LTI system
+Proof of main text Corollary 2.2 The Hawkes in-
+tensity process can be viewed as a system with one input
+– the exogenous stimuli rate s(t), and one output – the
+event rate ξ(t). The main text Corollary 2.2 states that
+the system s(t) →ξ(t) is an Linear Time Invariant (LTI)
+system. That is to say, the system has two properties:
+Linearity, which states that the relation between the
+input and the output of the system is a linear map: if
+s1(t) →ξ1(t) and s2(t) →ξ2(t), then as1(t) + bs2(t) →
+aξ1(t) + bξ2(t),∀a,b ∈R. We can see that linear scaling
+15
+is true as1(t) →aξ1(t) by multiplying a to both sides
+of Eq. (3) in the main text and re-grouping terms. Ad-
+ditivity as1(t) + bs2(t) →aξ1(t) + bξ2(t) can be shown
+similarly.
+Time invariance, which states that the response to a
+delayed input is identical and similarly delayed: if s(t) →
+ξ(t) then s(t−t0) →ξ(t−t0).
+We wish to show the following for Eq. (3) of the main
+text:
+ξ(t−t0) = µs(t−t0) + C
+∫ t
+0
+ˆτ−(1+θ)ξ(t−t0 −τ)dτ
+After a change of variable t′= t−t0, we can see that the
+LHS is ξ(t′). For the RHS, ˆτ remains unchanged, the rest
+is:
+µs(t′) + C
+∫ t′+t0
+0
+ˆτ−(1+θ)ξ(t′−τ)dτ
+We write the integral into two parts, i.e., (0,t) and (t′,t′+
+t0).
+µs(t′) + C
+∫ t′
+0
+ˆτ−(1+θ)ξ(t′−τ)dτ
++ C
+∫ t′+t0
+t′
+ˆτ−(1+θ)ξ(t′−τ)dτ
+We note that ξ(t) is a causal function, i.e., ξ(t) = 0 for
+t < 0, or ξ(t′−τ) = 0 for τ > t′. The second term
+vanishes. RHS becomes
+µs(t′) + C
+∫ t′
+0
+ˆτ−(1+θ)ξ(t′−τ)dτ
+Note LHS = RHS due to Eq. (30) and time invariance
+holds.
+The main text Corollary 2.2 concerning the LTI prop-
+erty directly implies the following about Hawkes intensity
+processes, as illustrated in Fig. 2(b) of the main text.
+• Additive eﬀects from multiple sources of external
+stimulation: when applying two sources of excita-
+tion, the event rate of the resulting Hawkes intensity
+process is the sum of the rates generated by each
+source of excitation independently. This allows us to
+separately quantify the impact of each source.
+• Scaling the expected event rate : if the exogenous
+stimuli scales up or down, the endogenous reaction
+will scale accordingly. In other words, if we can con-
+trol the amount of exogenous promotions, we could
+boost or suppress the number of views for videos that
+respond to such promotions.
+• Shifting in time : if the exogenous stimuli is shifted
+in time, so will the views responding to it. In other
+words, we could schedule promotions (and subse-
+quent views) for videos that respond to such pro-
+motions.
+Proof of main text Lemma 2.3 The sliced ﬁtting
+graph in Fig. 2(b) of the main text can be understood as
+an illustration of these three properties. In reality we ob-
+serve the exogenous stimuli s(t) as a discretized function
+(denote discrete time index as [ t]) consisting a series of
+impulses located at τ = 1,2,...,T , i.e.
+T∑
+τ=0
+s[τ]δ[t−τ] (32)
+Directly following from the three properties, we can see
+that ξ[t] is a superposition of impulse response func-
+tion ˆξ[t] scaled by s[τ] and shifted by the corresponding
+amount, i.e.
+ξ[t] =
+T∑
+τ=0
+s[τ]ˆξ[t−τ] (33)
+Visibly, Eq. (33) is Eq. 8 in the main text Lemma 2.3.
+2 Details about ﬁtting HIP
+This section describes some of the implementation and
+computational details for estimating the model in Eq. (30)
+from observed popularity and promotion histories.
+2.1 The loss function
+In this section, we develop the calculation of the loss func-
+tion deﬁned in main text Eq. (6). For each video with ob-
+served {¯ξ[t],¯s[t],t = 1,...,T }, we ﬁnd an optimal set of
+models parameters {µ,θ,C,c }and also estimate the un-
+observed external inﬂuence (parameters γ and η). This
+is done by minimizing the square error between the series
+¯ξ[t] and the model ξ[t], ∀t∈0,1 ...T . The corresponding
+optimization problem is as follows:
+min
+µ,θ,C,c,γ,η
+J = 1
+2
+T∑
+t=0
+(
+ξ[t] −¯ξ[t]
+)2
+Eq. (30), 4 = 1
+2
+T∑
+t=0
+(
+γ1 [t= 0] + η1 [t> 0] + µ¯s[t]
++ C
+t∑
+τ=1
+ξ[t−τ](τ + c)−(1+θ) −¯ξ[t]
+)2
+s.t. µ,θ,C,c> 0 (34)
+Note that Eq. (34) involves the model componentsξ[t−
+τ] – as we will show in the Sec. 2.2, the objective function
+and its gradients are computed iteratively by estimating
+ξ[τ] from ξ[1],...,ξ [t−1]. Also note that the recursive
+term is model estimates ξ[t−τ] rather than observations
+¯ξ[t−τ], as we would like to have the model reproducing
+the whole observed time series, rather than predicting the
+next point given observed history. As will be discussed in
+Sec. 2.3, we further improve ﬁtting stability by adding a
+L2 regularizer to the objective function.
+16
+2.2 Computing gradients
+Eq. (34) is a non-convex objective, we use gradient-based
+optimization approach, and speciﬁcally L-BFGS [9] with
+pre-supplied gradient functions. We use the implemen-
+tation supplied with the NLopt package [7] in R. We ﬁt
+each video in parallel, starting with multiple random ini-
+tializations to improve solution quality, and we present
+the solution with the lowest error function J. The gradi-
+ent computations are listed as follows.
+We deﬁne the error term as e[t] = ξ[t] −¯ξ[t], Eq. (34)
+now becomes J = 1
+2
+∑T
+t=0 e2[t]. Since ¯ξ[t] are observed
+quantities,
+∂e[t]
+∂var = ∂ξ[t]
+∂var ,
+Here var ∈{µ,θ,C,c,γ,η }. Using chain rule, we obtain:
+∂J
+∂var =
+T∑
+t=0
+e[t] ∂ξ[t]
+∂var (35)
+Speciﬁcally, we compute the following partial deriva-
+tives and use them in Eq. (35) to compute the gradient.
+∂ξ[t]
+∂µ =
+{
+¯s[t] + C∑t
+τ=1
+∂ξ[t−τ]
+∂µ (τ + c)−(1+θ) ,t> 0
+¯s[0] ,t = 0
+(36)
+for t> 0,
+∂ξ[t]
+∂θ = C
+t∑
+τ=1
+∂ξ[t−τ]
+∂θ (τ + c)−(1+θ)
++ ξ[t−τ] ∂
+∂θ(τ + c)−(1+θ)
+= C
+t∑
+τ=1
+[∂ξ[t−τ]
+∂θ −ξ[t−τ] ln(τ + c)
+]
+(τ + c)−(1+θ)
+(37)
+for t= 0,∂ξ[0]
+∂θ = 0 .
+for t> 0,
+∂ξ[t]
+∂C =
+t∑
+τ=1
+C∂ξ[t−τ]
+∂C (τ + c)−(1+θ)
++ ξ[t−τ](τ + c)−(1+θ) (38)
+for t= 0, ∂ξ[0]
+∂C = 0 .
+for t> 0,
+∂ξ[t]
+∂c = C
+t∑
+τ=1
+∂ξ[t−τ]
+∂c (τ + c)−(1+θ)
+−(1 + θ)ξ[t−τ](τ + c)−(2+θ) (39)
+for t= 0,∂ξ[0]
+∂c = 0 .
+For the unobserved external stimuli γ and η.
+for t> 0,
+∂ξ[t]
+∂γ = C
+t∑
+τ=1
+∂ξ[t−τ]
+∂γ (τ + c)−(1+θ) (40)
+for t= 0,∂ξ[0]
+∂γ = 1 .
+for t> 0,
+∂ξ[t]
+∂η = 1 + C
+t∑
+τ=1
+∂ξ[t−τ]
+∂η (τ + c)−(1+θ) (41)
+for t= 0,∂ξ[0]
+∂η = 0 .
+Note that the gradient computation is iterative, i.e. the
+computation of ∂ξ[t]
+∂var makes use of previous values in its
+own series ∂ξ[τ]
+∂var for τ = 1,...,t −1.
+2.3 Adding an L2 regularizer
+We add L2 regularization on the linear coeﬃcients of the
+Hawkes Intensity Process to avoid overﬁtting. The loss
+function with the regularization terms are as follows.
+Jreg(ω,µ,θ,C,c ) = J(µ,θ,C,c )+
++ ω
+2
+((γ
+γ0
+)2
++
+(η
+η0
+)2
++
+(µ
+µ0
+)2
++
+(C
+C0
+)2)
+,
+(42)
+Here ( γ0,η0,µ0,C0) are reference values for parameters
+obtained by ﬁtting the series ¯ξ[t] without regularization.
+The reference values are used to normalize the parame-
+ters in the regularization process, so that they have equal
+weights. Intuitively using L2 normalization in square-loss
+is eﬀectively putting a Gaussian prior on the parameters
+being regularized. We desire parameters c and θ to take
+values away from zero, hence they are not regularized.
+The L2 regularization term is diﬀerentiable with respect
+with variables ( γ,η,µ,C ) and the terms ω
+γ0
+, ω
+η0
+, ω
+µ0
+and
+ω
+C0
+are added respectively to the RHS of Eq. (40), (41),
+(36) and (38).
+The regularizer parameters ωis expressed as a percent-
+age of J0 (the value of the non-normalized error func-
+tion) and it is determined through a line search within
+17
+[10−4J0,10J0] in log-scale. ω is tuned per video, on a
+temporally hold-out tuning sequence, i.e. we use the ﬁrst
+75 days of observed popularity for parameter estimation,
+the next 15 days for tuning ω, and day 91-120 for fore-
+casting popularity.
+2.4 Properties of the model estimates
+It is informative to discuss the properties of the model
+estimation procedure above in terms of model properties,
+and the optimization procedure.
+The Hawkes intensity model in Eq. (30) is a non-linear
+integral equation. It is worth noting that there are two
+non-linear parameters θ and c, and the rest are linear
+parameters – µ and C, as well as the unknown exter-
+nal stimuli η and γ. Given θ and c, the loss function in
+Eq. (34) is convex, and the optimization procedure con-
+verges to a global optima. Assuming a set of ﬁxed (or
+known) non-linear parameters for the whole dataset is
+therefore convenient for fast estimation, and is used in re-
+cently literature such as by Zhao et al. [16]. On the other
+hand, our own recent study [11] shows that in addition to
+better interpretability, there is a performance advantage
+of estimating both the linear and non-linear parameters
+in estimating Hawkes point processes. Therefore we esti-
+mate all of the linear and non-linear parameters for the
+Hawkes intensity process.
+The procedure for minimizing the squared loss in
+Eq. (30) uses a standard gradient-based non-linear contin-
+uous optimization routine. The procedure will converge
+to a local minima in the loss function when it terminates.
+We implement standard random restarts to improve the
+solution quality, i.e. perform the optimization from 8 dif-
+ferent random starting points for each video, choose the
+one with the lowest loss as the ﬁnal result. On the theo-
+retical end, there is no known results of convergence rates
+as a function of sequence length (or sample size) for this
+class of models. In practice, the primary limiting assump-
+tions is the model being stationary (and ﬁxed) over time
+and over diﬀerent parts of the activated online social net-
+work.
+3 Data
+Setting up the Twitter crawler We construct a
+“Tweeted Videos” dataset using the data APIs from both
+Twitter and YouTube. We stream tweets from Twitter
+API using the set of keywords related to YouTube and its
+video: "youtube" OR ("youtu" AND "be"). The Twit-
+ter ﬁlter API returns the tweets for which the keywords
+were matched in at least one of the considered ﬁelds, in-
+cluding in the textual description and the expanded url
+ﬁeld. Twitter API claims that the expanded url ﬁeld
+contains the original URL of all URLs shortened using
+shortening services (such bit.ly). While this happens
+in most of the cases, we found that a non-trivial number
+of URLs remain shortened. In these cases, the Youtube
+video ID is hidden, if the URL is a link towards a Youtube
+video at all. Expanding these links ourselves is unfea-
+sible, given our network and service constraints. One
+noteworthy exception is Youtube’s own shortening ser-
+vice (youtu.be) which readily contains the video ID. It is
+for this reason that we added "youtu" AND "be" to the
+ﬁlter keywords.
+This returns over 5 million matched tweets per day af-
+ter URL expansion and tokenization performed by Twit-
+ter, most of which mention and link to a YouTube video.
+The raw dataset used in this study was from 2014-05-29
+to 2014-12-26, having 1,061,661,379 tweets in total. From
+each of these tweets, we extracted the associated YouTube
+video id (only the ﬁrst in case multiple videos were refer-
+enced in the same tweet), resulting in 81,915,174 distinct
+videos in total.
+Setting up the Youtube crawler From
+YouTube.com, we obtained for each video its meta-
+data, including the upload date and video category, as
+well as the time series consisting of the daily number of
+views and shares, from the day of upload and until the
+date of crawling. We aggregate for each video the number
+of tweets it receives every day and we obtained three
+attention-related time series for each video: ( views[t],
+shares[t] and tweets[t]), here t indexes time with unit
+of a day. For the number of views and shares, the
+time range is from the video’s upload date to the data
+collection (i.e. February-March 2015). For number
+of tweets, time ranges from the videos upload date or
+2014-05-29 (whichever is later) to 2014-12-26.
+3.1 The 5Mo and Active datasets
+We constructed two cleaned data subsets from the feed
+of tweeted videos, in order to collect basic data statistics
+and estimate the model.
+• The 5Mo was constructed to have videos whose pop-
+ularity history is at least 60 days long, and is used for
+forecasting popularity. We narrow down the time-
+frame of video upload to between 2014-05-29 and
+2014-10-24 in order to have long enough history.
+There are 16,417,622 videos with publicly-available
+popularity history. We did not obtain the popularity
+history for more than half of the videos, reasons for
+such data loss include: a video is no longer online, a
+video’s popularity history is not publicly-available, or
+requests that resulted in web server errors. This large
+and diverse sample allows us to estimate the back-
+ground statistics of video views, tweets, and shares,
+as will be discussed in the next subsection.
+• The Active dataset selects videos uploaded between
+2014-05-29 and 2014-08-09, and which have received
+18
+Table 1: Number of videos broken down by category in
+the Active dataset. Music represents a signiﬁcant pro-
+portion (25%) of all the videos.
+Category #vids Category #vids
+Comedy 865 Music 3549
+Education 298 News & Politics 1722
+Entertainment 2422 Nonproﬁts & Ac-
+tivism
+333
+Film & Animation 664 People & Blogs 1947
+Gaming 882 Science & Technol-
+ogy
+262
+Howto & Style 180 Sports 614
+Total: 13,738
+at least 100 tweets and at least 100 shares during
+recorded lifetime. The timeframe is selected to en-
+sure that each video has at least 120 days of tweet-
+ing and popularity history in our dataset, the ac-
+tivity threshold is used to ensure there is suﬃcient
+data for estimating the Hawkes intensity model and
+producing a forecast as describe in Section 5. Ta-
+ble 1 presents the category distribution for the Ac-
+tive dataset. It is noteworthy that the largest 4
+categories cover more than 70% of all the videos in
+Active, with more than 25% of the videos being
+Music. We removed 6 content categories (i.e. Autos
+& Vehicles, Travel & Events, Pets & Animals,
+Shows, Movies, Trailers) containing less than 1% of
+the videos in the dataset. Their corresponding videos
+were also removed. The resulting dataset contains
+13,738 videos.
+3.2 The popularity scale over time
+It is well-known that network measurements such as the
+number of views follows a long-tailed distribution. To
+facilitate discussions about popularity and attention, we
+propose to quantify popularity on an explicit percentage
+scale, with 0 .0% being the least popular, and 100% be-
+ing the most popular. Videos are grouped into Popularity
+Bins by viewcounts that they receive at t days after up-
+load, and each binξt(k) is marked with its maximum pop-
+ularity percentile – videos in bin kare at most among the
+top k% popular with age t. In this work we use 40 evenly
+spaced bins, i.e., k = 2.5,5.0,7.5,..., 100, and each bin
+contains 2.5%, or ∼41K+ videos for 5Mo.
+Fig. 8(a) and (b) contain boxplot of video viewcounts
+(in log-scale) of each bin after 30 and 60 days, respec-
+tively. We can see the long tailed distribution of popular-
+ity in YouTube reﬂected here – videos in the less popular
+bins have very similar number of views, e.g. the ﬁrst 6
+bins, or 15% of the videos, all have less than 10 views;
+on the 5MO popularity scale
+The ACTIVE dataset
+Popularity percentage
+Frequency
+0.0 0.2 0.4 0.6 0.8 1.0
+0 1000 2000 3000
+Figure 7: Positioning of the Active dataset on the popu-
+larity scale of the 5Mo dataset (at 30 days after upload).
+The horizontal axis shows the popularity percentiles in
+the 5Mo dataset, while the vertical axis shows the corre-
+sponding frequency of videos in Active. Visibly, Active
+is a subset of the most popular videos in 5Mo.
+videos in each the middle bins ( e.g. k = 17.5,..., 85.0)
+are within 1.5 times of the view count of each other;
+yet viewcounts of the 5% most popular ( k = 97 .5 and
+k = 100) videos span over almost two orders of magni-
+tude. For videos in 5Mo at 30 and 60 days after upload,
+the shape of the overall popularity scale remains the same,
+with a slight increase in the dynamic range of views (top
+of the last boxplot). The popularity scale of the Active
+is very similar to the one presented in Fig. 8(a) and (b),
+the only notable diﬀerence being the number of views cor-
+responding to each bin. Active is a subset of the most
+popular videos, as shown by Fig. 7: the videos in Ac-
+tive are positioned in the top 5% popularity percentiles
+of 5Mo (k= 97.5 and k= 100).
+In Fig. 8(c) we explore the change of popularity of each
+video from 30 days (y-axis) to 60 days (x-axis). Note that
+most videos retain a similar rank (in the boxes along the
+45 degree diagonal line), or have a slight rank decrease
+as they are overtaken by other videos (slightly above the
+diagonal in the plot). No outliers exist in the upper-left
+part of the graph, since a video cannot lose viewcount that
+it already gained. Most notably, we can see that video
+from any bucket can jump to the top popularity buckets
+between 30 and 60 days of age, such as the outliers for
+the few boxes on the far right. This phenomenon elicits
+important questions: how did these videos do viral, and
+whether or not it is related to external promotions.
+4 Understanding popularity dy-
+namics
+In this section, we provide additional observations on the
+parameters the HIP model, supplementing the analysis
+presented in the main text Sec. 4. Speciﬁcally, we relate
+the distribution of speciﬁc parameter values such as mem-
+ory exponent or exogenous sensitivity, to video groups –
+channels, content categories – and a video’s popularity.
+19
+Popularity 2.5% percentiles at 30 days
+Popularity percentile
+#views
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105
+106
+(a)
+Popularity 2.5% percentiles at 60 days
+Popularity percentile
+#views
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105
+106 (b)
+Evolution of popularity percentiles
+Popularity perc. at 60 days
+Popularity perc. at 30 days
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+● ●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+● ●
+●
+● ●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+● ●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+● ● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●●
+●
+●
+●
+● ●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●● ●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●●
+●
+●
+●
+●
+●
+●
+●
+●
+●● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+●
+●
+●
+●
+●
+●
+●●
+●
+● ●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100% (c)
+shares: Popularity scale at 30 days
+Popularity percentile
+#shares
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105
+(d)
+tweets: Popularity scale at 30 days
+Popularity percentile
+#tweets
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105 (e)
+tweets: Popularity scale at 60 days
+Popularity percentile
+#tweets
+5%
+10%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+50%
+55%
+60%
+65%
+70%
+75%
+80%
+85%
+90%
+95%
+100%
+100
+101
+102
+103
+104
+105 (f)
+Figure 8: (top row) The popularity scale of YouTube videos in the 5Mo dataset. The total number of views
+obtained by each video in the ﬁrst 30 days (a) and 60 days (b) after upload is divided into 40 equally spaced bins
+(i.e. each with 2 .5% of the videos). The 2 .5% most popular videos span almost two orders of magnitude in views.
+Note that outliers in this bin are not represented, as the most popular videos in the collection have ∼108 views.
+(c) Evolution of popularity between 30 and 60 days. The outliers are videos that have improved signiﬁcantly on the
+popularity scale. (bottom row) The popularity scale on the Active dataset for shares at 30 days (d) and tweets
+at 30 days (e) and 60 days (f). Note that the scales for shares and tweets are very similar, with the observation
+that videos in the Active set seem to receive more tweets than shares. Another observation is the diﬀerence in the
+popularity scale for tweets between 30 and 60 days: the biggest change is observe in the bottom 2 .5%. The reader
+should remember that all videos in the Active set receive at least 100 tweets during their life time. As a result, the
+bottom 2.5% will continue to rise with t.
+4.1 Behavior across groups of videos:
+categories and channels
+We provide in this subsection some observations on be-
+havior statistics and key parameters broken down by
+video category. Furthermore, we show how the endo-exo
+map can be used to detect consistent behaviors across
+YouTube channels.
+Consistent behavior across channels We use the
+endo-exo map to visualize groups of videos that belong
+to the same user-assigned content type, or are from the
+same author, called channel in YouTube. Fig. 9 shows
+a scatter plot of videos posted by a reporter in category
+News & Activism (in red) and a user focusing on record-
+ings of Game sessions (in blue). The game recording videos
+are generally more popular (bigger circles) than the news
+videos, and this is explained by the former group having
+higher exogenous sensitivity – higher values of µ.
+Endogenous response Aξ
+Exogenous sensitivityµ
+●
+●
+● ●
+●
+●
+●
+●●● ●
+●
+●
+●
+●
+●
+● ●●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+●
+100 100.5 101 101.5 102
+100
+101
+102
+103
+104 VEGETTA777
+Anatolii Sharij
+.25 .5 .75 1
+Figure 9: Video channels on the endo-exo map. Scatter
+plot of videos from a reporter covering events in Ukraine
+(Anatolii Sharij, in red) and Spanish game recording
+videos channel (VEGETTA777, in blue). Radii of the
+circles are proportional with the popularity percentile of
+each video.
+20
+0
+500000
+1000000
+1500000
+2000000
+2500000
+#views
+#views
+0
+500
+1000
+1500
+2000
+2500
+3000
+3500
+#shares
+#shares
+0
+500
+1000
+1500
+2000
+#tweets
+#tweets
+All
+Comedy
+Education
+Entertainment
+Film & Animation
+Gaming
+Howto & Style
+Music
+News & Politics
+Nonprofits & Activism
+People & Blogs
+Science & Technology
+Sports
+0
+2000
+4000
+6000
+8000
+γ
+0
+100
+200
+300
+400
+500
+η
+0
+200
+400
+600
+800
+µ
+0
+20
+40
+60
+80
+Aξ^
+All
+Comedy
+Education
+Entertainment
+Film & Animation
+Gaming
+Howto & Style
+Music
+News & Politics
+Nonprofits & Activism
+People & Blogs
+Science & Technology
+Sports
+Figure 10: (Top row) The number of views (left), shares (center) and tweets (right) for videos in diﬀerent categories.
+(Bottom row) Box plots of unobserved exogenous inﬂuence (initial impulse γ, constant excitation η), exogenous
+sensitivity µ and endogenous response Aˆξ, broken down by category.
+The eﬀect of the external inﬂuence is not equal
+We examine the amount of attention (in number of views)
+and external inﬂuence (in number of shares and tweets)
+in the Active dataset. This provides a basis for un-
+derstanding the corresponding Hawkes intensity model.
+Fig. 10 (top row) contains box plots of total views, along
+with total shares and tweets, broken down by video cate-
+gory. The left-most boxes (in red) depicts the proﬁle of all
+videos. One notable example is videos in the Nonprofits
+& Activism category: overall they have less-than-average
+amount of views, despite being shared more than the me-
+dian number of times.
+Observed versus unobserved external inﬂuences
+Model parameters γand ηcan be interpreted respectively
+as the initial impulse and constant exogenous stimuli not
+captured in the observed exogenous activity s(t). From
+the bottom left two plots in Fig. 10, we can see that sev-
+eral categories have signiﬁcantly higher components of γ
+and η, such as Gaming, Comedy and Entertainment. This
+may result from a signiﬁcant volume of activity outside of
+Twitter or Youtube sharing –Gaming videos, for example,
+is known to spread on dedicated social networks such as
+sub-reedit /r/gaming/, /r/gamingvids/ or forums, such
+as www.minecraftforum.net.
+Exogenous sensitivity and endogenous response
+The two bottom right plots of Fig. 10 represent the break-
+down per category of, respectively, the exogenous sensi-
+tivity µ and the endogenous response Aˆξ. These plots
+present an alternative view to the 2-dimensional density
+distribution of each category on the endo-exo map, shown
+in Figures 16 and 17. Certain categories, such as Comedy,
+Gaming or Sport seem to be particularly sensitive to ex-
+ternal inﬂuence. Categories like Comedy, Entertainment
+or Gaming observe higher then median endogenous re-
+sponses. The fact the Comedy and Gaming show both a
+high exogenous sensitivity and endogenous response pro-
+vide a plausible explanation to why these categories ob-
+serve relative high popularity (#views) despite their rela-
+tive low sharing. Conversely, Nonprofits & Activism
+exhibits lower than median values for both µ and Aˆξ
+which accounts for its low popularity (even though highly
+shared).
+4.2 Categories of longer versus shorter
+memory
+We study the distribution of the memory exponent θ in
+the HIP model, for three categories of videos in the Ac-
+tive dataset. In Fig. 11, the distributions for categories
+Music, Nonprofits & Activism and News & Politics
+21
+0%
+5%
+10%
+15%
+20%
+25%
+30%
+0 5 10 15 20
+Density
+AllMusic
+θ : Music
+0%
+5%
+10%
+15%
+20%
+25%
+30%
+0 5 10 15 20
+Density
+AllNonprofits & Activism
+θ : Nonprofits & Activism
+0%
+5%
+10%
+15%
+20%
+25%
+30%
+0 5 10 15 20
+Density
+AllNews & Politics
+θ : News & Politics
+Figure 11: Distribution of the memory exponent θ for 3 categories: Music (a), Nonprofits & Activism (b) and
+News & Politics (c), compared to the background distribution in all videos. Solid vertical lines indicate the median
+θ value in each population, whereas the dashed vertical lines indicate the mean θ. Color of lines corresponds to
+legend. The densities are obtained using kernel density estimation.
+(in red) are contrasted with the distribution from All the
+videos (in blue). The solid lines in each graph indicate the
+median value for θ in each category, whereas the dashed
+lines indicate the mean value. All video categories, as well
+as the general population, observe a long tail distribution
+for θ, with a peak density around θ ≃ 3.35. A small
+θ leads to slower decay over time (and larger endogenous
+response Aˆλ), whereas a large θmeans an video is quicker
+to be forgotten (i.e. small Aˆλ). We can see that a larger
+(than random) fraction of Music videos decay slowly
+(meanθ,all = 15 .94, mean θ,music = 14 .95), while more
+News & Politics and Nonprofits & Activism videos
+are forgotten faster, with mean θ,nonprofit = 17 .56 and
+meanθ,news = 19.45. This suggests that there is a system-
+atic diﬀerence across diﬀerent types of videos in the rate
+at which the collective memory decays – one explanation
+for such diﬀerences can be that music is typically con-
+sidered timeless content while news is considered timely
+whose relevance decreases rapidly over the ﬁrst few days.
+4.3 Model parameters and popularity
+In this section, we provide additional details about the
+relation between video popularity and ﬁtted values of pa-
+rameters µ and θ. These analyses provide additional de-
+tails to the endo-exo map, by explicitly linking the en-
+dogenous and exogenous components of each video to
+each model parameter.
+Parameters µ and θ and popularity In the main
+text, we claim a direct connection between µ the exoge-
+nous sensitivity and popularity and an inverse connection
+between the θ the time-decay rate of the memory ker-
+nel and the popularity. We provide, in Fig. 12, empirical
+proof of these connections by studying the popularity dis-
+tribution for low and high values of the above parameters.
+The top-left graphic shows the density distribution of the
+ﬁtted values of µin the Active dataset. There is a high
+a peak of density around µ= 1, corresponding to videos
+with low sensitivity to external inﬂuence, and a second
+peak around µ = 101.73 = 53.7, corresponding to videos
+with higher exogenous sensitivity. We divide the range
+of µ into deciles (groups of 10% each) and we select the
+second decile (i.e. low sensitivity) and the tenth decile
+(high sensitivity), hashed in gray on the graphic. In the
+bottom-left graphic, we plot the popularity distribution
+for videos within each of the above deciles of µ. The
+subpopulation of videos with low exogenous sensitivity
+show a dense area of low popularity, and with only very
+few videos making it into the top popularity percentiles.
+Conversely, the density distribution of the subpopulation
+of videos with high exogenous sensitivity shows an in-
+creasing trend, with a concentration of highly popular
+videos. This conﬁrms the intuition that highly popular
+videos tend to have high values of exogenous sensitivity
+µ.
+Similar results can be shown for the time-decaying
+memory exponent θ, which controls how fast videos are
+forgotten and the size of the endogenous response Aˆλ.
+Fig. 12b plots the density distribution of θ, which shows
+a peak at θ= 3.36 and selects the second and tenth per-
+centile, corresponding respectively to low values and high
+values of θ. Similarly to µ, the bottom-center graphic
+plots the popularity distribution for each of the subpop-
+ulations deﬁned by the selected deciles of θ. The sub-
+population with high values of θ (i.e. low Aˆλ) tends to
+be forgotten more quickly and shows a concentration of
+videos with low popularity, whereas videos with lower val-
+ues of θ (and higher Aˆλ) tend to be more popular.
+Endo-exo map for additional categories The above
+considerations are at the basis of the construction of the
+endo-exo map , as shown in the main text and its poten-
+tially viral region – videos with high values of both exoge-
+nous sensitivity µ and endogenous response Aˆλ are more
+susceptible to become popular if given the required atten-
+tion. The right column of Fig. 12 plots the 2D density of
+videos on the endo-exo map for the entireActive dataset
+(top) and the top 5% most popular videos (the color map
+is aligned for the two graphics). Visibly, the distribution
+22
+µ: density plot and selected deciles
+10−2 10−1 100 101 102 103 104 105
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9Density
+(a)
+0 20 40 60 80 100
+θ: density plot and selected deciles
+0
+0.1
+0.2
+0.3
+0.4
+0.5Density (b)
+Density distribution: all vids
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6 (c)
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+Popularity percentile density per type of µ
+Density
+0% 20% 40% 60% 80% 100%
+Low µ
+High µ
+(d)
+0.0
+0.5
+1.0
+1.5
+Popularity percentile density per type of θ
+Density
+0% 20% 40% 60% 80% 100%
+Low θ
+High θ (e)
+Density distribution: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6 (f)
+Figure 12: Density distribution of ﬁtted model parameters values µ(left column) and θ (center column). The range
+of each ﬁtted parameter is divided into 10 deciles, shown by vertical dotted gray lines (in the top row). For each
+of parameters µ and θ, 2 deciles are chosen (one corresponding to high values, and a second one corresponding to
+low values), shown shaded in gray. For each parameter, the bottom row plots the popularity distribution for videos
+within each of the chosen deciles. Right column: the endo-exo map 2 dimensional density distribution for all videos
+(top) and top 5% most popular videos (bottom). The density distribution of most popular videos is skewed towards
+the more viral area of the map (high µ and high Aˆξ).
+of the popular videos is skewed towards the more viral
+region of the map (i.e. high µ and high Aˆλ). In Fig. 16
+and 17, we repeat this analysis and we further break down
+the Active population, based on video category. We
+plot pairs of 2D densities of videos on the endo-exo map
+for all categories, except Gaming and Film & Animation,
+which were discussed in the main text Fig. 4. This visu-
+ally reveals some of the dynamics that propel videos to
+the most popular segment, in each subpopulation. For
+example, categories like Gaming, Science & Technology
+Travel & Events have the distribution of the most pop-
+ular videos shifted top-right w.r.t to rest of the cate-
+gory (similar to the dynamics shown for the entire pop-
+ulation). Other categories appear only upward-shifted
+(i.e. only higher µ) w.r.t to rest of the category: Film
+& Animation, Entertainment, Howto & Style, News &
+Politics and People & Blogs. There is even an outlier
+category, Comedy, which seems to have two heat centers
+in the top 5% popular subpopulation. This seems to in-
+dicate two distinct patterns of becoming popular within
+this category: one pattern involves being sensitive to ex-
+ogenous excitation more than the average video, whereas
+the second pattern involves higher endogenous propaga-
+tion in the network (higher Aˆλ).
+4.4 Potential causal connection between
+the views, tweets and shares series
+In this section, we investigate the causal connection be-
+tween the series of views, shares and tweets, for each of
+the videos in the Active dataset. We test for causal-
+ity using time-series analysis tools. We employ a F-type
+Granger-causality test [4], implemented in the R pack-
+age vars [13]. For each series of each video we construct
+a Vector Autoregressive Model, with the lag determined
+automatically using minimal AIC. Next, we perform a
+Granger causality test for each video and each pair of
+temporal series – i.e. (views, shares), (views, tweets) and
+(tweets, shares). Each test is performed in both directions
+– e.g. views Granger-cause shares and shares Granger-
+cause views. The null hypothesis is that no causal relation
+exists between the series. We reject the null hypothesis
+and we accept the existence of a causal relation when we
+observe a test p-value lower than 10 −3.
+23
+Table 2: Granger causality test: number of videos in the
+Active set for which the null hypothesis (i.e. absence
+of Granger causality) is rejected with p < .001. The left
+side of the table shows the number of videos for which
+an unidirectional Granger causality is detected – i.e. for
+114 videos tweets Granger-cause shares and not the other
+way around. The right side shows the number of videos
+for which the relation is detected in both directions. Note
+that when a video presents a bidirectional relation, it is
+not counted the unidirectional relations for the same pair
+of series.
+unidirectional bidirectional
+tweets shares views tweets shares views
+tweets - 114 164 - 22 18
+shares 136 - 537 - 253
+views 162 833 - -
+Tab. 2 shows the number of pairs in each setup for
+which the causal relation is considered to be signiﬁcant.
+Note that the causal relation can be reciprocal – e.g. for
+253 videos, both the shares Granger-cause the views and
+and the views Granger-cause the shares. Considering
+the scale of the Active dataset (around 14 thousands
+videos), a causal relation is detected for no more than
+6% of the videos – i.e. for the relation views Granger-
+cause shares, true for 833 videos. For all pairs of se-
+ries, the number of videos presenting a unidirectional re-
+lation seems comparable (e.g. tweets Granger-cause views
+for 164 videos, and shares Granger-cause tweets for 162
+videos). We cannot identify a clear Granger causality re-
+lation between diﬀerent series. As there does not yet exist
+a standard method for capturing non-linear causal rela-
+tionships or causality with confounding eﬀects, we leave
+this as future work.
+5 Popularity forecasting and com-
+parison to baseline
+In this section we provide additional details and results to
+complete the analysis in the main text Sec. 5. Namely, we
+provide more information about the performance break
+down of diﬀerent approaches and the statistical testing
+analysis for detecting statistically signiﬁcant diﬀerences
+in the forecasting performance.
+The series of the ﬁrst 90 days of each video history in
+Active dataset are used to ﬁt the Hawkes intensity model
+parameters. The series is divided into two sub-series: the
+ﬁrst 75 days are used to ﬁt parameters {µ,θ,C,c }, while
+the last 15 days for the holdout series used to ﬁt the reg-
+ularizer meta-parameter ω. Either #shares and #tweets
+series can serve as the known exogenous stimuli series
+s(t). The Multi-Linear Regression (MLR) [14] baseline is
+trained using the same data. We adapt the original algo-
+rithm by predicting the value of the viewcounts for each
+of the 30 days between day 91 and 120. Furthermore, we
+build an enhanced version (denoted by MLR ( #shares)
+or MLR ( #tweets)) by introducing the exogenous inﬂu-
+ence as additional variables, both in the training and in
+the prediction. The baseline is particularly sensitive to
+outliers, which we remove from the training set. A video
+is considered an outlier if it has received a large burst of
+views in the period from 91 to 120 days. More precisely,
+we remove any video having received twice as many view
+between days 91 and 120 than then do between 61 and 90.
+3.5% of the videos are considered outliers and eliminated
+from the training set. The errors are measured in average
+error in popularity percentile, as deﬁned in the main text.
+5.1 Additional results
+In addition to the performance comparison, shown in the
+main text Fig. 5, Fig. 13(a) presents the Cumulative Dis-
+tribution Function (CDF) of the prediction errors for the
+HIP, MLR and MLR (#shares). HIP consistently outper-
+forms MLR (with and without the exogenous stimuli in-
+formation): HIP forecasts popularity of 87% of the video
+population with a maximum 10% error, while MLR cov-
+ers only 78% of the population for the same error thresh-
+old. Furthermore, MLR (#shares) obtains only marginal
+performance improvements over MLR, even while using
+the exogenous information. Fig. 13(b) shows the ab-
+solute forecasting error performances, aggregated using
+barplots. Visibly, the HIP (using either #shares and
+#tweets) consistently outperforms MLR both in term of
+median values and variation, which results in the bet-
+ter mean values of forecasting error already shown in the
+main text Fig. 5(center). Fig. 13(c) analyzes closely the
+forecasting error distribution for the best performing ver-
+sion of each approach. The HIP (#shares) blue curve
+shows a concentration of lower errors and a median er-
+ror value of 3%. The red curve corresponds to the error
+distribution for the MLR (#shares) and shows a higher
+concentration of larger error and a median error value of
+3.75%.
+5.2 Comparing performance
+We ask whether or not the performance diﬀerences ob-
+served in main text Fig. 5(b) are signiﬁcant, or are they
+due to chance. We break down the study into two ques-
+tions: 1) is the diﬀerence of forecasting performance be-
+tween the Hawkes intensity process and the MLR baseline
+statistically signiﬁcant? and 2) does the source of exoge-
+nous stimuli – #shares or #tweets – inﬂuence the quality
+of the forecasting? We setup four comparisons: two com-
+paring the performances of forecasting methods for each
+of the two sources of inﬂuence and two comparing the ef-
+fect of the sources for each of the two algorithms. Based
+24
+Percentage of covered videos with error rate
+Hawkes (#shares)
+MLR
+MLR (#shares)
+0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50%
+0%
+20%
+40%
+60%
+78%
+87%
+94%
+100%
+Forecasting error
+Percentage of videos
+(a)
+0.00
+0.05
+0.10
+0.15
+0.20
+Active set: boxplot of error of popularity forecasts
+Absolute percentile error
+Hawkes
+(#shares)
+Hawkes
+(#tweets) MLR
+MLR
+(#shares)
+MLR
+(#tweets) (b)
+0
+2
+4
+6
+8
+10
+12
+14
+16
+0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50%
+Popularity forecasting error
+Error density
+HIP (#shares)
+MLR (#shares)
+Active set: error distribution of popularity forecasts
+(c)
+Figure 13: Performance comparison graphics, additional to main text: number of covered videos, when accepting a
+given error percentage (left) and barplots of absolute forecasting error (right). (bottom) Absolute forecasting error
+distribution for Hawkes (#shares) (blue curve) and MLR ( #shares) (red curve). Median values are represented for
+each approach with gray vertical lines: 3% for Hawkes and 3 .75% for MLR.
+on the selected setup, we construct two samples and per-
+form a T-test. For each test, the null hypothesis assumes
+that the mean of two samples are equal (i.e. there is no
+diﬀerence in forecasting performance). The alternative
+hypothesis assumes that the true means of two samples
+are not equal. Note that these statistical tests are not
+connected to particular models that were used to obtain
+the estimates, i.e. it does not matter if the estimated
+come from the multivariate linear regression or from the
+Hawkes intensity process.
+Statistical testing with large sample size The well-
+known p-value issued from hypothesis testing is depen-
+dent on the observed diﬀerence between the two samples,
+as well as the sample size. This renders analyses based
+only on p-value particularly sensitive to sample size, given
+that with suﬃciently large samples, a statistical test will
+almost always demonstrate a signiﬁcant diﬀerence [15].
+Given the size of the Active dataset (i.e. 13 ,738) which
+serves as sample for the four experiments hereafter, we
+measure the eﬀect size in addition to the typical p-value.
+The eﬀect size measure which we report and we use to
+justify our analysis is Cohen’s d coeﬃcient [2], deﬁned as
+the diﬀerence of the means scaled by the inverse of the
+standard deviation of both populations
+Evaluation setup Our forecasting systems uses two
+inputs: the observed #views and an external stimuli
+source (either #shares or #tweets). Answering question
+1) – signiﬁcance of performance diﬀerence between the
+Hawkes intensity model and the MLR baseline – boils
+down to comparing two treatments for a single set of in-
+dividuals. This translates into applying a paired T-test to
+a single sample. Conversely, comparing the two sources
+of exogenous excitation involves applying the same fore-
+casting method to two diﬀerent populations. This leads
+to applying a two-sample T-test.
+No performance diﬀerence between the two ex-
+ogenous stimuli sources The detailed results of each
+of the four hypothesis testings are presented in Tab 3.
+The ﬁrst two lines correspond to the two-sample T-tests,
+dealing with the diﬀerence between the two sources of
+exogenous stimuli. The ﬁrst test uses HIP as forecast-
+ing algorithm, the second one uses the MLR baseline.
+For both tests, the Cohen’s d coeﬃcient has a negligi-
+ble value. This suggests that no signiﬁcant diﬀerence
+exists when forecasting future popularity using #shares
+or #tweets as external stimuli. The very small p-value
+yielded in the ﬁrst test (∼10−7) is most likely an artifact
+of the large sample size. These two results indicate that
+25
+Table 3: Summary of comparison for forecasting performance diﬀerences. Each line corresponds to a performed
+T-test, either comparing two exogenous sources or two forecasting algorithms. Columns “Sample A” and “Sample
+B” describe the two compared samples in terms of used algorithm and exogenous source, mean value and standard
+deviation. The ﬁrst two tests are two sample T-tests , whereas the last two lines correspond to paired T-tests (more
+details about the underlying rationale in the text). M denotes sample mean, SD standard deviation.
+Exogenous
+source
+Forecasting
+algorithm
+Sample A Sample B T-test p-val Cohen’s d
+#shares vs.
+#tweets
+HIP HIP (#shares)
+M = 4.96 ×10−2,SD = 6.3 ×10−2
+HIP (#tweets)
+M = 5.35 ×10−2,SD = 6.88 ×10−2
+6.83 ×10−7 −0.05
+#shares vs.
+#tweets
+MLR MLR (#shares)
+M = 6.94 ×10−2,SD = 9.08 ×10−2
+MLR (#tweets)
+M = 6.94 ×10−2,SD = 9.05 ×10−2
+0.98 0 .00
+#shares HIP vs.
+MLR
+HIP (#shares)
+M = 4.96 ×10−2,SD = 6.3 ×10−2
+MLR (#shares)
+M = 6.94 ×10−2,SD = 9.08 ×10−2
+8.57 ×10−151 0.253
+#tweets HIP vs.
+MLR
+HIP (#tweets)
+M = 5.35 ×10−2,SD = 6.88 ×10−2
+MLR (#tweets)
+M = 6.94 ×10−2,SD = 9.05 ×10−2
+2.41 ×10−95 0.197
+−1.0 −0.5 0.0 0.5 1.0
+0
+2
+4
+6
+Pearson’s r correlation coefficient
+Density
+Distribution of correlation coefficient
+between #shares and #tweets
+Min. = −1.00
+1st Qu. = 0.67
+Median = 0.87
+Mean = 0.78
+3rd Qu. = 0.96
+Max. = 1.00
+Figure 14: Density distribution of Pearson’s r correlation
+coeﬃcient between #shares and #tweets for each video
+in the Active dataset. The legend values give the quar-
+tiles and the mean of the obtained coeﬃcients.
+the same forecasting performance is achieved using either
+source of external stimuli, regardless of the forecasting al-
+gorithm. Furthermore, a correlation analysis between the
+two sources reveals the same conclusion: for each video we
+compute the Pearson’s correlation coeﬃcient between the
+two time series #shares and #tweets. Fig. 7 shows the
+density distribution of the correlation coeﬃcient. Visibly,
+the two series are highly correlated for most videos.
+Diﬀerences between HIP and MLR The last two
+lines of Tab. 3 show the results of testing the performances
+of the HIP model against the baseline, for each of the
+two external sources. In both cases, the Cohen’s d coef-
+ﬁcient shows a small, but non-negligible eﬀect size. To-
+gether with the very low p-values (∼10−151 for #shares,
+∼10−95 for #tweets), this makes us reject the null hy-
+pothesis and conclude that the diﬀerences between the
+two forecasting methods are statistically signiﬁcant.
+5.3 Forecasting performance on diﬃcult
+videos
+The diﬀerence of forecasting performance is even more
+noteworthy for more diﬃcult videos – those that present
+a large exogenous shock in the forecasting period. A
+real example of such a video is depicted in Fig. 15(a).
+A video is considered to present a high exogenous shock
+if the exogenous stimuli series s(t′),t′ ∈Test contains
+at least one point t′ so that s(t′) > mean(s(t∗)) +
+10var(s(t∗)), with t∗ ∈Train. 4006 videos in the Ac-
+tive dataset present a high exogenous shock in the testing
+period. MLR, even in the presence of known information
+about the external stimuli, largely misses the predictions
+(as shown in Fig. 15(b)). HIP achieves levels of forecast-
+ing performance on the high exogenous dataset similar to
+the entire Active dataset. Fig. 15(c) shows the distribu-
+tion of absolute forecasting error for Hawkes ( #shares)
+and MLR ( #shares). Compared to Fig. 13(c), the HIP
+model achieves smaller errors, with a median value of
+3.25%, while MLR presents an increased concentration
+of high errors and a median value of median value 6 .5%.
+References
+[1] Clauset, A., Shalizi, C.R., Newman, M.E.J.: Power-Law
+Distributions in Empirical Data. SIAM Review 51(4),
+661–703 (Nov 2009)
+[2] Cohen, J.: Statistical Power Analysis for the Behavioral
+Sciences. Lawrence Erlbaum Associates, Hillsdale, NJ,
+2nd edn. (1988)
+[3] Crane, R., Sornette, D.: Robust dynamic classes revealed
+by measuring the response function of a social system.
+Proceedings of the National Academy of Sciences 105(41),
+15649–15653 (2008)
+[4] Granger, C.W.: Investigating causal relations by econo-
+metric models and cross-spectral methods. Econometrica:
+Journal of the Econometric Society pp. 424–438 (1969)
+26
+0 1000 2000 3000
+#views
+Video 8QWg0YrcFhI: example from the exogenous set
+2014−06−22 2014−07−20 2014−08−17 2014−09−14 2014−10−12
+0 93 186 Number of shares
+Observed #views
+Fitted #views on training set
+Predicted viewcounts
+Exogenous stimuli (#shares)
+(a)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+Exo. vids: boxplot of error of popularity forecasts
+Absolute percentile error
+Hawkes
+(#shares)
+Hawkes
+(#tweets) MLR
+MLR
+(#shares)
+MLR
+(#tweets) (b)
+0
+2
+4
+6
+8
+10
+12
+14
+16
+0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50%
+Popularity forecasting error
+Error density
+HIP (#shares)
+MLR (#shares)
+Exo. vids: error distribution of popularity forecasts
+(c)
+Figure 15: Forecasting performance for the Hawkes intensity model and MLR on videos presenting a high exogenous
+shock. (left) Depiction of a video having a high exogenous shock during the testing period. It is a relatively obscure
+video about Brazilian politics, which suddenly received a considerable amount of attention in October/November
+2015 (more than 3 months after its upload), only to slide back into obscurity after December 2015. (right) Barplot
+aggregation of performances of Hawkes intensity and MLR (with diﬀerent sources of external stimuli), in terms
+of absolute forecasting error. (bottom) Absolute forecasting error distribution for the exogenous set for Hawkes
+(#shares) (blue curve) and MLR ( #shares) (red curve). Median values are shown with gray vertical dotted lines
+(3.25% for Hawkes and 6 .5% for MLR).
+[5] Hawkes, A.G.: Spectra of some self-exciting and mutually
+exciting point processes. Biometrika 58(1), 83–90 (Apr
+1971)
+[6] Helmstetter, A., Sornette, D.: Subcritical and supercriti-
+cal regimes in epidemic models of earthquake aftershocks.
+Journal of Geophysical Research: Solid Earth 107(B10),
+ESE 10–1–ESE 10–21 (2002)
+[7] Johnson, S.G.: The NLopt nonlinear-optimization pack-
+age (2011)
+[8] Liptser, R.S., Shiryaev, A.N.: Statistics of Random Pro-
+cesses. Springer Berlin Heidelberg, Berlin, Heidelberg
+(2001)
+[9] Liu, D.C., Nocedal, J.: On the limited memory BFGS
+method for large scale optimization. Mathematical Pro-
+gramming 45(1-3), 503–528 (aug 1989)
+[10] Miritello, G., Lara, R., Cebrian, M., Moro, E.: Limited
+communication capacity unveils strategies for human in-
+teraction. Nature Scientiﬁc Reports 3 (Jun 2013)
+[11] Mishra, S., Rizoiu, M.A., Xie, L.: Feature Driven and
+Point Process Approaches for Popularity Prediction. In:
+Proceedings of International Conference on Information
+and Knowledge Management - CIKM ’16. p. 10. Indi-
+anapolis, USA (2016)
+[12] Ogata, Y.: Seismicity Analysis through Point-process
+Modeling: A Review. Pure and Applied Geophysics
+155(2-4), 471–507 (1999)
+[13] Pfaﬀ, B.: Var, svar and svec models: Implementation
+within R package vars. Journal of Statistical Software
+27(4) (2008)
+[14] Pinto, H., Almeida, J.M., Gon¸ calves, M.A.: Using early
+view patterns to predict the popularity of youtube videos.
+In: Proceedings of the sixth ACM international confer-
+ence on Web search and data mining - WSDM ’13. p. 365.
+ACM Press, New York, New York, USA (Feb 2013)
+[15] Sullivan, G.M., Feinn, R.: Using Eﬀect Size-or Why the
+P Value Is Not Enough. Journal of graduate medical ed-
+ucation 4(3), 279–82 (sep 2012)
+[16] Zhao, Q., Erdogdu, M.A., He, H.Y., Rajaraman, A.,
+Leskovec, J.: Seismic: A self-exciting point process model
+for predicting tweet popularity. In: Proceedings of the
+21th ACM SIGKDD International Conference on Knowl-
+edge Discovery and Data Mining. pp. 1513–1522. ACM
+(2015)
+27
+Autos & Vehicles: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Autos & Vehicles: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+(a)
+Comedy: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Comedy: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35 (b)
+Education: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Education: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+(c)
+Entertainment: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Entertainment: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6 (d)
+Howto & Style: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Howto & Style: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+(e)
+Music: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Music: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.2
+0.4
+0.6
+0.8 (f)
+News & Politics: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+News & Politics: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+(g)
+Nonprofits & Activism: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Nonprofits & Activism: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4 (h)
+Figure 16: Pairs of 2-dimensional densities of videos on the endo-exo map, for each of the video categories in Active
+dataset (except for Gaming and Film & Animation, already presented in the Main Text Fig. 4). For each pair, the
+left heatmap represents the density distribution of all videos in the category, while the right heatmap shows the
+distribution of the most popular 5% videos in the category. 6 more categories are shown in Fig. 17.
+28
+People & Blogs: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+People & Blogs: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+(a)
+Pets & Animals: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Pets & Animals: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35 (b)
+Science & Technology: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Science & Technology: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+(c)
+Shows: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Shows: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5 (d)
+Sports: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Sports: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.0
+0.1
+0.2
+0.3
+0.4
+(e)
+Travel & Events: all
+Endogenous response Aξ
+Exogenous sensitivity µ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+Travel & Events: top 5%
+Endogenous response Aξ
+10−0.5 100 100.5 101 101.5 102 102.5
+100
+101
+102
+103
+104
+0.00
+0.05
+0.10
+0.15
+0.20 (f)
+Figure 17: Fig. 16 cont’d: remaining categories.
+29

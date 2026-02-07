@@ -1,124 +1,87 @@
 \section{Discussion}
 \label{sec:discussion}
 
-This section interprets the empirical patterns reported in \Cref{sec:results} through the lens of our model (\Cref{sec:model}). We focus on implications for agent collective behavior, platform design, and the broader trajectory of autonomous AI systems.
+This section interprets the empirical patterns in \Cref{sec:results} through the
+model framework in \Cref{sec:model}, focusing on implications for collective
+agent behavior, platform design, and identification scope.
 
-\subsection{Interpreting a Minute-Scale Reply-Kernel Half-Life}
+\subsection{Interpreting Minute-Scale Reply Decay}
 \label{sec:discussion:halflife}
 
-The estimated reply-kernel half-life is under one minute in the primary specification, not
-hours. Combined with the high censoring fraction, this indicates a bursty process: if direct
-replies occur, they occur quickly; otherwise comments usually receive no direct reply in the
-observation window.
+The primary Moltbook estimate is a sub-minute reply-kernel half-life, accompanied
+by heavy censoring. Together, these results indicate a bursty regime: when direct
+replies occur, they tend to occur quickly; most parent comments receive no
+observed direct reply during the observation window.
 
-Several factors may contribute to this pattern:
-
-\paragraph{Context window limitations.} Even within a single session, LLMs face finite context windows. As agents accumulate interactions across multiple threads and tasks, earlier conversational context is compressed or lost, reducing the salience of any particular ongoing discussion.
-
-\paragraph{Task switching costs.} The feed exposes agents to large volumes of new content.
-Even without a statistically significant 4-hour spectral peak, this can induce rapid
-attention displacement away from already-open threads.
-
-\paragraph{Lack of persistent memory.} Unlike human users who maintain continuous episodic memory across sessions, agent memory of specific threads depends on explicit retrieval or re-exposure through feeds. Without mechanisms to prioritize ``return to active conversations,'' threads fade from agent awareness.
-
-This revision also reports a Reddit full-scale baseline run with hour-scale reply-kernel
-half-life (2.6066 hours in the primary specification). In addition, the coarse matched
-cross-platform run reports matched-subset half-life estimates of 0.0628 hours for Moltbook
-and 2.4448 hours for Reddit. These values are consistent with a large timing gap, but the
-matching controls are intentionally coarse and should not be interpreted as fully causal.
+This pattern is consistent with finite context retention, rapid task switching in
+high-volume feeds, and weak return-to-thread memory support. The Reddit baseline,
+by contrast, shows hour-scale reply-kernel half-life under the same estimator.
+Matched-subset half-life estimates preserve this large timing gap, but the matched
+design is intentionally coarse and should not be read as fully causal.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
 
-Shallow, star-shaped conversation trees can follow directly from short half-lives via the branching process interpretation (\cref{sec:model:branching}). When the effective branching ratio $\mu \approx \alpha/\beta$ is low (due to high decay rate $\beta$), deep threads become exponentially unlikely. Once $\hat{\mu}$ is estimated, this bound provides an interpretable link from fitted decay parameters to depth tails (e.g., $\Prob(D \ge 5) \lesssim \hat{\mu}^5$).
-
-Low reciprocity and re-entry rates would reinforce this picture. Sustained conversation requires participants to return and respond to each other's contributions. If agents treat each check-in as an independent sampling opportunity (rather than a continuation of ongoing dialogues), we would expect broadcast-style engagement: many agents contributing once and comparatively few returning to elaborate or debate.
+Shallow, root-heavy trees are consistent with low effective non-root reproduction
+in the branching interpretation (\cref{sec:model:branching}). When
+\(\mu\) is small, deep paths become exponentially unlikely, so thread geometry is
+dominated by first-layer responses rather than sustained chains. Low reciprocity
+and modest re-entry further support a broadcast-dominant interaction pattern.
 
 \subsection{Implications for AI Agent Coordination}
 \label{sec:discussion:coordination}
 
-A central question motivating this study is whether AI agents can sustain the extended, multi-turn interactions necessary for complex coordination. The patterns measured in \Cref{sec:results} speak directly to this question:
-
-\paragraph{Project abandonment.} Qualitative reports describe agents initiating ambitious projects but failing to follow through \citep{alexander2026afterweekend}. If half-lives are indeed short, a project requiring coordination over days or weeks may fail unless platform mechanisms actively sustain attention and re-entry.
-
-\paragraph{Shallow deliberation.} Effective collective decision-making often requires deep discussion: proposals, critiques, revisions, and convergence. If conversations are persistently star-shaped with limited depth, they may generate many initial reactions but few extended chains of reasoning.
-
-\paragraph{Coordination hubs.} The updated heterogeneity analysis suggests clear incidence
-differences by agent-account status: claimed accounts exhibit materially higher observed
-direct-reply probability than unclaimed accounts. Follower-bin patterns are informative but
-non-monotonic and include a sparse 10+ bin, so stronger hub inference still requires longer
-windows and richer covariates.
+These dynamics matter for multi-step coordination tasks. If engagement decays on
+minute timescales and repeated participation is limited, projects requiring
+extended deliberation or multi-day follow-through are difficult to sustain
+without explicit coordination scaffolds. Updated heterogeneity analyses suggest
+meaningful differences by account status in observed reply incidence, but
+follower-bin patterns remain non-monotonic and sparse in upper bins, so stronger
+hub claims require longer windows and richer controls.
 
 \subsection{Design Implications}
 \label{sec:discussion:design}
 
-The model and measurements in \Cref{sec:results} motivate concrete interventions that could extend conversational persistence on agent platforms:
-
-\paragraph{Memory scaffolding.} Providing agents with explicit tools to maintain conversational state across sessions---summaries of active threads, notifications of new replies, structured ``return-to-conversation'' prompts---could lower the effective decay rate $\beta$ by keeping threads salient.
-
-\paragraph{Thread summarization.} Automatically generating summaries of thread progress could help agents re-engage productively without needing to re-read entire conversations. This addresses context window limitations by compressing prior discussion into actionable starting points.
-
-\paragraph{Prioritized feeds.} Feed algorithms that surface threads where the agent has previously engaged (especially threads with new activity) could increase re-entry rates. Estimating parent-visibility weights and re-entry statistics provides a way to quantify whether the current feed presentation competes with ongoing conversations.
-
-\paragraph{Incentive mechanisms.} Reputation systems that reward sustained engagement (not just posting volume) could encourage agents to return to threads. Whether higher-reputation agents sustain longer engagement is an empirical question addressed by stratified half-life estimates (\Cref{sec:results:halflife}).
-
-\paragraph{Explicit coordination protocols.} Platform-level support for structured coordination (e.g., project boards, commitment registries, scheduled check-ins for specific threads) could help agents overcome the horizon limitations inherent in their architecture.
+The measured dynamics point to practical interventions that can be tested in
+future platform studies: memory scaffolding for active threads, summary-based
+re-entry support, feed prioritization of threads with prior participation, and
+incentive structures that reward sustained engagement rather than raw posting
+volume. Structured coordination interfaces (for example, commitments, milestones,
+and scheduled check-ins) are especially relevant if the default interaction
+regime remains fast-response-or-silence.
 
 \subsection{Broader Implications}
 \label{sec:discussion:broader}
 
-\paragraph{Benchmarking agent capabilities.} Interaction half-life provides a portable, comparable metric for assessing agent ``collective persistence'' across platforms and model generations. As LLM capabilities improve, we would expect to see changes in half-life and re-entry patterns---either through better memory mechanisms or through agents that more effectively prioritize ongoing commitments.
-
-\paragraph{Human-AI comparison.} The manuscript now includes both run-scoped Reddit baselines
-and an executed coarse matched comparison (813 exact pairs). This improves over raw
-platform-side contrasts, but strong causal interpretation still requires richer controls
-(especially exposure/visibility and finer topic alignment) and robustness checks across
-alternative match specifications.
-
-\paragraph{Platform evolution.} Moltbook is a nascent platform undergoing rapid evolution. The dynamics measured here reflect a specific early window and may shift as the platform matures, moderation improves, and agent architectures evolve. Longitudinal tracking of these metrics could reveal whether the persistence gap is narrowing.
-
-\paragraph{Authenticity questions.} A recurring concern in discussions of Moltbook is whether observed behavior is ``genuinely autonomous'' or reflects human prompting and guidance \citep{alexander2026afterweekend}. Our focus on interaction dynamics partially sidesteps this question: even if content is human-influenced, the temporal patterns of engagement are shaped by agent-level constraints (check-in schedules, context limits) and thus remain informative about what current agent architectures can sustain.
+Interaction half-life is a portable metric for comparing collective persistence
+across agent communities and model generations. The current cross-platform
+results improve on raw platform contrasts by adding deterministic matching, but
+strong causal interpretation still requires richer exposure controls and more
+granular semantic alignment. Because Moltbook is rapidly evolving, longitudinal
+tracking is necessary to determine whether the persistence gap narrows as agents,
+moderation, and interface design mature.
 
 \subsection{Scope Conditions}
 \label{sec:discussion:scope}
 
-Several boundary conditions should be kept in mind when interpreting these results.
-First, our Moltbook data cover a single first-week snapshot (January~28--February~4, 2026)
-of a rapidly evolving platform; dynamics may differ substantially in later periods as
-moderation matures and agent architectures improve.
-Second, the observation window contains a 41.72-hour coverage gap that restricts contiguous
-periodicity analysis to the longest gap-free segment, limiting spectral resolution and
-statistical power at the target 4-hour frequency.
-The same gap can also affect survival/duration measurement by leaving some reply opportunities
-unobserved around the gap interval, so reply incidence and timing estimates should be read as
-conditional on observed coverage in this snapshot.
-Third, heavy right-censoring (91\% of parent comments receive no observed direct reply)
-means the estimated half-life characterizes the \emph{timing} of replies conditional on
-occurrence, not reply probability itself; we report these separately.
-Fourth, Moltbook's early period includes substantial spam and low-signal content, which
-inflates thread counts and may attenuate engagement metrics.
-Fifth, the Reddit comparison corpus is run-scoped (a single archive-based collection of
-six subreddits), and the coarsened exact matching controls only three covariates---topic,
-posting hour, and early engagement---leaving residual confounding from feed visibility,
-ranking exposure, and finer topic semantics unaddressed.
-These conditions motivate the planned follow-up work noted throughout: longer observation
-windows, exposure-controlled designs, and richer matching specifications.
+Several boundary conditions are central to interpretation. First, results are
+from a first-week snapshot of a rapidly changing platform. Second, the
+observation window includes a 41.72-hour coverage gap; periodicity analysis is
+restricted to contiguous segments, and survival/duration estimates may miss reply
+opportunities around the gap interval. Third, heavy right-censoring means
+half-life captures timing conditional on reply occurrence rather than reply
+incidence itself. Fourth, early-period spam and low-signal activity can attenuate
+engagement metrics. Fifth, the run-scoped Reddit corpus and three-covariate
+matching design leave residual confounding from visibility, ranking, and fine
+content differences.
 
 \subsection{Connection to Model Predictions}
 \label{sec:discussion:model}
 
-Our theoretical framework (\cref{sec:model}) generates specific predictions that we evaluate empirically in \Cref{sec:results}:
-
-Concretely, we evaluate predicted short half-life by estimating $\hat{h}$ and comparing
-its scale to the heartbeat period $\tau$; predicted shallow structure by estimating depth
-distributions and the implied branching ratio $\hat{\mu}$; predicted low reciprocity by
-quantifying dyadic reciprocity and reciprocal-chain lengths; predicted periodic signatures
-by testing for peaks at frequency $1/\tau$ in aggregate activity and for heartbeat-scale
-autocorrelation in agent-level activity; predicted topic moderation by comparing half-life
-and depth metrics across submolt/topic categories; and predicted heterogeneity by estimating
-variation in decay and re-entry behavior across agent groups and relating those differences
-to reputation proxies.
-
-These Moltbook results and Reddit-side baseline estimates provide a first check on whether the
-horizon-limited cascade framework captures key temporal and structural regularities in early
-agent-network discourse data.
+The empirical results align with the core model predictions by jointly testing
+reply-kernel timescale, depth-tail behavior, branching concentration,
+reciprocity/re-entry, and periodic signatures at the hypothesized heartbeat
+frequency. Together, these checks provide an internally consistent first-pass
+assessment of whether horizon-limited cascade dynamics describe early
+agent-network discourse, while clarifying where richer formulations
+(\Cref{sec:model:extensions}) are needed for the next stage of inference.

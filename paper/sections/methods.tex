@@ -1,248 +1,128 @@
 \section{Methods}
 \label{sec:methods}
 
-We describe our empirical methodology for (1) characterizing conversation geometry,
-(2) estimating interaction half-life, (3) detecting periodic signatures, and
-(4) executing a coarse matched cross-platform comparison.
+We estimate conversation geometry, reply-kernel decay, periodic signatures, and
+coarse matched cross-platform contrasts using a common set of deterministic
+preprocessing rules and fixed inferential settings.
 
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
 
-We compute structural properties of comment trees that characterize ``conversation shape'' independently of temporal dynamics.
+For each thread \(j\), we compute node depths from \cref{eq:depth}, record the
+maximum depth \(D_j\), and summarize the empirical depth distribution with mean,
+median, and tail probabilities \(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\).
+Using the model implication in \cref{prop:depth-bound}, we estimate an effective
+depth-tail parameter \(\hat{\mu}\) by zero-intercept least squares on
+\(\log \Prob(D_j \ge k)\). Because the analysis conditions on threads with at
+least one comment, \(\Prob(D_j \ge 1)=1\) by construction; the fit is therefore
+identified by \(k\ge2\), and \(\hat{\mu}\) is interpreted as an effective
+non-root reproduction parameter (\cref{rem:two-type}).
 
-\subsubsection{Depth Distribution}
+We additionally compute branching-factor profiles by depth,
+\(\bar c_k = \E[\text{children at depth }k]\), including the root branching
+factor, to distinguish root-heavy star patterns from deeper cascades.
 
-For each thread $j$, we compute the depth $d_{jn}$ of every comment using
-\cref{eq:depth} and record maximum depth $D_j$. We report the empirical
-distribution of $D_j$ across threads, its mean and median, and the proportion
-of threads reaching depth $k$ for $k = 1, 2, \ldots, 10$.
-
-Under our model (\cref{prop:depth-bound}), $\Prob(D_j \geq k) \leq \mu^k$. We estimate
-the effective branching ratio $\hat{\mu}$ by fitting this exponential bound to the
-empirical tail distribution via zero-intercept least squares on log-probabilities,
-using $k = 1, 2, \ldots, \max(D_j)$.  Because the depth distribution is computed
-conditional on threads with at least one comment ($N = 34{,}730$),
-$\Prob(D_j \geq 1) = 1$ by construction; the $k = 1$ point anchors the regression
-at zero and the fit is driven by $k \geq 2$.  The resulting $\hat{\mu}$ should be
-interpreted as an \emph{effective non-root reproduction parameter}
-(\cref{rem:two-type}), not a literal unconditional offspring mean for the root post.
-
-\subsubsection{Branching Factor}
-
-The \emph{branching factor} of a node is its number of direct children. We
-compute mean branching factor by depth level,
-$\bar{c}_k := \E[\text{children of nodes at depth } k]$, the root branching
-factor (direct replies to the post), and the distribution of branching factors
-across all nodes.
-
-Star-shaped trees (many direct replies, few deep chains) exhibit high root branching factor and rapidly declining $\bar{c}_k$.
-
-\subsubsection{Reciprocity and Back-and-Forth}
-
-We measure conversational reciprocity---the extent to which agents respond to
-each other---in two ways. First, for each ordered pair of agents $(i, j)$
-appearing in the same thread, we count replies from $i$ to $j$ and from $j$ to
-$i$; dyadic reciprocity is the fraction of dyads with bidirectional replies.
-Second, we compute reciprocal-chain length, where a \emph{reciprocal chain} is
-a maximal sequence of consecutive replies alternating between two agents, and we
-report the resulting chain-length distribution.
-
-Low reciprocity and short chains indicate ``broadcast'' rather than ``conversational'' dynamics.
-
-\subsubsection{Re-Entry Rate}
-
-We compute the re-entry rate $\text{RE}_j$ (\cref{eq:reentry-rate}) for each
-thread as the fraction of comments from agents who have previously commented in
-that thread. We report the distribution of $\text{RE}_j$ across threads, its
-relationship with thread size (because larger threads may mechanically have
-higher re-entry), and agent-level return frequency to previously joined threads.
+Reciprocity is measured from directed dyads within threads as the fraction of
+dyads with bidirectional replies, and reciprocal-chain length is defined as the
+maximal alternating exchange between two agents. Re-entry is measured by
+\(\mathrm{RE}_j\) in \cref{eq:reentry-rate}, with thread-level distributions and
+thread-size-conditioned summaries.
 
 \subsection{Interaction Half-Life Estimation}
 \label{sec:methods:halflife}
 
-Our primary goal is estimating the decay rate $\beta$ (equivalently, half-life $h = \ln 2 / \beta$) governing how quickly conversational engagement fades.
-
-\subsubsection{Survival Analysis Framework}
-
-We frame half-life estimation as a survival analysis problem. For each comment $m$ in thread $j$, define the \emph{survival time} $S_{jm}$ as the time until the \emph{next} direct reply to $m$:
+Our primary temporal estimand is the decay rate \(\beta\), reported as
+reply-kernel half-life \(h=\ln 2 / \beta\). For each parent comment \(m\) in
+thread \(j\), we define first-direct-reply survival time
 \begin{equation}
 \label{eq:survival-time}
-S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn} = m, n > m\}.
+S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
 \end{equation}
-If $m$ receives no replies, $S_{jm}$ is right-censored at the thread's observation window.
-Because the canonical timeline contains a 41.72-hour coverage gap, the primary survival
-specification does not attempt to reconstruct unobserved replies during that gap and does
-not exclude parent comments whose potential reply window intersects it; we therefore treat
-the half-life and duration estimates as conditional on observed coverage and potentially
-affected by reply undercount/missingness around the gap interval.
+If no direct reply is observed, the unit is right-censored at the observation
+boundary. Because the canonical timeline contains a 41.72-hour coverage gap,
+we do not impute unobserved replies across that interval; half-life and duration
+quantities are interpreted as conditional on observed coverage.
 
-Under the model (\cref{eq:reply-intensity}), conditional on the availability function $b(t)$, $S_{jm}$ follows an inhomogeneous exponential distribution with hazard
+Under \cref{eq:reply-intensity}, the survival hazard for parent age \(s\) is
 \begin{equation}
 \label{eq:hazard}
-\lambda(s \mid t_{jm}) = b(t_{jm} + s) \, \alpha_{a_{jm}} \, e^{-\beta_{a_{jm}} s}.
+\lambda(s \mid t_{jm}) = b(t_{jm}+s)\,\alpha_{a_{jm}}\,e^{-\beta_{a_{jm}}s}.
 \end{equation}
 
 \begin{remark}[Estimand interpretation]
 \label{rem:estimand}
-The \emph{reply-kernel half-life} $\hat{h} = \ln 2 / \hat{\beta}$ is a
-\textbf{kernel decay timescale}: it characterizes how quickly the instantaneous
-hazard of receiving a direct reply falls as a parent comment ages. It is
-\emph{not} the median thread lifetime or the time at which 50\% of all
-comments have arrived. Because most parent comments receive no direct reply
-in-window (high censoring fraction), the estimated half-life reflects the
-concentration of observed replies in the first seconds to minutes after a
-parent is posted. A short half-life combined with heavy censoring describes a
-\emph{bursty} reply process: if a direct reply occurs at all, it occurs
-quickly; otherwise the parent comment typically receives no direct reply.
+The \emph{reply-kernel half-life} \(\hat h = \ln 2/\hat\beta\) is a kernel-decay
+timescale for direct-reply hazard. It is not a median thread lifetime.
+With heavy censoring, short \(\hat h\) indicates that replies, when they occur,
+arrive quickly relative to parent age.
 \end{remark}
 
-\subsubsection{Parametric Estimation}
-
-We estimate $\beta$ via maximum likelihood under exponential and Weibull survival models:
-
-\paragraph{Exponential-kernel hazard model.} Assume constant $b(t) = 1$ and homogeneous $\alpha, \beta$. The log-likelihood for observed survival times $\{s_m\}$ with censoring indicators $\{\delta_m\}$ is:
+We estimate \((\alpha,\beta)\) by maximum likelihood under an exponential-kernel
+hazard model with constant \(b(t)=1\):
 \begin{equation}
 \label{eq:exponential-ll}
-\ell(\alpha, \beta) = \sum_m \left[ \delta_m \left( \log \alpha - \beta s_m \right) - \frac{\alpha}{\beta} \left(1 - e^{-\beta s_m}\right) \right].
+\ell(\alpha,\beta)=\sum_m\left[\delta_m(\log\alpha-\beta s_m)-\frac{\alpha}{\beta}\left(1-e^{-\beta s_m}\right)\right].
 \end{equation}
-We maximize numerically to obtain $(\hat{\alpha}, \hat{\beta})$ and report $\hat{h} = \ln 2 / \hat{\beta}$.
-
-\paragraph{Weibull model.} To allow for non-exponential decay, we fit a Weibull survival model with shape parameter $\gamma$:
+We also fit a Weibull alternative,
 \begin{equation}
 \label{eq:weibull-survival}
-S(s) = \exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right).
+S(s)=\exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right),
 \end{equation}
-The case $\gamma = 1$ recovers the exponential; $\gamma < 1$ indicates decreasing hazard (early replies more likely), while $\gamma > 1$ indicates increasing hazard.
+to assess departures from exponential decay.
 
-\subsubsection{Reply Probability vs.\ Reply Timing}
+Given high censoring, we report a decomposition of (i) observed in-window
+reply probability \(p_{\mathrm{obs}}\), (ii) conditional median
+first-reply time among observed events, and (iii) model-implied eventual reply
+probability \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) as a diagnostic quantity.
+We further report stratified pooled estimates by submolt category and agent
+proxies (claim status and follower-count bins).
 
-Given heavy censoring, we report a three-part decomposition in addition to
-$\hat{\beta}$. The first component is observed in-window reply probability,
-\(p_{\mathrm{obs}}=\Pr(\text{parent receives} \ge 1 \text{ direct reply in window})\),
-estimated as the event fraction in the primary survival sample. The second is
-the conditional timing summary, defined as median time-to-first-direct-reply
-among observed events. The third is an implied eventual reply probability under
-the fitted exponential-kernel hazard model (diagnostic only),
-\(p_{\infty}=1-\exp(-\hat{\alpha}/\hat{\beta})\), where
-\(\hat{\alpha}/\hat{\beta}\) is integrated reply mass under the fitted hazard.
-This separates \emph{whether} replies occur from \emph{how quickly} they occur when they do.
-
-\paragraph{Agent heterogeneity (implemented summary).} In this analysis pass, we report
-stratified pooled estimates rather than a full mixed-effects survival model: half-life
-and reply-probability summaries by submolt category and by agent-level proxies
-(\texttt{is\_claimed} status and follower-count bins \(\{0,1\text{--}9,10+\}\)).
-
-\subsubsection{Stratified Estimates}
-
-We compute half-life estimates stratified by submolt category
-(Builder/Technical, Philosophy/Meta, Social/Casual, and related groups) and by
-agent groups (claimed vs.\ unclaimed accounts plus follower-count bins
-\(0,1\text{--}9,10+\)).
-
-\subsubsection{Confidence Intervals and Uncertainty}
-
-We report 95\% confidence intervals using cluster bootstrap resampling at the thread level.
+Uncertainty is quantified with 95\% thread-cluster bootstrap intervals.
 
 \subsection{Periodicity Detection}
 \label{sec:methods:periodicity}
 
-Our model predicts periodic structure in comment arrivals at the heartbeat frequency ($\sim$4 hours). We test this via spectral analysis.
+To test for heartbeat-scale periodicity, we bin comment counts at 15-minute
+resolution in the longest contiguous segment after splitting the timeline at
+gaps larger than six hours. Let \(C_t\) denote binned counts; we transform and
+preprocess as
+\(Y_t=\log(C_t+1)\), 24-hour moving-average detrending, and Hanning windowing.
 
-\subsubsection{Aggregate Activity Time Series}
+We estimate power spectral density via Welch's method and test the target
+frequency \(f_\tau = 1/\tau \approx 0.25\,\mathrm{hr}^{-1}\) against an AR(1)
+red-noise null using 2,000 Monte Carlo simulations for Fisher's \(g\) and
+target-frequency power statistics. Robustness checks repeat target-frequency and
+dominant-frequency analyses at 5-, 15-, and 30-minute bin widths on the same
+contiguous segment.
 
-We construct a time series of comment counts binned at 15-minute intervals for the primary
-specification. Because the canonical comment timeline contains a long coverage gap, we first
-segment the event stream at gaps $>6$ hours and analyze the longest contiguous segment. Let
-$C_t$ denote the count in bin $t$ for that segment. We apply standard preprocessing:
-we log-transform (\(Y_t = \log(C_t + 1)\)) to stabilize variance, detrend by
-subtracting a 24-hour moving average to remove diurnal drift, and apply a
-Hanning window before spectral estimation.
-
-\subsubsection{Spectral Analysis}
-
-We estimate the power spectral density (PSD) via Welch's method with overlapping segments.
-We test for peaks at the expected heartbeat frequency
-$f_\tau = 1/\tau \approx 1/(4\text{ hours}) = 0.25\text{ hr}^{-1}$
-by comparing observed power at $f_\tau$ to a red-noise null from an AR(1) process
-fit to the detrended series, and estimating Monte Carlo $p$-values using 2,000
-AR(1) simulations for both Fisher's $g$ and target-frequency power.
-As a robustness check, we repeat the target-frequency and dominant-frequency analysis with
-5-minute and 30-minute bins on the same contiguous segment.
-
-\subsubsection{Agent-Level Autocorrelation}
-
-For agents with $\geq 10$ comments in the contiguous periodicity segment, we compute lagged
-autocorrelation on each agent's 15-minute binned activity process, reporting the
-mean autocorrelation at lag 4 hours with bootstrap confidence intervals over agents.
+At agent level, we compute lagged autocorrelation on 15-minute activity series
+for agents with at least 10 comments in the contiguous segment and report the
+mean lag-4-hour autocorrelation with bootstrap confidence intervals.
 
 \subsection{Cross-Platform Comparison}
 \label{sec:methods:comparison}
 
-To assess whether Moltbook dynamics differ from human-driven platforms, we compare against matched Reddit threads.
-We execute a coarse matched observational comparison
-(implementation details in \Cref{sec:methods:implementation}).
+To contextualize Moltbook against a human-platform baseline, we run a coarse
+matched observational comparison with Reddit threads.
 
-\subsubsection{Matching}
+Matching uses coarsened exact strata on three controls: first-30-minute
+action volume (bins \(\{0, 1\text{--}2, 3\text{--}5, 6\text{--}10, 11+\}\)),
+a deterministic coarse topic map (Moltbook and Reddit categories projected to
+\texttt{tech}/\texttt{meta}/\texttt{general}/\texttt{spam}), and exact UTC posting
+hour \((0,\ldots,23)\). Within each shared stratum, threads are sorted
+deterministically and paired one-to-one up to \(\min(n_M,n_R)\).
 
-Naive cross-platform comparisons confound platform differences with selection
-effects (e.g., threads that attract early engagement differ systematically from
-those that do not). We therefore employ coarsened exact matching
-\citep{iacus2012causal} to align Moltbook and Reddit threads on early engagement
-(thread comment count in the first 30 minutes, computed from
-\texttt{thread\_events} and coarsened into bins
-\(\{0,\;1\text{--}2,\;3\text{--}5,\;6\text{--}10,\;11+\}\)); topic category via
-deterministic coarse mapping (Moltbook:
-\texttt{Builder/Technical}$\rightarrow$\texttt{tech},
-\texttt{Philosophy/Meta}$\rightarrow$\texttt{meta},
-\texttt{Social/Casual}$\rightarrow$\texttt{general},
-\texttt{Creative}$\rightarrow$\texttt{general},
-\texttt{Other}$\rightarrow$\texttt{general},
-\texttt{Spam/Low-Signal}$\rightarrow$\texttt{spam}; Reddit:
-\texttt{MachineLearning}, \texttt{Python}, \texttt{datascience},
-\texttt{learnprogramming}, \texttt{programming}$\rightarrow$\texttt{tech},
-\texttt{artificial}$\rightarrow$\texttt{meta}); and exact UTC posting-hour bin
-\((0,\ldots,23)\).
+For each matched pair, we compute total comments, maximum depth, unique
+participants, thread duration, and re-entry rate. Reply-kernel half-life is
+also estimated on matched-thread subsets for each platform (platform-level
+estimation, not thread-level paired survival effects).
 
-Threads are assigned to exact strata defined by
-\((\texttt{topic\_coarse},\texttt{post\_hour\_bin},\texttt{early\_engagement\_bin})\).
-Within each stratum, we sort Moltbook and Reddit threads by
-\((\texttt{early\_comments\_30m}, \texttt{created\_at\_utc}, \texttt{thread\_id})\) and
-take one-to-one matches up to \(\min(n_M, n_R)\). This yields deterministic 1:1 pairing
-without random tie-breaking.
+Inference uses two-sided Wilcoxon signed-rank tests on paired differences,
+paired Cohen's \(d\), and bootstrap 95\% confidence intervals for mean paired
+differences (1,000 matched-pair resamples). Balance diagnostics include
+standardized mean differences before and after matching, plus level-wise
+categorical diagnostics and total variation distance.
 
-\subsubsection{Outcome Metrics}
-
-For each matched pair, we compute total comments \(N\), maximum depth \(D\),
-unique participants, thread duration (hours), and re-entry rate \(\mathrm{RE}\).
-Interaction half-life is additionally estimated on the matched-thread subsets for each
-platform (not pairwise at thread level) using the same reply-kernel survival construction as
-platform-side analyses.
-
-\subsubsection{Statistical Testing}
-
-We test for platform differences using two-sided Wilcoxon signed-rank tests on
-matched-pair differences, paired Cohen's \(d\) effect sizes, bootstrap 95\%
-confidence intervals for mean paired differences (1,000 matched-pair resamples),
-and balance diagnostics based on standardized mean differences (SMD) before/after
-matching; for categorical controls we additionally report level-wise SMD and
-total variation distance.
-
-\subsubsection{Sensitivity Analyses}
-
-The present cross-platform pass is intentionally coarse. We treat caliper variants,
-alternative topic maps, and richer causal estimators as planned follow-up analyses rather than
-reporting them post hoc.
-
-\subsection{Implementation}
-\label{sec:methods:implementation}
-
-All analyses are implemented in Python. The Reddit full-scale run reported here uses
-\texttt{analysis/07\_reddit\_only\_analysis.py} with run ID
-\texttt{attempt\_scaled\_20260206-142651Z} (seed 20260206; censor boundary 4 hours; 400
-bootstrap replications; 2,000 AR(1) simulations), after run-scoped validation by
-\texttt{analysis/05\_reddit\_validate.py}. Cross-platform matched analysis uses
-\texttt{analysis/08\_cross\_platform\_matched\_analysis.py} with run ID
-\texttt{run\_20260206-182842Z} (seed 20260206; 1,000 paired bootstrap replications; 400
-thread-cluster bootstrap replications for matched-subset half-life). Software dependencies,
-versions, and end-to-end reproduction instructions are documented in
+All analyses are run in Python with fixed seeds and deterministic preprocessing;
+manuscript-level reproducibility metadata are provided in
 \Cref{sec:reproducibility}.
