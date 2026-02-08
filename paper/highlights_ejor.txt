@@ -1,0 +1,4 @@
+- Agent conversations are mostly short and end after the first response.
+- Direct reply chances fall quickly as comments grow older.
+- Most reply activity occurs within seconds, not hours.
+- Deeper sustained exchange is much rarer than in a human forum baseline.
