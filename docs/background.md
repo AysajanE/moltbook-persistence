@@ -22,8 +22,15 @@ This project studies conversation persistence and coordination on **Moltbook**, 
 - “Moltbook Observatory: A Large Scale Dataset of an Agentic Social Network” (arXiv:2602.00931): https://arxiv.org/abs/2602.00931
 - “On the Emergence of Agentic Social Networks” (arXiv:2602.01012): https://arxiv.org/abs/2602.01012
 
+## OR/MS anchors added for EJOR positioning (2026-02-08)
+
+- Daw et al. (Management Science): Hawkes processes in contact-center service dynamics. DOI: https://doi.org/10.1287/mnsc.2021.04060
+- Whitt (Management Science): many-server queues with abandonment. DOI: https://doi.org/10.1287/mnsc.1040.0279
+- Reed and Tezcan (Operations Research): hazard-rate scaling for abandonment distributions. DOI: https://doi.org/10.1287/opre.1120.1069
+- Jouini et al. (EJOR): call-center scheduling with impatient customers. DOI: https://doi.org/10.1016/j.ejor.2010.02.036
+- Ren and Zhou (Management Science): coordination of staffing and service quality in call centers. DOI: https://doi.org/10.1287/mnsc.1070.0820
+
 ## Caveats worth tracking
 
 - **Platform volatility:** norms, moderation, and features may change quickly; analyses should be timestamped.
 - **Human influence / account compromise:** some activity may be human-driven; focus on interaction dynamics and run sensitivity analyses by time window, agent reputation/age, and abnormal-activity periods.
-

@@ -1,33 +1,23 @@
 \section{Background and Related Work}
 \label{sec:background}
 
-Our work connects three research streams: temporal models of information cascades, structural analysis of online conversations, and the emerging study of autonomous AI agent systems. We review each in turn before positioning our contribution.
+We position this study in three layers: OR/MS stochastic-process foundations for service and interaction dynamics, networked conversation structure, and agent-platform applications.
 
-\subsection{Information Cascades and Temporal Dynamics}
+\subsection{OR/MS Stochastic Foundations}
 
-The study of how content spreads through social networks has a rich history in computational social science. Early work established that information cascades exhibit characteristic temporal signatures, with activity bursts followed by power-law relaxation \citep{crane2008robust}. \citet{hawkes1971spectra} introduced self-exciting point processes---now commonly called Hawkes processes---which provide a natural generative model for such dynamics: each event (post, comment, retweet) temporarily elevates the probability of subsequent events, with this excitation decaying over time.
+OR/MS models frequently link service dynamics to stochastic-process structure. Self-exciting point processes capture temporal reinforcement \citep{hawkes1971spectra}, survival/hazard models encode time-to-event behavior under censoring \citep{cox1972regression}, and branching-process formulations characterize propagation depth and stability in subcritical regimes \citep{harris1963theory}.
 
-Hawkes processes have been extensively applied to social media dynamics. \citet{zhao2015seismic} developed the SEISMIC model for predicting tweet popularity using self-exciting dynamics. \citet{rizoiu2017expecting} introduced Hawkes Intensity Processes (HIP) that decompose content popularity into inherent virality, promotion sensitivity, and exogenous stimuli---separating endogenous from exogenous drivers in a manner analogous to our availability--staleness decomposition.
+Recent OR/MS work applies these tools directly in operations contexts. Contact-center interactions have been modeled with Hawkes processes \citep{daw2025coproduction}. Queueing models in Management Science, Operations Research, and EJOR analyze impatience and abandonment under constrained capacity \citep{whitt2004efficiency,reed2012hazard,jouini2010online}. OR coordination models also connect decentralized staffing choices to service-quality outcomes in service systems \citep{ren2008callcenter}.
 
-A key quantity in these models is the \emph{excitation kernel}, which governs how quickly the influence of an event decays. In social-media applications, kernel choices are often heavy-tailed; both SEISMIC and HIP adopt power-law-style memory kernels \citep{zhao2015seismic, rizoiu2017expecting}. In the present manuscript, we use an exponential staleness kernel for interpretability, so the \emph{half-life} $h = \ln 2 / \beta$ provides a direct measure of temporal persistence. Our work further incorporates periodic availability modulation absent in standard Hawkes formulations.
+Computational social science contributes complementary diffusion evidence. Response-function and Hawkes-style popularity models on online platforms \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting} motivate our event-time persistence perspective. Relative to that literature, our focus is OR-facing measurement: incidence, conditional timing, and depth stability under explicit availability and staleness mechanisms.
 
-\subsection{Conversation Structure in Online Communities}
+\subsection{Networked Interaction Structure}
 
 Beyond temporal dynamics, researchers have studied the \emph{structural} properties of online discussions. Comment threads form tree structures, and the shape of these trees---their depth, breadth, and branching patterns---reveals how conversations unfold.
 
 \citet{gomez2013structure} modeled discussion cascades using preferential attachment with root bias, showing this captures the tendency for replies to cluster near the original post---a pattern we observe strongly on Moltbook. \citet{aragon2017thread} studied the impact of conversation threading on social reciprocity, finding that threaded interfaces increase bidirectional exchange and reciprocity. More recently, \citet{meital2024branch} studied branching prediction on Reddit---whether new comments reply to leaf nodes or interior nodes---finding that structural, temporal, and linguistic features all contribute, a question directly relevant to the root-concentrated branching we observe on Moltbook.
 
-This literature establishes that human-driven conversations exhibit characteristic structural regularities. Our work asks whether AI-agent conversations conform to or deviate from these patterns, and whether deviations can be explained by agents' distinct temporal constraints.
-
-\subsection{Branching Processes and Cascade Size}
-
-The connection between Hawkes processes and branching processes provides theoretical grounding for conversation structure. When the excitation kernel integrates to a value less than one (the subcritical regime), the expected total number of events is finite, and cascade sizes follow well-characterized distributions \citep{harris1963theory}.
-
-On human platforms, \citet{gleeson2014competition} showed that competition for attention drives meme cascades toward critical branching processes, producing heavy-tailed popularity distributions. By contrast, our analysis finds that agent conversations operate deep in the subcritical regime, consistent with limited attention competition when agents check in on fixed schedules. In the subcritical case, the expected cascade size scales as $\mu / (1 - \mu)$ where $\mu$ is the branching ratio \citep{harris1963theory}, providing a direct link between temporal decay parameters and structural outcomes.
-
-Our model inherits this branching-process interpretation, with the added feature that the branching ratio depends on both intrinsic decay ($\beta$) and periodic availability ($b(t)$), allowing us to decompose structural properties into platform-level and agent-level contributions.
-
-\subsection{AI Agents and Multi-Agent Systems}
+\subsection{Agent Platforms as a New Application Domain}
 
 The emergence of LLM-powered agents that interact autonomously with digital environments has opened new questions about collective AI behavior. \citet{park2023generative} demonstrated that 25 LLM agents in a controlled sandbox can exhibit believable social behaviors---forming relationships, initiating conversations, and coordinating events. Moltbook extends this paradigm from a controlled simulation to a deployed platform with over 25{,}000 agents, providing the first opportunity to measure LLM agent social dynamics at scale. The Observatory dataset we employ is publicly archived on Hugging Face \citep{simulamet2026observatoryarchive}.
 
@@ -35,4 +25,4 @@ Critical commentary has questioned the authenticity of agent autonomy on Moltboo
 
 \subsection{Positioning Our Contribution}
 
-Prior work on conversation dynamics has focused exclusively on human-driven platforms. Our contribution is to extend these frameworks to agent-populated networks, explicitly modeling how architectural constraints (periodic check-ins, context windows) shape collective behavior. We introduce interaction half-life as a comparable metric across platforms, estimate it empirically for the first time on an agent network, and provide mechanism-grounded explanations linking design choices to observed dynamics.
+Prior work on conversation dynamics focuses primarily on human-populated platforms. Our contribution is to extend OR/MS measurement ideas to agent-populated networks by formalizing a two-part persistence decomposition (reply incidence and conditional timing), linking these estimands to availability and staleness mechanisms, and connecting them to depth-tail stability diagnostics. This is a mechanism-to-measurement contribution for a new application domain, not a new stochastic-process class.

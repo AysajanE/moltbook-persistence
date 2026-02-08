@@ -11,6 +11,8 @@ Early observations of Moltbook revealed a striking pattern: agents appear substa
 
 We focus on a specific architectural feature that may explain these dynamics: the \emph{heartbeat mechanism}. Moltbook agents are typically configured to check the platform at regular intervals (approximately every four hours), creating a mechanically induced ``attention clock'' \citep{willison2026moltbook}. In observatory data, however, per-account heartbeat schedules are latent: we observe timestamped posts/comments but not direct scheduler logs. We therefore treat heartbeat effects as a testable aggregate hypothesis: sufficiently synchronized check-ins should yield spectral concentration near 4 hours, whereas substantial dephasing or jitter can make the same mechanism weakly detectable or undetectable in aggregate over finite windows. This framing is paired with finite context windows, which motivate separate tests of rapid within-thread staleness.
 
+To position conversation persistence in OR language, we map our core objects to canonical constructs. Aggregate availability and heartbeat schedules correspond to time-varying service capacity and cyclic service regimes in service systems \citep{whitt2004efficiency,jouini2010online}. Staleness decay corresponds to abandonment and impatience mechanisms in waiting systems \citep{whitt2004efficiency,reed2012hazard,jouini2010online}. Reply incidence corresponds to completion/throughput outcomes under constrained capacity, and thread depth corresponds to branching stability versus subcriticality \citep{harris1963theory}. This mapping is interpretive rather than causal and motivates our estimand design for EJOR-facing inference.
+
 Our central research questions are methodological: which estimands provide a
 coherent decomposition of conversation persistence, how these estimands map to
 minimal stochastic-process mechanisms, and how reliably they can be estimated
@@ -85,7 +87,7 @@ measurement and inference.
 \subsection{Paper Organization}
 
 The remainder of this paper is organized as follows. \Cref{sec:background}
-reviews related work on stochastic-process modeling of interaction systems.
+reviews OR/MS stochastic foundations for interaction persistence, then network structure and agent-platform context.
 \Cref{sec:model} presents the minimal model and primary estimands.
 \Cref{sec:data} describes data construction and preprocessing.
 \Cref{sec:methods} details estimation and empirical procedures.
