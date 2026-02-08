@@ -420,8 +420,9 @@ u_{\mathrm{sync}},u_{\mathrm{cad}})\) denote platform settings for visibility
 weighting, resurfacing/notifications, memory scaffolding, synchronization policy,
 and scheduled check-in cadence. Consistent with \cref{eq:alpha-exposure}, we model
 \(u_{\mathrm{vis}}\) and \(u_{\mathrm{res}}\) as levers on the exposure multiplier
-inside \(\alpha_i\). A stylized mapping from these design settings to model
-parameters is
+inside \(\alpha_i\). For decision-support use, this block maps lever inputs to
+predicted persistence outputs and their trade-offs. A stylized mapping from
+these design settings to model parameters is
 \begin{align}
 \alpha_i(u) &=
 \bar{\alpha}_i^{(0)}\,\xi_i(u), \qquad
@@ -469,7 +470,7 @@ design \(B\) pointwise in \(v\), so the integral is weakly larger. Averaging ove
 \(i\sim\pi(s)\) preserves the inequality.
 \end{proof}
 
-\begin{corollary}[Stylized memory/resurfacing effect on depth and size]
+\begin{corollary}[Stylized memory/resurfacing comparative-static hypothesis on depth and size]
 \label{cor:lever-size-depth}
 Assume \Cref{ass:thread-size-regularity} and \(0\le\mu(A)\le\mu(B)<1\), with
 \(\mu_0(B)\ge\mu_0(A)\). Then
@@ -495,6 +496,7 @@ tree under \(A\) a subtree of the tree under \(B\) almost surely, implying the
 depth and size inequalities.
 \end{proof}
 
-These are comparative-static implications of the model, not identified causal
-effects from observational data. In the empirical sections, intervention language is
-therefore interpreted as mechanism-consistent hypotheses.
+These are comparative-static decision-support implications of the model, not
+identified causal effects from observational data. In the empirical sections,
+intervention language is therefore interpreted as mechanism-consistent
+hypotheses.
