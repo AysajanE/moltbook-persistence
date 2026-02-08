@@ -1,0 +1,3 @@
+platform,period_hours,segment_event_count,critical_z_at_alpha,alpha_level,kappa_star_power_0p8,null_size_at_kappa0,power_sim_reps,null_mc_reps,seed,segment_duration_hours,detectability_source,input_thread_events_path
+Moltbook,4.0,220461.0,2.99400666842901,0.05,0.2,0.04964,50000,200000,20260208,63.517545643333335,paper/tables/moltbook_periodicity_detectability_power.csv,data_features/moltbook_only/run_20260206-145240Z/thread_events.parquet
+Reddit,4.0,9878.0,2.9983426045599346,0.05,0.2,0.05136,50000,200000,20260208,119.93722222222222,computed_from_thread_events,data_features/reddit_only/attempt_scaled_20260206-142651Z/thread_events.parquet

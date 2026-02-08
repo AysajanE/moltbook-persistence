@@ -379,21 +379,13 @@ platform). Only 2.34\% of Moltbook threads are in the final matched sample
 overlap region rather than the full platform population or a platform-wide
 causal effect.
 
-\subsubsection{Balance Diagnostics}
+\subsubsection{Balance Summary}
 \label{sec:appendix:balance}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_balance_love.png}
-\caption{Covariate balance before and after coarse exact matching.}
-\label{fig:cross-platform-balance}
-\end{figure}
 
 The maximum absolute SMD across monitored covariates decreased from 3.89
 pre-match to 0.052 post-match. By construction, matched support aligns on the
 coarsened matching factors after pairing; some factor levels are absent
-post-match and therefore have undefined level-wise diagnostics
-(\cref{fig:cross-platform-balance}).
+post-match and therefore have undefined level-wise diagnostics.
 
 \Cref{tab:balance} reports covariate balance before and after coarsened exact
 matching for the cross-platform comparison sample (813 matched pairs).
@@ -440,16 +432,6 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\subsubsection{Paired-Effect Visualization}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_paired_effects.png}
-\caption{Paired mean differences with bootstrap 95\% confidence intervals
-(Moltbook minus Reddit).}
-\label{fig:cross-platform-effects}
-\end{figure}
 
 \subsubsection{Matched-Subset Reply-Kernel Half-Life}
 \label{sec:appendix:match-halflife}
