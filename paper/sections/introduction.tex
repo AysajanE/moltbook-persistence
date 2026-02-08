@@ -11,7 +11,16 @@ Early observations of Moltbook suggested a pattern: agents appear substantially 
 
 We focus on a specific architectural feature that may explain these dynamics: the \emph{heartbeat mechanism}. Moltbook agents are typically configured to check the platform at regular intervals (approximately every four hours), creating a mechanically induced ``attention clock'' \citep{willison2026moltbook}. In observatory data, however, per-account heartbeat schedules are latent: we observe timestamped posts/comments but not direct scheduler logs. We therefore treat heartbeat effects as a testable aggregate hypothesis: sufficiently synchronized check-ins should yield spectral concentration near 4 hours, whereas substantial dephasing or jitter can make the same mechanism weakly detectable or undetectable in aggregate over finite windows. This framing is paired with finite context windows, which motivate separate tests of rapid within-thread staleness.
 
-To position conversation persistence in service-systems and stochastic-process language, we map our core objects to canonical constructs. Aggregate availability and heartbeat schedules correspond to time-varying service capacity and cyclic service regimes in service systems \citep{whitt2004efficiency,jouini2010online}. Staleness decay corresponds to abandonment and impatience mechanisms in waiting systems \citep{whitt2004efficiency,reed2012hazard,jouini2010online}. Reply incidence corresponds to completion/throughput outcomes under constrained capacity, and thread depth corresponds to branching stability versus subcriticality \citep{harris1963theory}. This mapping is interpretive rather than causal and motivates our estimand design for empirical inference in this setting.
+Conversation persistence can be interpreted through canonical constructs in
+service systems and stochastic-process modeling. Aggregate availability and
+heartbeat schedules correspond to time-varying service capacity and cyclic
+service regimes \citep{whitt2004efficiency,jouini2010online}. Staleness decay
+corresponds to abandonment and impatience mechanisms in waiting systems
+\citep{whitt2004efficiency,reed2012hazard,jouini2010online}. Reply incidence
+corresponds to completion/throughput outcomes under constrained capacity, and
+thread depth corresponds to branching stability versus subcriticality
+\citep{harris1963theory}. This mapping is interpretive rather than causal and
+motivates the estimand design used in this study.
 
 Our central research questions are methodological: which estimands provide a
 coherent decomposition of conversation persistence, how these estimands map to
@@ -66,23 +75,19 @@ periodic signatures.
 
 We evaluate this framework empirically with a Moltbook-first design using the Moltbook
 Observatory Archive \citep{simulamet2026observatoryarchive}. A run-scoped curated Reddit
-corpus is used as secondary contextual baseline, not as a gating causal comparison. The
-present manuscript reports: (1)~descriptive characterization of Moltbook conversation
-geometry, (2)~estimation of Moltbook temporal decay parameters via survival analysis,
-(3)~spectral tests for Moltbook periodic activity signatures, (4)~a full-scale Reddit-side
-baseline analysis under the same estimators, and (5)~a coarse matched observational
-comparison with paired effect estimation.
+corpus is used as secondary contextual baseline, not as a gating causal comparison.
+We report descriptive characterization of Moltbook conversation geometry,
+estimation of Moltbook temporal decay parameters via survival analysis,
+spectral tests for Moltbook periodic activity signatures, a full-scale
+Reddit-side baseline analysis under the same estimators, and a coarse matched
+observational comparison with paired effect estimation.
 
-Our contributions are fourfold. First, we formalize a two-component persistence
-measurement target that separates direct-reply incidence from conditional reply
-timing, with half-life treated as a kernel-timescale summary. Second, we
-provide a mechanism-to-estimand mapping that links staleness, branching, and
-availability modulation to identifiable empirical quantities. Third, we
-implement and calibrate an estimation workflow (survival-based timing
-inference, depth-tail summaries, and periodicity tests) under a common
-reproducible pipeline. Fourth, we derive downstream design implications as
-model-consistent hypotheses, while keeping the primary contribution in
-measurement and inference.
+The study formalizes a two-component persistence target that separates
+direct-reply incidence from conditional reply timing, with half-life treated as
+a kernel-timescale summary. It links staleness, branching, and availability
+modulation to estimands, implements a survival-based estimation workflow with
+depth-tail summaries and periodicity tests under a common reproducible
+pipeline, and derives model-consistent design-implication hypotheses.
 
 \subsection{Paper Organization}
 

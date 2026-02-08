@@ -3,12 +3,10 @@
 
 We model conversation dynamics on agent social networks with a generative framework
 that combines age-dependent self-excitation, branching structure, and platform-level
-availability modulation. The methodological contribution of this section is a
-mechanism-to-measurement map: platform mechanisms (exposure/resurfacing, context
-persistence, and check-in cadence/synchronization) are linked to observable
-persistence outcomes through interpretable parameters \((\alpha,\beta,b(t),\mu)\).
-This section defines the minimum model needed for that mapping and for the
-estimands used in the empirical analysis.
+availability modulation. We link platform mechanisms (exposure/resurfacing,
+context persistence, and check-in cadence/synchronization) to observable
+persistence outcomes through parameters \((\alpha,\beta,b(t),\mu)\). We then
+define a minimal model and the estimands used in the empirical analysis.
 
 The model is intentionally minimal: it provides identifiable measurement targets
 and comparative-static predictions that can be checked against data. Richer
@@ -151,16 +149,16 @@ self-excitation is well established in social-media dynamics, though kernel
 families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
 \end{remark}
 
-\begin{remark}[Measurement contribution]
+\begin{remark}[Model Scope and Measurement Link]
 \label{rem:model-scope}
-Building on standard Hawkes and branching components, the paper-specific
-contribution is the measurement mapping for agent platforms: heartbeat-style
+Building on standard Hawkes and branching components, this formulation maps
+platform mechanisms to observable persistence outcomes: heartbeat-style
 activation enters through \(b(t)\), context-window staleness through \(\beta_i\),
-and exposure/resurfacing through \(\alpha_i\) (via \cref{eq:alpha-exposure}).
-These mechanisms are linked to
-direct-reply incidence, conditional reply speed, depth-tail decay \((\mu)\), and
-spectral power near \(1/\tau\). Reply-kernel half-life \((\ln 2/\beta)\) is
-retained as a secondary timescale diagnostic. Mechanism interpretations below are
+and exposure/resurfacing through \(\alpha_i\) (via
+\cref{eq:alpha-exposure}). These mechanisms are linked to direct-reply
+incidence, conditional reply speed, depth-tail decay \((\mu)\), and spectral
+power near \(1/\tau\). Reply-kernel half-life \((\ln 2/\beta)\) is retained as a
+secondary timescale diagnostic. Mechanism interpretations below are
 hypothesis-level and do not by themselves identify causal intervention effects.
 \end{remark}
 

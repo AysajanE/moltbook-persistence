@@ -1,13 +1,21 @@
 \section{Background and Related Work}
 \label{sec:background}
 
-We position this study in three layers: stochastic-process foundations for service and interaction dynamics, networked conversation structure, and agent-platform applications.
+This section reviews three strands of prior work: stochastic-process
+foundations for service and interaction dynamics, networked conversation
+structure, and agent-platform applications.
 
 \subsection{Stochastic Foundations for Service and Interaction Dynamics}
 
 Operations and service-systems models frequently link service dynamics to stochastic-process structure. Self-exciting point processes capture temporal reinforcement \citep{hawkes1971spectra}, survival/hazard models encode time-to-event behavior under censoring \citep{cox1972regression}, and branching-process formulations characterize propagation depth and stability in subcritical regimes \citep{harris1963theory}.
 
-Recent operations research and management science work applies these tools directly in operations contexts. Contact-center interactions have been modeled with Hawkes processes \citep{daw2025coproduction}. Queueing models in Management Science, Operations Research, and the European Journal of Operational Research analyze impatience and abandonment under constrained capacity \citep{whitt2004efficiency,reed2012hazard,jouini2010online}. Coordination models in service operations also connect decentralized staffing choices to service-quality outcomes in service systems \citep{ren2008callcenter}.
+Recent work applies these tools directly in operations contexts.
+Contact-center interactions have been modeled with Hawkes processes
+\citep{daw2025coproduction}. Queueing models analyze impatience and abandonment
+under constrained capacity \citep{whitt2004efficiency,reed2012hazard,jouini2010online}.
+Coordination models in service operations also connect decentralized staffing
+choices to service-quality outcomes in service systems
+\citep{ren2008callcenter}.
 
 Computational social science contributes complementary diffusion evidence. Response-function and Hawkes-style popularity models on online platforms \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting} motivate our event-time persistence perspective. Relative to that literature, our focus is a measurement framework for incidence, conditional timing, and depth stability under explicit availability and staleness mechanisms.
 
@@ -23,6 +31,12 @@ The emergence of LLM-powered agents that interact autonomously with digital envi
 
 Critical commentary has questioned the authenticity of agent autonomy on Moltbook. \citet{alexander2026afterweekend} observed that agents appear better at founding than continuing projects, with time horizons measured in hours rather than days. \citet{willison2026moltbook} characterized much of the agent output as science-fiction-themed content while acknowledging concrete demonstrations of increased agent capability. These qualitative observations motivate our quantitative investigation.
 
-\subsection{Positioning Our Contribution}
+\subsection{Contribution Relative to Prior Work}
 
-Prior work on conversation dynamics focuses primarily on human-populated platforms. Our contribution is to extend measurement ideas from operations and service-systems research to agent-populated networks by formalizing a two-part persistence decomposition (reply incidence and conditional timing), linking these estimands to availability and staleness mechanisms, and connecting them to depth-tail stability diagnostics. This is a mechanism-to-measurement contribution for a new application domain, not a new stochastic-process class.
+Prior work on conversation dynamics focuses primarily on human-populated
+platforms. We extend measurement ideas from operations and service-systems
+research to agent-populated networks by formalizing a two-part persistence
+decomposition (reply incidence and conditional timing), linking estimands to
+availability and staleness mechanisms, and connecting them to depth-tail
+stability diagnostics. The focus is a mechanism-to-measurement mapping for a
+new application domain, not a new stochastic-process class.
