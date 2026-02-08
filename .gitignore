@@ -71,3 +71,4 @@ paper/*.pdf
 # Internal project files
 docs/feedback/
 docs/prompts/
+.tmp_audit/
