@@ -3,9 +3,16 @@
 
 We model conversation dynamics on agent social networks with a generative framework
 that combines age-dependent self-excitation, branching structure, and platform-level
-availability modulation. This section defines the minimum mechanism model and the
-primary measurement targets used in the empirical analysis. Richer formulations for
-hierarchical heterogeneity and visibility-weighted reply assignment are provided in
+availability modulation. The OR contribution of this section is a
+mechanism-to-measurement map: platform mechanisms (exposure/resurfacing, context
+persistence, and check-in cadence/synchronization) are linked to observable
+persistence outcomes through interpretable parameters \((\alpha,\beta,b(t),\mu)\).
+This section defines the minimum model needed for that mapping and for the
+estimands used in the empirical analysis.
+
+The model is intentionally minimal: it provides identifiable measurement targets
+and comparative-static predictions that can be checked against data. Richer
+formulations for hierarchical heterogeneity and visibility-weighted reply assignment are provided in
 \Cref{sec:model:extensions} in the appendix.
 
 \subsection{Setting and Notation}
@@ -113,7 +120,15 @@ replies as an inhomogeneous Poisson process with
 \lambda_{j,m}(t\mid\mathcal{H}_j(t))
 := b(t)\,\alpha_{a_{jm}}\exp\!\left[-\beta_{a_{jm}}(t-t_{jm})\right]\mathbf{1}\{t>t_{jm}\},
 \end{equation}
-where \(\alpha_i>0\) is influence amplitude and \(\beta_i>0\) decay rate.
+where \(\alpha_i>0\) is an effective exposure-weighted influence amplitude and
+\(\beta_i>0\) decay rate. We write
+\begin{equation}
+\label{eq:alpha-exposure}
+\alpha_i=\bar{\alpha}_i\,\xi_i,
+\end{equation}
+where \(\bar{\alpha}_i\) is baseline reply propensity and \(\xi_i\) is a latent
+exposure multiplier that absorbs visibility/ranking and resurfacing/notification
+effects in observational data.
 \end{definition}
 
 Total thread intensity is superposition,
@@ -136,23 +151,24 @@ self-excitation is well established in social-media dynamics, though kernel
 families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
 \end{remark}
 
-\begin{remark}[What is specific in this formulation]
+\begin{remark}[OR-facing measurement contribution]
 \label{rem:model-scope}
-The Hawkes kernel and branching interpretation are standard. The paper-specific
-step is mechanism mapping for agent platforms: heartbeat-style activation enters
-through \(b(t)\), context-window staleness enters through \(\beta_i\), and their
-implications are evaluated through linked observables: direct-reply incidence,
-conditional reply speed, depth-tail decay \((\mu)\), and aggregate spectral
-power near \(1/\tau\). Reply-kernel half-life \((\ln 2/\beta)\) is retained as a
-secondary diagnostic of kernel timescale. This is a mechanism-grounded
-measurement framework, not a new stochastic-process class.
+Building on standard Hawkes and branching components, the paper-specific
+contribution is the measurement mapping for agent platforms: heartbeat-style
+activation enters through \(b(t)\), context-window staleness through \(\beta_i\),
+and exposure/resurfacing through \(\alpha_i\) (via \cref{eq:alpha-exposure}).
+These mechanisms are linked to
+direct-reply incidence, conditional reply speed, depth-tail decay \((\mu)\), and
+spectral power near \(1/\tau\). Reply-kernel half-life \((\ln 2/\beta)\) is
+retained as a secondary timescale diagnostic. Mechanism interpretations below are
+hypothesis-level and do not by themselves identify causal intervention effects.
 \end{remark}
 
 \subsection{Primary Estimands and Measurement Mapping}
 \label{sec:model:estimands}
 \label{sec:methods:def-est}
 
-The model is used as a measurement map from mechanism parameters
+This subsection operationalizes the measurement map from mechanism parameters
 \((\alpha,\beta,b(t),\mu)\) to estimands computed from observed timestamped reply trees.
 Terminology in \Cref{sec:results,sec:discussion,sec:conclusion} follows this
 estimand glossary.
@@ -196,9 +212,9 @@ short-window probabilities such as
 \(h=\ln 2/\beta\) (\cref{def:halflife}), interpreted as secondary to incidence
 and conditional speed.
 \item \textbf{Depth-tail decay summary:}
-effective tail slope \(\hat{\mu}\) from
-\(\log \Prob(D_j\ge k)\approx c+k\log\mu\), interpreted descriptively because
-\cref{eq:depth-tail} is a bound.
+effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}\) from
+\(\log \Prob(D_j\ge k)\approx c+k\log s_{\mathrm{depth}}\), interpreted
+descriptively because \cref{eq:depth-tail} is a bound.
 \item \textbf{Periodicity detectability target:}
 power concentration near \(f_\tau=1/\tau\) implied by \cref{prop:periodicity}.
 \end{itemize}
@@ -328,10 +344,11 @@ rates (large \(\beta_i\)) imply small \(\mu_i\) and thus shallow trees.
 \begin{remark}[Interpretation of \(\mu\) in depth tails]
 \label{rem:mu-tail-interpretation}
 \Cref{eq:depth-tail} is an upper bound, not an exact identity for the empirical
-depth tail. Accordingly, \(\hat{\mu}\) estimated from
-\(\log \Prob(D_j\ge k)\approx c+k\log\mu\) should be read as a descriptive
-effective tail-slope parameter motivated by the bound, rather than an exact
-equality-based estimator of reproduction mean.
+depth tail. Accordingly, the effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}}\), obtained from
+\(\log \Prob(D_j\ge k)\approx c+k\log s_{\mathrm{depth}}\), should be read as a
+descriptive summary motivated by the bound, rather than an exact
+equality-based estimator of reproduction mean or branching ratio.
 \end{remark}
 
 \subsection{Reciprocity, Re-Entry, and Agent Heterogeneity}
@@ -397,14 +414,89 @@ Proof is provided in \Cref{app:proof-periodicity}.
 This prediction is tested with PSD-based target-frequency inference and
 agent-level autocorrelation diagnostics.
 
-\subsection{Connection to Platform Mechanisms}
+\subsection{Platform Design Levers and Comparative Statics}
 \label{sec:model:mechanisms}
 
-Model parameters map to platform mechanisms, with estimation separated from
-mechanism interpretation. Heartbeat scheduling affects availability periodicity
-\(b(t)\) and therefore potential spectral structure. Memory limits and context
-loss affect \(\beta_i\), shifting timing decay and branching depth. Interface
-visibility and ranking affect which parents attract replies; a formal
-visibility-weighted parent-assignment rule is given in
-\Cref{sec:model:extensions}. Design implications based on these mappings are
-discussed downstream in \Cref{sec:discussion}.
+Let \(u=(u_{\mathrm{vis}},u_{\mathrm{res}},u_{\mathrm{mem}},
+u_{\mathrm{sync}},u_{\mathrm{cad}})\) denote platform settings for visibility
+weighting, resurfacing/notifications, memory scaffolding, synchronization policy,
+and scheduled check-in cadence. Consistent with \cref{eq:alpha-exposure}, we model
+\(u_{\mathrm{vis}}\) and \(u_{\mathrm{res}}\) as levers on the exposure multiplier
+inside \(\alpha_i\). A stylized mapping from these design knobs to model
+parameters is
+\begin{align}
+\alpha_i(u) &=
+\bar{\alpha}_i^{(0)}\,\xi_i(u), \qquad
+\xi_i(u):=\exp\!\left(
+\theta_{i,\mathrm{vis}}u_{\mathrm{vis}}+
+\theta_{i,\mathrm{res}}u_{\mathrm{res}}
+\right), \label{eq:lever-alpha}\\
+\beta_i(u) &=
+\beta_i^{(0)}\exp\!\left(-\theta_{i,\mathrm{mem}}u_{\mathrm{mem}}\right),
+\label{eq:lever-beta}\\
+b(t;u) &= 1+\kappa(u_{\mathrm{sync}})
+\cos\!\left(\frac{2\pi}{\tau(u_{\mathrm{cad}})}t+\phi\right),
+\quad |\kappa(u_{\mathrm{sync}})|<1,
+\label{eq:lever-b}
+\end{align}
+with \(\theta_{\cdot,\cdot}\ge 0\). Here, stronger memory scaffolding lowers
+effective decay (\(\beta_i\downarrow\)); resurfacing and visibility increase
+effective exposure (\(\alpha_i\uparrow\)); synchronization and cadence govern the
+shape of \(b(t)\) through \(\kappa(\cdot)\) and \(\tau(\cdot)\).
+
+Under design \(u\), the expected direct offspring of node \((i,s)\) is
+\begin{equation}
+\label{eq:lever-mu-i}
+\mu_i(s;u)=\int_0^{\infty} b(s+v;u)\,\alpha_i(u)\,e^{-\beta_i(u)v}\,dv.
+\end{equation}
+
+\begin{assumption}[Monotone design change]
+\label{ass:lever-monotone}
+For two designs \(A\) and \(B\), suppose for all \(i,t\):
+\(\alpha_i(B)\ge\alpha_i(A)\), \(\beta_i(B)\le\beta_i(A)\), and
+\(b(t;B)\ge b(t;A)\), with at least one strict inequality on a set of positive
+measure.
+\end{assumption}
+
+\begin{proposition}[Lever monotonicity of effective reproduction]
+\label{prop:lever-mu-monotone}
+Under \Cref{ass:lever-monotone}, \(\mu_i(s;B)\ge\mu_i(s;A)\) for all \(i,s\).
+For fixed author mixture \(\pi(s)\), the aggregate non-root reproduction satisfies
+\(\mu(B)\ge\mu(A)\).
+\end{proposition}
+
+\begin{proof}
+In \Cref{eq:lever-mu-i}, the integrand is nonnegative and weakly larger under
+design \(B\) pointwise in \(v\), so the integral is weakly larger. Averaging over
+\(i\sim\pi(s)\) preserves the inequality.
+\end{proof}
+
+\begin{corollary}[Stylized memory/resurfacing effect on depth and size]
+\label{cor:lever-size-depth}
+Assume \Cref{ass:thread-size-regularity} and \(0\le\mu(A)\le\mu(B)<1\), with
+\(\mu_0(B)\ge\mu_0(A)\). Then
+\begin{equation}
+\label{eq:lever-size-monotone}
+\E[N_j\mid B]=\frac{\mu_0(B)}{1-\mu(B)}
+\ge
+\frac{\mu_0(A)}{1-\mu(A)}=\E[N_j\mid A].
+\end{equation}
+For a depth comparison only, add the local assumption that non-root offspring are
+Poisson with means \(\mu(A)\) and \(\mu(B)\), coupled by thinning across designs.
+Under this local assumption,
+\(\Prob(D_j\ge k\mid B)\ge\Prob(D_j\ge k\mid A)\) for all \(k\), hence
+\(\E[D_j\mid B]\ge\E[D_j\mid A]\).
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+Equation \eqref{eq:lever-size-monotone} follows from \Cref{prop:thread-size}. For
+depth under the local Poisson condition, couple offspring by thinning: a \(\mathrm{Poisson}(\mu(A))\)
+offspring count is obtained by thinning \(\mathrm{Poisson}(\mu(B))\) with retention
+probability \(\mu(A)/\mu(B)\). Recursing this coupling over generations makes the
+tree under \(A\) a subtree of the tree under \(B\) almost surely, implying the
+depth and size inequalities.
+\end{proof}
+
+These are comparative-static implications of the model, not identified causal
+effects from observational data. In the empirical sections, intervention language is
+therefore interpreted as mechanism-consistent hypotheses.

@@ -35,9 +35,11 @@ is 0.000\%.
 
 Fitting a geometric log-tail slope to empirical \(\Prob(D_j \geq k)\) for
 \(k\ge2\), motivated by the bound \(\Prob(D_j \geq k) \leq \mu^k\), gives
-\(\hat{\mu}=0.154\). We report \(\hat{\mu}\) as an effective tail-slope
-parameter (descriptive), indicating rapid depth-tail decay consistent with a
-strongly subcritical branching regime.
+an effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}}=0.154\). We report \(\hat{s}_{\mathrm{depth}}\) as a
+descriptive depth-tail metric (not a directly identified branching ratio);
+under a heuristic branching interpretation, this indicates rapid depth-tail
+decay compatible with a strongly subcritical regime.
 
 \subsubsection{Branching Factor by Depth}
 
@@ -54,8 +56,9 @@ comments.}
 replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
 respectively. This is the expected star-shaped pattern under rapid branching decay.
 Applying the root-special branching approximation (\cref{prop:thread-size}) with $\mu_0 \approx 5.57$ (root)
-and descriptive \(\hat{\mu} \approx 0.154\) (non-root tail-slope proxy) gives the
-heuristic expectation \(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\)
+and effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}} \approx 0.154\), and using
+the heuristic mapping \(\mu \approx \hat{s}_{\mathrm{depth}}\), gives the
+heuristic expectation \(\E[N_j] \approx \mu_0/(1-\hat{s}_{\mathrm{depth}}) \approx 6.6\)
 comments per thread, closely matching the observed mean of 6.43 (\cref{tab:descriptive}).
 
 \subsubsection{Reciprocity and Re-Entry}
@@ -403,7 +406,7 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 \label{sec:results:summary}
 
 Overall, Moltbook threads are strongly star-shaped (mean maximum depth 1.38, median
-maximum depth 1, effective tail-slope parameter \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
+maximum depth 1, effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare bidirectional dyads (0.998\%) and
 modest re-entry (mean 0.195; median 0.167). The primary Moltbook survival
 specification yields a very short reply-kernel half-life of 0.013 hours
 (0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply

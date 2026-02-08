@@ -34,9 +34,11 @@ is 0.000\%.
 
 Fitting a geometric log-tail slope to empirical \(\Prob(D_j \geq k)\) for
 \(k\ge2\), motivated by the bound \(\Prob(D_j \geq k) \leq \mu^k\), gives
-\(\hat{\mu}=0.154\). We report \(\hat{\mu}\) as an effective tail-slope
-parameter (descriptive), indicating rapid depth-tail decay consistent with a
-strongly subcritical branching regime.
+an effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}}=0.154\). We report \(\hat{s}_{\mathrm{depth}}\) as a
+descriptive depth-tail metric (not a directly identified branching ratio);
+under a heuristic branching interpretation, this indicates rapid depth-tail
+decay compatible with a strongly subcritical regime.
 
 \subsubsection{Branching Factor by Depth}
 
@@ -227,9 +229,11 @@ materially faster upper-tail conditional timing than unclaimed accounts.
 \subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
 
 Applying the root-special branching approximation (\cref{prop:thread-size}) with
-\(\mu_0 \approx 5.57\) (root) and descriptive \(\hat{\mu} \approx 0.154\)
-(non-root tail-slope proxy) gives the heuristic expectation
-\(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\) comments per thread, closely
+\(\mu_0 \approx 5.57\) (root) and effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}} \approx 0.154\), and using the heuristic mapping
+\(\mu \approx \hat{s}_{\mathrm{depth}}\), gives the heuristic expectation
+\(\E[N_j] \approx \mu_0/(1-\hat{s}_{\mathrm{depth}}) \approx 6.6\) comments per
+thread, closely
 matching the observed mean of 6.43 (\cref{tab:descriptive}).
 
 \subsubsection{Model-to-Observable Validation Loop}
@@ -382,7 +386,7 @@ reported in \Cref{sec:appendix:comparison-details,sec:appendix:match-halflife}.
 \label{sec:results:summary}
 
 Overall, Moltbook threads are strongly star-shaped (mean maximum depth 1.38, median
-maximum depth 1, effective tail-slope parameter \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
+maximum depth 1, effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare bidirectional dyads (0.998\%) and
 modest re-entry (mean 0.195; median 0.167). The primary two-part readout is a
 9.60\% direct-reply incidence (95\% CI: [9.45\%, 9.76\%]) with ultra-fast
 conditional timing (\(t_{50}=4.55\) seconds, 95\% CI: [4.53, 4.58] seconds;

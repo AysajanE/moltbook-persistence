@@ -136,15 +136,18 @@ self-excitation is well established in social-media dynamics, though kernel
 families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
 \end{remark}
 
-\begin{remark}[What is specific in this formulation]
+\begin{remark}[OR-facing measurement contribution]
 \label{rem:model-scope}
-The Hawkes kernel and branching interpretation are standard. The paper-specific
-step is mechanism mapping for agent platforms: heartbeat-style activation enters
-through \(b(t)\), context-window staleness enters through \(\beta_i\), and their
-implications are evaluated through three linked observables, reply-kernel
-half-life \((\ln 2/\beta)\), depth-tail decay \((\mu)\), and aggregate spectral
-power near \(1/\tau\). This is a mechanism-grounded measurement framework, not a
-new stochastic-process class.
+Building on standard Hawkes and branching components, the paper-specific
+contribution is the measurement mapping for agent platforms: heartbeat-style
+activation enters through \(b(t)\), context-window staleness through \(\beta_i\),
+and exposure/resurfacing through \(\alpha_i\). These mechanisms are linked to
+direct-reply incidence, conditional reply speed, effective depth-tail slope
+estimate \(\hat{s}_{\mathrm{depth}}\), and spectral power near \(1/\tau\).
+Reply-kernel half-life \((\ln 2/\beta)\) is retained as a secondary timescale
+diagnostic. The depth-tail metric is descriptive (bound-motivated) and not an
+exact branching-ratio identification; branching interpretations remain
+heuristic.
 \end{remark}
 
 \subsection{Interaction Half-Life}
@@ -269,10 +272,11 @@ rates (large \(\beta_i\)) imply small \(\mu_i\) and thus shallow trees.
 \begin{remark}[Interpretation of \(\mu\) in depth tails]
 \label{rem:mu-tail-interpretation}
 \Cref{eq:depth-tail} is an upper bound, not an exact identity for the empirical
-depth tail. Accordingly, \(\hat{\mu}\) estimated from
-\(\log \Prob(D_j\ge k)\approx c+k\log\mu\) should be read as a descriptive
-effective tail-slope parameter motivated by the bound, rather than an exact
-equality-based estimator of reproduction mean.
+depth tail. Accordingly, the effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}}\), obtained from
+\(\log \Prob(D_j\ge k)\approx c+k\log s_{\mathrm{depth}}\), should be read as a
+descriptive summary motivated by the bound, rather than an exact
+equality-based estimator of reproduction mean or branching ratio.
 \end{remark}
 
 \subsection{Reciprocity, Re-Entry, and Agent Heterogeneity}
