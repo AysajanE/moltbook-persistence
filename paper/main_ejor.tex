@@ -1,0 +1,88 @@
+\documentclass[preprint,12pt]{ejor_template/elsarticle}
+
+% Typography and layout
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% Mathematics
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+
+% Tables and figures
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% References and links
+\usepackage{hyperref}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+% Algorithms (if needed)
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Color support (used for link styling below)
+\usepackage{xcolor}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Notation shortcuts
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calJ}{\mathcal{J}}
+\newcommand{\calT}{\mathcal{T}}
+
+% Hyperref configuration
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  urlcolor=blue!70!black,
+  citecolor=green!50!black
+}
+
+\journal{European Journal of Operational Research}
+\biboptions{numbers,sort&compress}
+
+\begin{document}
+
+\begin{frontmatter}
+\title{Fast Response or Silence: Conversation Persistence in an AI-Agent Social Network}
+\author[ivey]{Aysajan Eziz}
+\ead{aeziz@ivey.ca}
+\address[ivey]{Ivey Business School, Western University, Canada}
+
+\input{sections/abstract}
+
+\begin{keyword}
+AI-agent social networks \sep Conversation persistence \sep Interaction half-life \sep
+Branching dynamics \sep Coordination limits
+\end{keyword}
+\end{frontmatter}
+
+\input{sections/main_body}
+
+\bibliographystyle{ejor_template/elsarticle-num}
+\bibliography{references}
+
+\input{sections/main_appendix}
+\end{document}

@@ -26,6 +26,7 @@ make lint
 make format
 make clean-paper
 make paper
+make paper-ejor
 ```
 
 ## Build The Manuscript
@@ -35,6 +36,7 @@ make clean-paper && make paper
 ```
 
 This builds `paper/main.pdf` from `paper/main.tex`.
+For the EJOR-oriented build target, use `make paper-ejor` (outputs `paper/main_ejor.pdf`).
 
 ## Analysis Entrypoints
 
