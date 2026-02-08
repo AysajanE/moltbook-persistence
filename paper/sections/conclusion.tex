@@ -1,7 +1,37 @@
 \section{Conclusion}
 \label{sec:conclusion}
-This paper measured how quickly agent conversations fade on Moltbook during its first week of public operation. We operationalized conversational persistence as \emph{direct-reply responsiveness over time}: how rapidly a comment stops attracting direct replies as it ages, separating reply \emph{timing} from the separate question of whether a reply happens at all. In this snapshot, Moltbook discussions are shallow and strongly root-heavy. Most comments receive no direct reply, reciprocal back-and-forth is uncommon, and when replies do arrive they concentrate in the first seconds to minutes. Model-consistency checks show that the branching approximation and incidence-level diagnostics align with observed aggregates, while conditional timing is even more front-loaded than the exponential-kernel benchmark. The resulting picture is not slow conversational decay but a ``fast response or silence'' regime, which leaves limited room for extended multi-turn deliberation without additional support.
+This paper measured conversational persistence on Moltbook during its first week
+of public operation using a two-part definition: direct-reply incidence and
+conditional reply speed. In this snapshot, the core pattern is
+low-incidence/ultra-fast-conditional response: only 9.60\% of at-risk comments
+receive a direct reply, but conditional reply times are concentrated in seconds
+to minutes (\(t_{50}=0.076\) minutes, \(t_{90}=0.834\) minutes,
+\(t_{95}=2.204\) minutes). Most comments receive no direct reply, reciprocal
+back-and-forth is uncommon, and thread geometry is shallow and root-heavy.
 
-A widely discussed architectural hypothesis is that Moltbook agents check in on an approximately four-hour heartbeat schedule. Because per-account heartbeat events are not directly observed in the archive, we tested only for \emph{aggregate} periodic signatures. Across contiguous windows and binning choices, we do not detect a statistically reliable four-hour peak in this snapshot. This should be interpreted as a detectability result rather than evidence that periodic schedules do not exist: dephasing, jitter, mixed cadences, and limited contiguous coverage can erase a clean platform-level signature even when individual agents follow periodic routines.
+Model-to-observable validation shows tight calibration for reply incidence
+overall and across key strata, while the same model overpredicts non-root
+branching and deep-tail depth probabilities. A one-parent-per-thread robustness
+check lowers pooled incidence but leaves conditional median speed nearly
+unchanged, indicating that the central limitation is whether replies occur, not
+how fast they arrive once they do. Half-life is informative as a secondary
+kernel-timescale diagnostic but is not the primary persistence estimand.
 
-For context, a contemporaneous Reddit corpus analyzed with the same estimators shows substantially deeper threads, higher direct-reply incidence, and reply persistence on the order of hours rather than minutes. A coarse overlap-restricted matching exercise points in the same direction but remains observational and is not a causal attribution of platform differences. The main next step is longitudinal measurement under richer exposure controls (visibility, ranking, notifications) and richer agent-level models, enabling sharper tests of design interventions such as memory aids, thread summarization, and explicit re-entry prompts. Absent such scaffolding, early agent social platforms may remain better at launching interactions than sustaining the conversations required to finish them.
+A widely discussed hypothesis is an approximately 4-hour heartbeat schedule.
+Because per-account heartbeat events are unobserved in the archive, we tested
+only aggregate signatures. AR(1)-calibrated PSD tests do not detect a
+statistically reliable 4-hour spectral peak, while event-time Rayleigh testing
+detects a statistically significant but small phase concentration
+(\(r=0.0308\)). This is an effect-size-versus-detectability result, consistent
+with weak or dephased periodic routines.
+
+For context, a contemporaneous Reddit corpus analyzed with the same estimators
+shows substantially deeper threads, higher direct-reply incidence, and
+hour-scale persistence diagnostics. A coarse overlap-restricted matching
+exercise points in the same direction but remains observational and non-causal.
+The main next step is longitudinal measurement with richer exposure controls
+(visibility, ranking, notifications) and richer agent-level models, enabling
+sharper tests of interventions such as memory aids, thread summarization, and
+explicit re-entry prompts. Without such scaffolding, early agent social
+platforms may remain better at launching interactions than sustaining the
+multi-turn conversations required to finish them.

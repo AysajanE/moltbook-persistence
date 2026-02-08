@@ -76,10 +76,10 @@ dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
 pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
 mean unique participants per thread, from 4.57 to 4.60.
 
-\subsection{Result 2: Persistence Decomposition (Incidence vs.\ Conditional Timing)}
-\label{sec:results:halflife}
+\subsection{Result 2: Two-Part Reply Dynamics (Incidence and Conditional Reply Speed)}
+\label{sec:results:two-part}
 
-\subsubsection{Overall Estimate and Two-Regime Finding}
+\subsubsection{Overall Two-Part Readout}
 \label{sec:results:two-regime}
 
 \begin{figure}[t]
@@ -90,133 +90,109 @@ fitted exponential-kernel hazard overlay.}
 \label{fig:reply-hazard-moltbook}
 \end{figure}
 
-Using one survival unit per at-risk comment (candidate parent), the primary analysis sample includes 199,000
-comments (17,915 events; 181,085 right-censored), after excluding parents posted within 4
-hours of the dataset end to reduce boundary censoring bias.
-The fitted exponential-kernel hazard model yields:
-\begin{align*}
-\hat{\beta} &= 52.2 \text{ hr}^{-1} \quad \text{(95\% bootstrap CI: [36.9, 78.5])}, \\
-\hat{h} &= \frac{\ln 2}{\hat{\beta}} = 0.013 \text{ hr}
-\quad \text{(95\% bootstrap CI: [0.009, 0.019])}.
-\end{align*}
-
-In minutes, this corresponds to 0.80 minutes (95\% CI: [0.53, 1.13]).
-Without the 4-hour boundary exclusion, the estimate is similar (0.011 hr).
-
-This estimate should be interpreted as a \emph{kernel decay timescale}
-(see \cref{rem:estimand}), not as a median thread lifetime. The combination
-of a sub-minute half-life with a 91\% censoring fraction (181,085 of 199,000
-at-risk comments receive no observed direct reply) describes a bursty
-two-regime process: a small fraction of at-risk comments attract rapid direct replies
-concentrated in the first seconds to minutes, while the large majority receive
-no direct reply at all during the observation window. The Moltbook reply
-process is thus better characterized as ``fast response or silence'' than as
-a gradual decay of engagement.
+Using one survival unit per at-risk comment (candidate parent), the primary
+two-part sample includes 223,316 parents with 21,430 observed direct replies
+(reply incidence 9.60\%).
+\Cref{tab:reply-dynamics} reports the primary estimands: incidence and
+conditional timing quantiles.
+The conditional median reply time is 0.076 minutes (4.55 seconds), with
+\(t_{90}=0.834\) minutes (50.0 seconds) and \(t_{95}=2.204\) minutes
+(132.2 seconds). Unconditionally, 8.47\% of at-risk parents receive a direct
+reply within 30 seconds and 9.41\% within 5 minutes; conditional on a reply
+occurring, these become 88.30\% and 98.06\%.
+This is the core low-incidence/ultra-fast-conditional-speed regime.
 
 \begin{table}[t]
 \centering
-\caption{Reply probability and timing decomposition (primary survival samples).}
+\caption{Two-part reply dynamics on Moltbook (primary readout). Reply incidence and conditional reply speed are primary; half-life is secondary diagnostic.}
 \label{tab:reply-dynamics}
 \begingroup
-\setlength{\tabcolsep}{4pt}
-\footnotesize
+\setlength{\tabcolsep}{3pt}
+\scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}lrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrrrrr@{}}
 \toprule
-\textbf{Sample} & \textbf{Parents} & \textbf{Observed reply \%} & \textbf{Cond. median (min)} & \textbf{Half-life (hr)} & \textbf{Implied eventual \% (model)} \\
+\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s})$ \%} & \textbf{$\Pr(\text{reply}\le 5\mathrm{m})$ \%} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{$\Pr(\text{reply}\le 5\mathrm{m}\mid\text{reply})$ \%} & \textbf{Half-life (min)} \\
 \midrule
-Moltbook (overall) & 199,000 & 9.0 & 0.076 & 0.013 & 9.3 \\
-Builder/Technical & 7,696 & 1.7 & 1.92 & 0.053 & 1.7 \\
-Philosophy/Meta & 5,429 & 1.9 & 1.84 & 0.135 & 1.9 \\
-Social/Casual & 168,407 & 10.3 & 0.075 & 0.011 & 10.7 \\
-Creative & 366 & 1.9 & 0.483 & 0.008 & 1.9 \\
-Spam/Low-Signal & 2,218 & 0.9 & 1.32 & 0.023 & 0.9 \\
-Other & 14,884 & 2.1 & 1.48 & 0.054 & 2.1 \\
-Reddit (overall) & 9,547 & 36.2 & 39.3 & 2.61 & 38.7 \\
+Overall & 223,316 & 9.60 & 0.076 & 0.834 & 2.204 & 8.47 & 9.41 & 88.30 & 98.06 & 0.685 \\
+Claimed & 20,667 & 19.23 & 0.074 & 0.105 & 0.494 & 18.27 & 18.94 & 94.99 & 98.52 & 0.408 \\
+Unclaimed & 201,743 & 8.65 & 0.077 & 1.057 & 2.416 & 7.51 & 8.47 & 86.79 & 97.95 & 0.747 \\
 \bottomrule
 \end{tabular}
 \par}
 \endgroup
 \end{table}
 
-\textbf{Two-regime finding (incidence--timing split).}
-\textbf{Result: a low-incidence / ultra-fast conditional response regime.}
-\Cref{tab:reply-dynamics} separates event incidence from timing. On Moltbook, only
-9.0\% of at-risk comments receive any direct reply in-window, versus 36.2\% on the
-Reddit baseline. Conditional on receiving a reply, Moltbook replies arrive within seconds
-to minutes (overall median 0.076~minutes, i.e., $\approx$4.6~seconds), while
-Reddit conditional timing is much slower (39.3~minutes median). The implied eventual percentages are model-diagnostic quantities
-under the exponential-kernel fit, not direct empirical estimands.
+\subsubsection{Part-1 Incidence Model (cloglog) Summary}
+
+The incidence model (\cref{eq:methods-incidence-cloglog}) is well calibrated at
+the sample mean: observed incidence is 0.096304 and mean fitted incidence is
+0.096319 (absolute error \(1.52\times 10^{-5}\), \(N=222{,}410\)).
+Relative to Social/Casual (reference), all other submolts have substantially
+lower incidence on the cloglog scale (coefficients from \(-1.62\) to \(-2.56\),
+all two-way-clustered \(p\le 2.6\times 10^{-4}\)).
+The claimed-group coefficient is positive (\(+0.844\)) but imprecise under the
+two-way clustered covariance (\(p=0.181\)).
 
 \subsubsection{Timing Shape Diagnostic}
 
-The Weibull model gives shape \(\hat{\gamma}=0.112\) (95\% bootstrap CI:
-[0.111, 0.112]), far below 1. This indicates strong early-time hazard concentration and
-substantial departure from the fitted exponential decaying hazard
-\(\lambda(s)=\alpha e^{-\beta s}\) (not from a constant-hazard baseline), with additional excess concentration at very
-small \(s\).
+The Weibull conditional-time fit succeeds for the overall sample and most
+strata. The overall shape estimate is \(\hat{\gamma}=0.523<1\), indicating a
+decreasing hazard with strong early-time concentration. This supports the
+primary quantile readout in \Cref{tab:reply-dynamics}: conditional reply speed
+is concentrated in the first seconds to minutes.
 
 \subsubsection{Stratification by Submolt Category}
 
 \begin{table}[t]
 \centering
-\caption{Interaction half-life by submolt category in the primary survival sample.}
-\label{tab:halflife-by-submolt}
-\small
-\begin{tabular}{@{}lrrrr@{}}
+\caption{Submolt stratification for reply incidence and conditional reply speed. Half-life is included as a secondary diagnostic column.}
+\label{tab:submolt-two-part}
+\scriptsize
+\begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Category} & \textbf{Threads} & \textbf{Comments} & \textbf{Half-life (hr)} & \textbf{95\% CI} \\
+\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Half-life (min)} \\
 \midrule
-Philosophy/Meta & 1,310 & 5,429 & 0.135 & [0.048, 0.250] \\
-Other & 3,882 & 14,884 & 0.054 & [0.034, 0.077] \\
-Builder/Technical & 1,853 & 7,696 & 0.053 & [0.034, 0.073] \\
-Spam/Low-Signal & 569 & 2,218 & 0.023 & [0.011, 0.032] \\
-Social/Casual & 23,747 & 168,407 & 0.011 & [0.007, 0.017] \\
-Creative & 111 & 366 & 0.008 & [0.004, 0.015] \\
+Builder/Technical & 8,396 & 1.72 & 1.731 & 7.248 & 18.332 & 2.979 \\
+Creative & 433 & 1.62 & 0.483 & 1.303 & 1.736 & 0.453 \\
+Other & 16,396 & 2.26 & 1.504 & 5.831 & 12.855 & 2.909 \\
+Philosophy/Meta & 5,831 & 1.80 & 1.717 & 47.813 & 62.683 & 7.768 \\
+Social/Casual & 189,765 & 10.95 & 0.075 & 0.414 & 1.776 & 0.593 \\
+Spam/Low-Signal & 2,495 & 0.88 & 1.315 & 4.220 & 4.341 & 1.313 \\
 \midrule
-Overall & 31,472 & 199,000 & 0.013 & [0.009, 0.019] \\
+Overall & 223,316 & 9.60 & 0.076 & 0.834 & 2.204 & 0.685 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Half-life varies across categories in this first-pass estimate. Philosophy/Meta is longest,
-while Social/Casual and Creative are shortest.
+The primary stratified pattern is incidence/speed heterogeneity. Social/Casual
+has the highest incidence (10.95\%) and very fast conditional timing
+(\(t_{90}=0.414\) minutes), whereas Builder/Technical and Philosophy/Meta have
+low incidence with materially slower conditional tails.
 
 \subsubsection{Agent Heterogeneity in Incidence and Timing}
 
 \begin{table}[t]
 \centering
-\caption{Agent-level heterogeneity in reply incidence and timing (Moltbook primary sample).}
+\caption{Claim-status heterogeneity in two-part reply dynamics.}
 \label{tab:agent-heterogeneity}
 \small
-\begin{tabular}{@{}llrrr@{}}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-\textbf{Group family} & \textbf{Group} & \textbf{Parents} & \textbf{Observed reply \%} & \textbf{Half-life (min)} \\
+\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{Half-life (min)} \\
 \midrule
-\texttt{is\_claimed} & Claimed & 18,367 & 18.2 & 0.48 \\
-\texttt{is\_claimed} & Unclaimed & 180,633 & 8.1 & 0.87 \\
-\texttt{follower\_count} & 0 & 176,689 & 8.4 & 0.85 \\
-\texttt{follower\_count} & 1--9 & 21,167 & 14.4 & 0.52 \\
-\texttt{follower\_count} & 10+ & 238 & 1.7 & 1.85 \\
+Claimed & 20,667 & 19.23 & 0.074 & 0.105 & 0.408 \\
+Unclaimed & 201,743 & 8.65 & 0.077 & 1.057 & 0.747 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/agent_group_reply_dynamics_moltbook.png}
-\caption{Moltbook heterogeneity by claim status and follower-count bins.}
-\label{fig:agent-group-heterogeneity}
-\end{figure}
+\Cref{tab:agent-heterogeneity} shows that claimed accounts have higher
+incidence (19.23\% vs.\ 8.65\%) and faster upper-tail conditional timing
+(\(t_{90}=0.105\) vs.\ 1.057 minutes). Half-life remains secondary and is
+consistent with the same direction (0.408 vs.\ 0.747 minutes).
 
-\Cref{tab:agent-heterogeneity} and \cref{fig:agent-group-heterogeneity} show that claimed
-accounts have materially higher observed direct-reply incidence (18.2\% vs.\ 8.1\%) and
-shorter reply-kernel half-life (0.48 vs.\ 0.87 minutes) than unclaimed accounts. The
-follower-bin split is non-monotonic: \(1\text{--}9\) followers is highest-incidence in this
-snapshot, while the 10+ bin is sparse (\(n=238\) at-risk comments), so that estimate is
-interpreted cautiously.
-
-\subsection{Result 3: Model-to-Data Consistency Checks}
+\subsection{Result 3: Model-to-Observable Validation and Dependence Robustness}
 \label{sec:results:consistency}
 
 \subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
@@ -227,26 +203,68 @@ Applying the root-special branching approximation (\cref{prop:thread-size}) with
 \(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\) comments per thread, closely
 matching the observed mean of 6.43 (\cref{tab:descriptive}).
 
-\subsubsection{Incidence Consistency: Observed vs.\ Model-Implied Event Probability}
+\subsubsection{Model-to-Observable Validation Loop}
 
-In \Cref{tab:reply-dynamics}, the exponential-kernel implied eventual reply
-probability is 9.3\% versus observed 9.0\% on Moltbook and 38.7\% versus 36.2\%
-on Reddit. This supports using the fitted kernel as a coarse incidence-level
-diagnostic, while keeping causal interpretation out of scope.
+\begin{table}[t]
+\centering
+\caption{Model-to-observable validation: predicted vs.\ observed incidence, non-root branching, and depth tails (overall and key stratifications).}
+\label{tab:model-observable-validation}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+\textbf{Group} & \textbf{Pred. inc. \%} & \textbf{Obs. inc. \%} & \textbf{Pred. branch} & \textbf{Obs. branch} & \textbf{Pred. \(\Pr(D\ge3)\)} & \textbf{Obs. \(\Pr(D\ge3)\)} & \textbf{Pred. \(\Pr(D\ge5)\)} & \textbf{Obs. \(\Pr(D\ge5)\)} \\
+\midrule
+Overall & 9.91 & 9.60 & 0.104 & 0.134 & 0.0109 & 0.0013 & 0.00012 & 0.00001 \\
+Claimed & 20.49 & 19.23 & 0.229 & 0.274 & 0.0526 & 0.0030 & 0.00276 & 0.00000 \\
+Unclaimed & 8.90 & 8.65 & 0.093 & 0.120 & 0.0087 & 0.0012 & 0.00008 & 0.00001 \\
+Builder/Technical & 1.72 & 1.72 & 0.017 & 0.017 & 0.0003 & 0.0001 & 0.00000 & 0.00000 \\
+Creative & 1.62 & 1.62 & 0.016 & 0.016 & 0.0003 & 0.0000 & 0.00000 & 0.00000 \\
+Other & 2.27 & 2.26 & 0.023 & 0.025 & 0.0005 & 0.0001 & 0.00000 & 0.00000 \\
+Philosophy/Meta & 1.81 & 1.80 & 0.018 & 0.018 & 0.0003 & 0.0002 & 0.00000 & 0.00000 \\
+Social/Casual & 11.36 & 10.95 & 0.121 & 0.154 & 0.0145 & 0.0015 & 0.00021 & 0.00001 \\
+Spam/Low-Signal & 0.88 & 0.88 & 0.009 & 0.009 & 0.0001 & 0.0000 & 0.00000 & 0.00000 \\
+\bottomrule
+\end{tabular}
+\par}
+\endgroup
+\end{table}
 
-\subsubsection{Timing Consistency: Conditional Median vs.\ Kernel Timescale}
+\Cref{tab:model-observable-validation} closes the model-to-data loop by mapping
+fitted \((\alpha,\beta)\)-style primitives to observables used in the paper.
+Incidence calibration is tight overall (9.91\% predicted vs.\ 9.60\% observed)
+and remains close across claimed/unclaimed and submolt strata. The model
+systematically overpredicts non-root branching and deeper tails
+(\(\Pr(D\ge3)\), \(\Pr(D\ge5)\)), which is expected under a coarse homogeneous
+branching approximation and reinforces treating depth-tail outputs as
+descriptive consistency checks rather than exact structural equalities.
 
-Under the fitted exponential-kernel model in the low-reply-probability regime
-(\(\hat{\alpha}/\hat{\beta} \approx 0.097 \ll 1\)), the conditional distribution
-of first reply time---given that a reply occurs---is approximately
-\(\mathrm{Exponential}(\hat{\beta})\) (rare-event approximation), whose median
-equals the kernel half-life (\(\approx 0.80\) minutes); the exact conditional
-density is given in \Cref{eq:appendix-conditional-density}. The empirical
-conditional median is 0.076 minutes, roughly \(10\times\) smaller. Together with
-\(\hat{\gamma}=0.112 \ll 1\) and \Cref{fig:reply-hazard-moltbook}, this indicates
-that the exponential kernel captures a broad decay timescale but understates
-the extreme early-time concentration. We therefore treat half-life as a coarse
-kernel timescale summary, not a precise predictor of conditional timing.
+\subsubsection{Within-Thread Dependence Robustness}
+
+\begin{table}[t]
+\centering
+\caption{One-parent-per-thread robustness against within-thread clustering dependence.}
+\label{tab:dependence-robustness}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Primary} & \textbf{One-parent/thread} & \textbf{Abs.\ diff.} & \textbf{Rel.\ diff. \%} \\
+\midrule
+Reply incidence \(\Pr(\delta=1)\) & 0.09596 & 0.07213 & 0.02383 & -24.84 \\
+Conditional \(t_{50}\) (min) & 0.07590 & 0.07519 & 0.00070 & -0.93 \\
+Conditional \(t_{90}\) (min) & 0.83416 & 0.68469 & 0.14947 & -17.92 \\
+Half-life (min; diagnostic) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\Cref{tab:dependence-robustness} shows the one-parent-per-thread sensitivity
+readout. Incidence decreases materially (9.60\% to 7.21\%), indicating that
+within-thread clustering contributes to the pooled incidence level. In contrast,
+the conditional median speed is nearly unchanged (0.07590 to 0.07519 minutes),
+so the fast conditional-reply regime is robust to this dependence control.
 
 \subsection{Result 4 (Secondary): Periodicity Tests}
 \label{sec:results:periodicity}
@@ -277,6 +295,22 @@ and 0.556 (30 min). The dominant period shifts from 5.33 to 8.0 hours across the
 choices, but none imply a significant 4-hour peak; the corresponding robustness
 plot is provided in \Cref{sec:appendix:periodicity-robustness}.
 
+Event-time modulo-4-hour testing provides a complementary readout. On the same
+contiguous segment (\(N=220{,}461\) events), the Rayleigh resultant length is
+\(r=0.0308\), with \(Z=209.57\) and Monte Carlo
+\(p=5\times 10^{-6}\); the circular mean phase is 153.2 minutes within the
+4-hour cycle. The effect size is small (\(r\approx 3.1\%\) phase concentration)
+despite formal significance. Detectability simulations indicate correct null
+size (power \(=0.0496\) at \(\kappa=0\)) and very high power for moderate
+concentration (power \(=1.0\) at \(\kappa=0.2\), with the 0.8-power crossing at
+\(\kappa=0.2\)).
+
+These findings are coherent with the non-significant AR(1)-calibrated
+target-frequency PSD result: Rayleigh can detect weak but non-uniform phase
+concentration at very large \(N\), while narrowband spectral tests at exactly
+4 hours remain non-significant when coherence is low and schedules are
+dephased/jittered.
+
 Among 1,076 agents with at least 10 comments in the contiguous segment, mean lag-4-hour
 autocorrelation in 15-minute binned activity is 0.111
 (95\% bootstrap CI: [0.100, 0.122]).
@@ -293,8 +327,8 @@ The Reddit baseline corpus (\Cref{sec:data:reddit}) contains 1,772
 submissions, 9,878 comments, and 1,104 threads with at least one comment. Comment timestamps
 span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z. Under the same estimators,
 Reddit is deeper and slower: mean maximum depth 2.17 (vs.\ 1.38 on Moltbook),
-reply incidence 36.2\% (vs.\ 9.0\%), and reply-kernel half-life 2.61 hours
-(95\% CI: [2.29, 2.95], vs.\ 0.013 hours on Moltbook). Reddit periodicity also
+reply incidence 36.2\% (vs.\ 9.60\%), and reply-kernel half-life 2.61 hours
+(95\% CI: [2.29, 2.95], vs.\ 0.011 hours on Moltbook). Reddit periodicity also
 does not show a significant 4-hour target peak under AR(1)-calibrated tests
 (\(p=0.685\)), despite detectable periodic structure at other frequencies
 (Fisher's \(g\), \(p<0.001\)). Full Reddit diagnostics are reported in
@@ -319,31 +353,32 @@ diagnostics, paired plots, and matched-subset half-life details are reported in
 
 Overall, Moltbook threads are strongly star-shaped (mean maximum depth 1.38, median
 maximum depth 1, effective tail-slope parameter \(\hat{\mu}=0.154\)), with rare bidirectional dyads (0.998\%) and
-modest re-entry (mean 0.195; median 0.167). The primary Moltbook survival
-specification yields a very short reply-kernel half-life of 0.013 hours
-(0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply
-pattern in which observed direct-reply incidence is 9.00\% on Moltbook versus
-36.20\% on Reddit and conditional timing differs by orders of magnitude.
-Consistency checks show that the branching approximation reproduces observed
-mean thread size and that model-implied eventual reply probabilities are close
-to observed incidence, while conditional timing remains substantially faster
-than exponential-kernel prediction. Periodicity and cross-platform matching are
-secondary: 4-hour periodicity is not detected under AR(1)-calibrated tests, and
+modest re-entry (mean 0.195; median 0.167). The primary two-part readout is a
+9.60\% direct-reply incidence with ultra-fast conditional timing
+(\(t_{50}=0.076\) minutes, \(t_{90}=0.834\) minutes, \(t_{95}=2.204\) minutes),
+plus high short-window mass (8.47\% within 30 seconds and 9.41\% within
+5 minutes unconditionally). Model-to-observable validation shows tight
+incidence calibration but overprediction of deeper non-root branching tails.
+One-parent-per-thread robustness lowers pooled incidence but leaves conditional
+median speed essentially unchanged. Periodicity and cross-platform matching are
+secondary: 4-hour periodicity is not detected under AR(1)-calibrated PSD tests,
+while event-time Rayleigh detects only a small concentration effect, and
 matched cross-platform contrasts are overlap-region, non-causal context.
 Taken together, the core empirical spine supports a ``fast response or
 silence'' persistence regime in this early Moltbook window.
 
-\subsubsection{H1a Readout (Short Hazard Half-Life)}
+\subsubsection{H1a Readout (Incidence + Conditional Speed)}
 \label{sec:results:h1a}
-H1a is supported by the minute-scale estimate (\(\hat h=0.013\) hours) and by
-the labeled two-regime incidence--timing split in
+H1a is supported by the low-incidence and ultra-fast-conditional-speed split in
 \Cref{sec:results:two-regime}.
 
 \subsubsection{H1b Readout (4-Hour Periodicity)}
 \label{sec:results:h1b}
 H1b is not detected in this snapshot under AR(1)-calibrated target-frequency
 tests (\(p=0.501\) at 15-minute bins; 0.508 and 0.556 at 5- and 30-minute
-bins).
+bins). Event-time Rayleigh testing indicates statistically detectable but small
+phase concentration (\(r=0.0308\)), consistent with weak/dephased periodicity
+rather than a strong aggregate 4-hour spectral line.
 
 In the coarse matched cross-platform design, Moltbook remains lower on comments,
 depth, unique participants, duration, and re-entry in matched support

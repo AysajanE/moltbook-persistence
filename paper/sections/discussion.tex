@@ -9,23 +9,20 @@ incidence versus conditional timing, then model-to-data consistency checks.
 Together these support a ``fast-response-or-silence'' regime as the core
 contribution; periodicity and cross-platform analyses remain secondary context.
 
-\subsection{Interpreting Minute-Scale Reply Decay}
-\label{sec:discussion:halflife}
+\subsection{Interpreting Incidence and Conditional Reply Speed}
+\label{sec:discussion:two-part}
 
-The primary Moltbook estimate is a sub-minute reply-kernel half-life, accompanied
-by heavy censoring. Together, these results indicate a bursty regime: when direct
-replies occur, they tend to occur quickly; most at-risk comments receive no
-observed direct reply during the observation window.
+The primary persistence readout is two-part: low direct-reply incidence (9.60\%)
+and very fast conditional reply speed (\(t_{50}=0.076\) minutes,
+\(t_{90}=0.834\) minutes, \(t_{95}=2.204\) minutes). Unconditional short-window
+probabilities are similarly concentrated (8.47\% within 30 seconds and 9.41\%
+within 5 minutes), implying that most observed replies occur almost immediately.
+The remaining majority of parents receive no observed direct reply in-window.
 
-This pattern is consistent with finite context retention, rapid task switching in
-high-volume feeds, and weak return-to-thread memory support. The Reddit baseline,
-by contrast, shows hour-scale reply-kernel half-life under the same estimator.
-Matched-subset half-life estimates preserve this large timing gap, but the matched
-design is intentionally coarse and overlap-restricted, so it is used as
-secondary contextual evidence rather than a core causal estimate.
-The matched Moltbook survival subset includes only 22 events on narrow overlap
-support, so its half-life estimate is noisy and not directly comparable with the
-overall Moltbook estimate.
+This pattern is consistent with finite context retention, rapid task switching,
+and weak return-to-thread memory support. Half-life remains useful as a
+secondary kernel-timescale diagnostic, but the incidence/conditional-speed split
+is the operationally informative summary for coordination limits.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -38,16 +35,23 @@ overall sample further support a broadcast-dominant interaction pattern, while
 the matched overlap subset shows that re-entry direction can change under
 conditioning.
 
+The model-to-observable validation loop sharpens this interpretation: predicted
+and observed incidence align closely overall and by key strata, but the model
+overpredicts non-root branching and depth tails. This indicates that the fitted
+timing/incidence dynamics are directionally consistent with observed activity,
+while deeper cascade generation remains weaker in the data than in the coarse
+branching approximation.
+
 \subsection{Implications for AI Agent Coordination}
 \label{sec:discussion:coordination}
 
 These dynamics matter for multi-step coordination tasks. If engagement decays on
-minute timescales and repeated participation is limited, projects requiring
+minute-scale conditional timescales and repeated participation is limited,
+projects requiring
 extended deliberation or multi-day follow-through are difficult to sustain
 without explicit coordination scaffolds. Updated heterogeneity analyses suggest
 meaningful differences by account status in observed reply incidence, but
-follower-bin patterns remain non-monotonic and sparse in upper bins, so stronger
-hub claims require longer windows and richer controls.
+causal attribution remains out of scope.
 
 \subsection{Design Implications}
 \label{sec:discussion:design}
@@ -60,14 +64,27 @@ volume. Structured coordination interfaces (for example, commitments, milestones
 and scheduled check-ins) are especially relevant if the default interaction
 regime remains fast-response-or-silence.
 
+Dependence robustness reinforces this product implication: when restricting to
+one parent per thread, pooled incidence drops (9.60\% to 7.21\%), but
+conditional median speed is nearly unchanged (0.07590 to 0.07519 minutes). The
+bottleneck appears to be whether a reply happens, not how quickly replies arrive
+once they happen.
+
 \subsection{Broader Implications}
 \label{sec:discussion:broader}
 
-Interaction half-life is a portable metric for comparing collective persistence
-across agent communities and model generations. The current cross-platform
+Reply incidence and conditional reply speed are portable metrics for comparing
+collective persistence across agent communities and model generations; half-life
+is a secondary diagnostic for kernel-timescale interpretation. The current cross-platform
 results add overlap-region context beyond raw platform contrasts via
 deterministic matching, but are not a primary causal identification strategy;
 the full matched diagnostics are therefore kept in appendix material.
+
+Periodicity evidence should be read similarly: AR(1)-calibrated PSD tests do not
+show a significant 4-hour line, while event-time Rayleigh detects a small but
+non-zero phase concentration. This is an effect-size-versus-detectability result
+rather than a contradiction.
+
 Stronger causal interpretation still requires richer exposure controls and more
 granular semantic alignment. Because Moltbook is rapidly evolving, longitudinal
 tracking is necessary to determine whether the persistence gap narrows as agents,

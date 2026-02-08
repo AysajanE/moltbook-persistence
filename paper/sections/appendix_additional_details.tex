@@ -134,12 +134,16 @@ This subsection records manuscript-level operational settings referenced from
 For survival estimation, each non-root comment is treated as one at-risk
 candidate parent unit. First-reply durations are right-censored at the observed
 coverage boundary. No replies are imputed across the canonical 41.7-hour
-timeline gap, and half-life analyses use a 4-hour end-of-window censor boundary
-exclusion. Missing-author-ID handling is deterministic: participant counts use
+timeline gap. The primary two-part reply tables use all observed at-risk
+parents; 4-hour end-of-window censor-boundary exclusion is reported as a
+sensitivity for exponential-kernel diagnostics. Missing-author-ID handling is
+deterministic: participant counts use
 observed commenter IDs only; re-entry denominators include comments with known
 commenter IDs only; reciprocity uses edges with known source and parent IDs;
 author-based thread metrics are left undefined when no commenter IDs are
-observed.
+observed. To assess within-thread dependence, a robustness readout samples one
+candidate parent per thread (deterministic seed) and recomputes incidence,
+conditional timing quantiles, and half-life diagnostics.
 
 \subsubsection{Periodicity Preprocessing and Test Knobs}
 
@@ -266,6 +270,13 @@ Other & (default: no keyword match) \\
 \caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
 \label{fig:periodicity-bin-robustness}
 \end{figure}
+
+On the longest contiguous segment (\(N=220{,}461\) events), the event-time
+modulo-4-hour Rayleigh test gives resultant length \(r=0.0308\),
+\(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\) (200,000 reps), and mean phase
+153.2 minutes. Detectability simulations (50,000 reps) show near-nominal null
+size at \(\kappa=0\) (power \(=0.0496\)) and power \(=1.0\) by
+\(\kappa=0.2\), with 80\% power crossing at \(\kappa=0.2\).
 
 \subsection{Reddit Baseline Supplementary Diagnostics}
 \label{sec:appendix:reddit-details}

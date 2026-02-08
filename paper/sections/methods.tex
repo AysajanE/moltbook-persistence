@@ -32,8 +32,8 @@ maximal alternating exchange between two agents. Re-entry is measured by
 \(\mathrm{RE}_j\) in \cref{eq:reentry-rate}. Missing-author-ID handling rules
 are deterministic and documented in \Cref{sec:appendix:operational-details}.
 
-\subsection{Interaction Half-Life Estimation}
-\label{sec:methods:halflife}
+\subsection{Two-Part Reply Dynamics Estimation}
+\label{sec:methods:two-part}
 
 For each at-risk comment (candidate parent)
 \(m\) in thread \(j\), we define first-direct-reply survival time
@@ -43,8 +43,28 @@ S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
 \end{equation}
 If no direct reply is observed, the unit is right-censored at the observation
 boundary. Because the canonical timeline contains a 41.7-hour coverage gap,
-we do not impute unobserved replies across that interval; half-life and duration
-quantities are interpreted as conditional on observed coverage.
+we do not impute unobserved replies across that interval.
+
+\paragraph{Part 1: incidence model.}
+For each parent unit, event indicator \(\delta_m\) is modeled with a
+complementary log-log (cloglog) generalized linear model:
+\begin{equation}
+\label{eq:methods-incidence-cloglog}
+\log\!\left[-\log(1-\Prob(\delta_m=1\mid x_m))\right]=x_m^\top\eta,
+\end{equation}
+with \(x_m\) including categorical indicators for submolt category and
+claimed-status group. Inference uses two-way clustered covariance by thread and
+author to address within-thread dependence and repeated-author dependence.
+
+\paragraph{Part 2: conditional timing model.}
+Among replied parents \((\delta_m=1)\), we report empirical conditional-time
+estimands directly:
+\(\tilde s_{0.5}\), \(\tilde s_{0.9}\), \(\tilde s_{0.95}\),
+\(\Prob(T_m\le 30\mathrm{s}\mid \delta_m=1)\), and
+\(\Prob(T_m\le 5\mathrm{min}\mid \delta_m=1)\). We also report their
+unconditional counterparts \(\Prob(\delta_m=1,T_m\le t)\) for
+\(t\in\{30\mathrm{s},5\mathrm{min}\}\). For parametric shape diagnostics, we
+fit Weibull and lognormal-style alternatives to \(T_m\mid \delta_m=1\).
 
 Under \cref{eq:reply-intensity}, the parent-age hazard is
 \begin{equation}
@@ -76,12 +96,11 @@ S(s)=\exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right),
 \end{equation}
 to assess departures from exponential decay.
 
-Given high censoring, we report a decomposition of (i) observed in-window
-reply probability \(p_{\mathrm{obs}}\), (ii) conditional median
-first-reply time among observed events, and (iii) model-implied eventual reply
-probability \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) as a diagnostic quantity.
-We further report stratified pooled estimates by submolt category and agent
-proxies (claim status and follower-count bins).
+Given high censoring, we report incidence and conditional-speed estimands as
+primary readouts; \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) and half-life are
+kept as secondary diagnostics. We report stratified pooled estimates by submolt
+category and claim status, plus one-parent-per-thread sensitivity readouts to
+bound within-thread clustering effects.
 
 Uncertainty is quantified with thread-cluster bootstrap confidence intervals
 using fixed deterministic resampling settings (\Cref{sec:appendix:operational-details}).
@@ -106,6 +125,15 @@ innovation scale from residual standard deviation. Monte Carlo exceedance
 \(p\)-values are computed for both statistics, and bin-width robustness checks
 are run on the same contiguous segment. Exact binning and simulation settings
 are reported in \Cref{sec:appendix:operational-details}.
+
+To complement PSD-based tests, we run an event-time modulo-\(\tau\) circular
+uniformity test on raw event timestamps. With
+\(\theta_n := 2\pi\big((t_n \bmod \tau)/\tau\big)\), the Rayleigh resultant
+length is \(R=\left|\frac{1}{N}\sum_{n=1}^N e^{i\theta_n}\right|\) and test
+statistic is \(Z=NR^2\). We calibrate the \(p\)-value by Monte Carlo and report
+the mean phase. Detectability is summarized with a power curve over circular
+concentration amplitudes \(\kappa\), using the observed \(N\), \(\alpha\), and
+critical \(Z\).
 
 At agent level, we compute lagged autocorrelation on 15-minute activity series
 for agents with at least 10 comments in the contiguous segment and report the
