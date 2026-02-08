@@ -1,48 +1,98 @@
-# Moltbook Conversation Persistence (Research Repo)
+# Fast Response or Silence: Conversation Persistence in an AI-Agent Social Network
 
-This repository contains a fast, reproducible research workflow for studying **conversation persistence and coordination limits** in **Moltbook** (a social network for AI agents), with a goal of producing an **arXiv preprint**.
+This repository contains the manuscript and reproducible analysis pipeline for studying conversation persistence and coordination limits on Moltbook (an AI-agent social network), with Reddit as a contextual baseline.
 
-**Working title:** *The 4‑Hour Attention Clock Hypothesis: Conversation Half-Lives and Coordination Limits in an AI-Agent Social Network*
+## What Is In This Repo
 
-## Quickstart
+- `paper/`: LaTeX manuscript source (`paper/main.tex`) and committed manuscript PDF (`paper/main.pdf`).
+- `analysis/`: reproducible Python entrypoints for curation, platform-specific analysis, and cross-platform matched comparison.
+- `scripts/`: helper CLIs for data export and arXiv packaging.
+- `docs/`: background notes, data-source notes, and decision log.
+- `data/`, `data_raw/`, `data_curated/`, `data_features/`: local data workspaces (raw data is not committed).
+- `outputs/`: run-scoped derived artifacts, diagnostics, and manuscript-facing tables/figures.
 
-1) Create a Python environment and install dependencies:
+## Environment Setup
+
+Target Python version is 3.11.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+make install
 ```
 
-2) Download the Moltbook Observatory Archive (Hugging Face) tables to `data/raw/`:
+Useful developer commands:
 
 ```bash
-python scripts/download_moltbook_observatory_archive.py --out-dir data/raw/moltbook-observatory-archive
-```
-
-3) Build the paper PDF (optional; requires a local LaTeX install):
-
-```bash
+make lint
+make format
+make clean-paper
 make paper
 ```
 
-## Repo layout
+## Build The Manuscript
 
-- `moltbook_research_proposal.md`: original research proposal (source of truth for scope).
-- `docs/`: background notes, data notes, and project checklists.
-- Key docs:
-  - `docs/background.md`: web-sourced context + pointers.
-  - `docs/data_collection_plan.md`: detailed collection plan (source of truth for data work).
-  - `docs/pwj_pipeline.md`: how to run the planner→worker→judge Codex pipeline.
-  - `docs/project_checklist.md`: week-by-week execution checklist.
-- `paper/`: LaTeX source for the arXiv submission.
-- `scripts/`: small CLIs (download/export data, packaging helpers).
-- `analysis/`: analysis entrypoints (kept minimal; add as the project evolves).
-- `data/`: local data workspace (not committed; see `data/README.md`).
-- `outputs/`: generated figures/tables (generally not committed; see `outputs/README.md`).
+```bash
+make clean-paper && make paper
+```
 
-## Project norms (keep it fast)
+This builds `paper/main.pdf` from `paper/main.tex`.
 
-- Prefer small, end-to-end scripts over big frameworks.
-- Track “decisions” in `docs/decisions.md` so we don’t re-litigate.
-- Keep raw data out of git; export clean intermediates for reproducibility.
+## Analysis Entrypoints
+
+Primary analysis scripts:
+
+- `analysis/06_moltbook_only_analysis.py`
+- `analysis/07_reddit_only_analysis.py`
+- `analysis/08_cross_platform_matched_analysis.py`
+
+Example commands:
+
+```bash
+python analysis/06_moltbook_only_analysis.py
+python analysis/07_reddit_only_analysis.py --run-id attempt_scaled_20260206-142651Z
+python analysis/08_cross_platform_matched_analysis.py
+```
+
+For script-specific options, run `--help` on each script.
+
+## Data Sources And Handling
+
+Primary upstream source (Moltbook):
+- https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive
+
+Data and ethics constraints:
+- Do not commit raw data.
+- Keep redistributable constraints in mind for third-party data (especially Reddit).
+- Preserve run manifests and seed settings for reproducibility/provenance.
+
+See:
+- `data/README.md`
+- `docs/data_sources.md`
+- `docs/decisions.md`
+
+## arXiv Source Packaging
+
+Preferred arXiv bundle command:
+
+```bash
+python scripts/build_arxiv_submission.py \
+  --paper-dir paper \
+  --bundle-dir arxiv \
+  --tar-path arxiv_source.tar.gz \
+  --check-compile
+```
+
+This creates:
+- `arxiv/` (clean source bundle)
+- `arxiv_source.tar.gz` (upload-ready tarball)
+
+Legacy timestamped bundling script is also available:
+- `scripts/build_arxiv_bundle.py`
+
+## Repository Guide
+
+- `analysis/README.md`: analysis workflow notes and scope.
+- `scripts/README.md`: helper script usage.
+- `docs/background.md`: background pointers and related references.
+- `docs/attention_dynamics_model.md`: modeling notes.
+- `docs/feedback/`: reviewer feedback and revision materials.
+- `docs/decisions.md`: project decision log.
