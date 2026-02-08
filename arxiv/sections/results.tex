@@ -116,7 +116,7 @@ at-risk comments receive no observed direct reply) describes a bursty
 two-regime process: a small fraction of at-risk comments attract rapid direct replies
 concentrated in the first seconds to minutes, while the large majority receive
 no direct reply at all during the observation window. The Moltbook reply
-process is thus better characterized as ``fast response or silence'' than as
+process is thus better characterized as ``low-incidence/fast-conditional-response'' than as
 a gradual decay of engagement.
 
 \begin{table}[t]
@@ -146,7 +146,7 @@ Reddit (overall) & 9,547 & 36.2 & 39.3 & 2.61 & 38.7 \\
 \end{table}
 
 \textbf{Two-regime finding (incidence--timing split).}
-\textbf{Result: a low-incidence / ultra-fast conditional response regime.}
+\textbf{Result: a low-incidence / very-fast conditional response regime.}
 \Cref{tab:reply-dynamics} separates event incidence from timing. On Moltbook, only
 9.0\% of at-risk comments receive any direct reply in-window, versus 36.2\% on the
 Reddit baseline. Conditional on receiving a reply, Moltbook replies arrive within seconds
@@ -405,22 +405,22 @@ Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
-Overall, Moltbook threads are strongly star-shaped (mean maximum depth 1.38, median
+Overall, Moltbook threads are predominantly star-shaped (mean maximum depth 1.38, median
 maximum depth 1, effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare bidirectional dyads (0.998\%) and
 modest re-entry (mean 0.195; median 0.167). The primary Moltbook survival
 specification yields a very short reply-kernel half-life of 0.013 hours
 (0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply
 pattern in which observed direct-reply incidence is 9.00\% on Moltbook versus
-36.20\% on Reddit and conditional timing differs by orders of magnitude.
+36.20\% on Reddit and conditional timing differs substantially (0.076 minutes vs.\ 39.3 minutes median).
 Although power at the 4-hour target frequency is elevated relative to
 background (median power outside the \(\pm0.03\) hr\(^{-1}\) target neighborhood),
 AR(1)-based tests remain non-significant across 5/15/30-minute
 binning choices.
 Taken together, these results jointly evaluate the model-prediction bundle
 (reply-kernel timescale, depth-tail behavior, branching concentration,
-reciprocity/re-entry, and periodic signatures), giving an internally consistent
-first-pass empirical readout of horizon-limited cascade dynamics in this early
-Moltbook window.
+reciprocity/re-entry, and periodic signatures), providing a first-pass
+empirical readout of horizon-limited cascade dynamics in this early Moltbook
+window.
 
 \subsubsection{H1a Readout (Short Hazard Half-Life)}
 \label{sec:results:h1a}
