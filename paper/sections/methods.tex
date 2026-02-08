@@ -29,7 +29,7 @@ factor, to distinguish root-heavy star patterns from deeper cascades.
 Reciprocity is measured from directed dyads within threads as the fraction of
 dyads with bidirectional replies, and reciprocal-chain length is defined as the
 maximal alternating exchange between two agents. Re-entry is measured by
-\(\mathrm{RE}_j\) in \cref{eq:reentry-rate}. Missing-author-ID handling rules
+\(\mathrm{RE}_j\) in \cref{eq:reentry-rate}. Missing-author-identifier handling rules
 are deterministic and documented in \Cref{sec:appendix:operational-details}.
 
 \subsection{Two-Part Reply Dynamics Estimation}
@@ -119,7 +119,7 @@ Fisher's \(g=\max_f I(f)/\sum_f I(f)\), and target-frequency power
 of \(Y_t\) and \(f_\tau^\star\) is the nearest Fourier frequency to 0.25
 hr\(^{-1}\).
 
-Null calibration uses an AR(1) process fit directly to \(Y_t\):
+Null calibration uses a first-order autoregressive (AR(1)) process fit directly to \(Y_t\):
 \(Y_t=\phi Y_{t-1}+\varepsilon_t\), with \(\phi\) estimated by least squares and
 innovation scale from residual standard deviation. Monte Carlo exceedance
 \(p\)-values are computed for both statistics, and bin-width robustness checks

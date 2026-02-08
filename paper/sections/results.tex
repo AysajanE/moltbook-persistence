@@ -27,7 +27,7 @@ sample \(D_j\) therefore coincides with maximum comment depth.}
 \end{figure}
 
 Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean maximum depth is 1.38
-(95\% bootstrap CI: [1.37, 1.38]), median maximum depth is 1, the proportion reaching depth 5+
+(95\% bootstrap confidence interval (CI): [1.37, 1.38]), median maximum depth is 1, the proportion reaching depth 5+
 is 0.006\% (95\% bootstrap CI: [0.000\%, 0.014\%]), and the proportion reaching depth 10+
 is 0.000\%.
 
@@ -71,8 +71,8 @@ in the comment sequence.}
 Dyadic reciprocity is low: 1,621 of 162,430 dyads are bidirectional (0.998\%).
 Reciprocal chains are short (median chain length 2; mean 2.09). Thread-level re-entry is also
 limited (\cref{fig:reentry-distribution}), with mean 0.195 and median 0.167.
-Missing-author-ID sensitivity is small: restricting to threads with complete
-commenter IDs (34,476 of 34,730 threads; 99.3\%) leaves re-entry and pooled
+Missing-author-identifier sensitivity is small: restricting to threads with complete
+commenter identifiers (34,476 of 34,730 threads; 99.3\%) leaves re-entry and pooled
 dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
 pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
 mean unique participants per thread, from 4.57 to 4.60.
@@ -107,7 +107,7 @@ very-fast-conditional-speed pattern.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/reply_time_ecdf_logscale.png}
-\caption{ECDF of conditional reply times on a log-time axis (seconds to hours),
+\caption{Empirical cumulative distribution function (ECDF) of conditional reply times on a log-time axis (seconds to hours),
 with vertical markers at 10 seconds, 1 minute, and 1 hour.}
 \label{fig:reply-time-ecdf-logscale}
 \end{figure}
@@ -317,7 +317,7 @@ At the 4-hour target frequency (\(f=0.25\) hr\(^{-1}\)), the peak-to-background 
 \(P(f_\tau^\star)\) is Welch power at the nearest frequency bin to
 \(0.25\) hr\(^{-1}\) and \(\widetilde{P}_{\mathrm{bg}}\) is the median Welch
 power across positive frequencies excluding the
-\(\pm 0.03\) hr\(^{-1}\) neighborhood around \(f_\tau^\star\). However, AR(1)-calibrated tests do not support significance
+\(\pm 0.03\) hr\(^{-1}\) neighborhood around \(f_\tau^\star\). However, first-order autoregressive (AR(1))-calibrated tests do not support significance
 (Fisher's \(g=0.094\), \(p=0.686\); target-frequency power \(p=0.501\)).
 The dominant spectral component is at 0.156 hr\(^{-1}\) (period 6.4 hours), not 4 hours.
 

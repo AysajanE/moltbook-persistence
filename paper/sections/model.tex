@@ -13,6 +13,24 @@ and comparative-static predictions that can be checked against data. Richer
 formulations for hierarchical heterogeneity and visibility-weighted reply assignment are provided in
 \Cref{sec:model:extensions} in the appendix.
 
+\subsection{Assumptions and Scope}
+\label{sec:model:scope}
+
+This formulation combines standard Hawkes-style self-excitation and branching-process
+components with exponential reply-kernel decay. The novel contribution in this manuscript
+is the measurement map from platform mechanisms to persistence estimands in observatory
+data: exposure/resurfacing enters through \(\alpha\) (\cref{eq:alpha-exposure}),
+context-window staleness through \(\beta\), and check-in cadence/synchronization through
+\(b(t)\). Empirically, we estimate direct-reply incidence and conditional timing, and
+report reply-kernel half-life as a secondary timescale diagnostic. By contrast, depth-tail
+slope summaries, two-type branching interpretations, and
+\(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) are descriptive or model-implied diagnostics
+rather than identified causal estimands. Periodicity predictions are tested with
+power spectral density (PSD)/autocorrelation
+diagnostics, whereas platform-lever comparative statics are interpreted as
+mechanism-consistent hypotheses. Because per-account heartbeat events are not directly logged,
+\(b(t)\) is latent and inferred from aggregate periodic signatures.
+
 \subsection{Setting and Notation}
 \label{sec:model:notation}
 
@@ -77,14 +95,6 @@ at time \(t\), normalized so that
 \(\bar b:=\frac{1}{L}\int_0^L b(t)\,dt=1\) over a long window.
 \end{definition}
 
-\begin{remark}[Observability limit]
-\label{rem:availability-observability}
-In observatory data, \(b(t)\) is latent because per-account heartbeat events are
-not directly logged. We therefore infer heartbeat implications from aggregate
-periodic signatures in timestamped activity, not from direct heartbeat-event
-observation.
-\end{remark}
-
 For heartbeat-like scheduling, a tractable form is
 \begin{equation}
 \label{eq:availability-periodic}
@@ -108,6 +118,10 @@ mechanisms and combine multiplicatively in event intensity.
 
 We model direct replies with an age-dependent Hawkes-type construction
 \citep{hawkes1971spectra}.
+Marginalizing explicit parent labels yields a marked Hawkes process with kernel
+\(g_i(\Delta)=\alpha_i e^{-\beta_i\Delta}\) modulated by \(b(t)\); this construction
+follows standard self-exciting process practice in social-media dynamics
+\citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
 
 \begin{definition}[Direct-reply intensity]
 \label{def:reply-intensity}
@@ -140,27 +154,6 @@ and parent selection follows competing risks,
 \Prob(p_{jn}=m\mid t_{jn}=t,\mathcal{H}_j(t))
 =\frac{\lambda_{j,m}(t\mid\mathcal{H}_j(t))}{\lambda_j(t\mid\mathcal{H}_j(t))}.
 \end{equation}
-
-\begin{remark}[Connection to standard Hawkes processes]
-\label{rem:hawkes}
-Marginalizing explicit parent labels yields a marked Hawkes process with kernel
-\(g_i(\Delta)=\alpha_i e^{-\beta_i\Delta}\) modulated by \(b(t)\). Hawkes-style
-self-excitation is well established in social-media dynamics, though kernel
-families differ across applications \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}.
-\end{remark}
-
-\begin{remark}[Model Scope and Measurement Link]
-\label{rem:model-scope}
-Building on standard Hawkes and branching components, this formulation maps
-platform mechanisms to observable persistence outcomes: heartbeat-style
-activation enters through \(b(t)\), context-window staleness through \(\beta_i\),
-and exposure/resurfacing through \(\alpha_i\) (via
-\cref{eq:alpha-exposure}). These mechanisms are linked to direct-reply
-incidence, conditional reply speed, depth-tail decay \((\mu)\), and spectral
-power near \(1/\tau\). Reply-kernel half-life \((\ln 2/\beta)\) is retained as a
-secondary timescale diagnostic. Mechanism interpretations below are
-hypothesis-level and do not by themselves identify causal intervention effects.
-\end{remark}
 
 \subsection{Primary Estimands and Measurement Mapping}
 \label{sec:model:estimands}
@@ -232,13 +225,10 @@ h_i:=\frac{\ln 2}{\beta_i},
 \end{equation}
 so that \(e^{-\beta_i h_i}=1/2\).
 \end{definition}
-
-\begin{remark}[Estimation link]
 Under \cref{eq:reply-intensity}, first-reply waiting times have hazard proportional
 to \(e^{-\beta\Delta}\), so \(\beta\) is estimable by likelihood-based survival
-methods from parent-relative reply times. In that analysis, each non-root
-candidate parent comment is an at-risk unit (``at-risk comment'').
-\end{remark}
+methods from parent-relative reply times; each non-root candidate parent comment
+is an at-risk unit (``at-risk comment'').
 
 \subsection{Structural Dynamics: Branching Process Interpretation}
 \label{sec:model:branching}
@@ -332,22 +322,13 @@ If \(D_j\ge k\), then generation-\(k\) population \(Z_k\ge1\). By Markov's
 inequality, \(\Prob(D_j\ge k)\le\E[Z_k]\). Under mean offspring \(\mu\),
 \(\E[Z_k]=\mu^k\).
 \end{proof}
-
-\begin{remark}[Implication for shallow threads]
-\label{rem:shallow}
 Deep threads become exponentially unlikely unless \(\mu\) is near one; high decay
 rates (large \(\beta_i\)) imply small \(\mu_i\) and thus shallow trees.
-\end{remark}
-
-\begin{remark}[Interpretation of \(\mu\) in depth tails]
-\label{rem:mu-tail-interpretation}
-\Cref{eq:depth-tail} is an upper bound, not an exact identity for the empirical
-depth tail. Accordingly, the effective depth-tail slope estimate
-\(\hat{s}_{\mathrm{depth}}\), obtained from
-\(\log \Prob(D_j\ge k)\approx c+k\log s_{\mathrm{depth}}\), should be read as a
-descriptive summary motivated by the bound, rather than an exact
+Because \cref{eq:depth-tail} is an upper bound, the effective depth-tail slope
+estimate \(\hat{s}_{\mathrm{depth}}\), obtained from
+\(\log \Prob(D_j\ge k)\approx c+k\log s_{\mathrm{depth}}\), is interpreted as a
+descriptive summary motivated by the bound, not as an exact
 equality-based estimator of reproduction mean or branching ratio.
-\end{remark}
 
 \subsection{Reciprocity, Re-Entry, and Agent Heterogeneity}
 \label{sec:model:heterogeneity}

@@ -39,13 +39,13 @@ most recent record. The archive contains six relational tables summarized in
 
 The \texttt{comments} table is central to our analysis. Each row includes a unique
 comment identifier, a post identifier, an author identifier, a parent-comment
-identifier (null for direct replies to the root post), a UTC timestamp, and an
+identifier (null for direct replies to the root post), a Coordinated Universal Time (UTC) timestamp, and an
 observed score snapshot. The parent linkage enables full thread-tree
 reconstruction for depth, branching, and reply-chain analyses.
 
 Preprocessing combines schema harmonization, deterministic tree reconstruction,
 and integrity checks before feature construction. In this snapshot, canonical
-comments contain 223,317 unique comment IDs from 226,173 raw comment rows.
+comments contain 223,317 unique comment identifiers from 226,173 raw comment rows.
 Referential checks pass: every \texttt{comments.post\_id} maps to a valid post,
 every non-null \texttt{comments.parent\_id} maps to a valid comment, and no
 negative parent or post lags are observed. Timestamps are normalized to UTC and
@@ -55,11 +55,11 @@ Social/Casual, Creative, Spam/Low-Signal, Other) using a fixed keyword mapping
 to avoid post hoc relabeling.
 
 Author identifiers are nearly complete but not perfect. In this snapshot,
-906 of 223,317 comments (0.41\%) have missing author IDs, concentrated in 254
+906 of 223,317 comments (0.41\%) have missing author identifiers, concentrated in 254
 threads where all comment authors are missing (0.73\% of threads). We retain
-these rows in canonical thread reconstruction, count resolved commenter IDs only
+these rows in canonical thread reconstruction, count resolved commenter identifiers only
 for participant metrics, and treat author-based interaction metrics as undefined
-when no commenter IDs are observed.
+when no commenter identifiers are observed.
 
 Event-time analyses use UTC timestamps. The canonical timeline contains a
 41.7-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
@@ -108,7 +108,7 @@ with 1,104 threads containing at least one comment; timestamps span
 
 Validation checks on curated tables pass, with two upstream caveats that bound
 interpretation: 1,570 comments were dropped during curation because submission
-IDs were missing, and collection logs record 2 non-200/error responses.
+identifiers were missing, and collection logs record 2 non-200/error responses.
 
 This Reddit corpus is used in two ways in the present manuscript. First, we
 estimate Reddit-side geometry, survival, and periodicity metrics using the same
