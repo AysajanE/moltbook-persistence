@@ -1,11 +1,11 @@
-\section{Model: Horizon-Limited Interaction Cascades}
+\section{Model and Estimands: Horizon-Limited Interaction Cascades}
 \label{sec:model}
 
 We model conversation dynamics on agent social networks with a generative framework
 that combines age-dependent self-excitation, branching structure, and platform-level
-availability modulation. The core model components in this section correspond directly
-to the empirical estimands in \Cref{sec:methods}; richer formulations for hierarchical
-heterogeneity and visibility-weighted reply assignment are provided in
+availability modulation. This section defines the minimum mechanism model and the
+primary measurement targets used in the empirical analysis. Richer formulations for
+hierarchical heterogeneity and visibility-weighted reply assignment are provided in
 \Cref{sec:model:extensions} in the appendix.
 
 \subsection{Setting and Notation}
@@ -146,6 +146,42 @@ half-life \((\ln 2/\beta)\), depth-tail decay \((\mu)\), and aggregate spectral
 power near \(1/\tau\). This is a mechanism-grounded measurement framework, not a
 new stochastic-process class.
 \end{remark}
+
+\subsection{Primary Estimands and Measurement Mapping}
+\label{sec:model:estimands}
+\label{sec:methods:def-est}
+
+The model is used as a measurement map from mechanism parameters
+\((\alpha,\beta,b(t),\mu)\) to estimands computed from observed timestamped reply trees.
+Terminology in \Cref{sec:results,sec:discussion,sec:conclusion} follows this
+estimand glossary.
+For each candidate parent comment \(m\), let \(T_m\) denote first direct-reply
+time (if any), \(C_m\) the right-censoring time from candidate-parent timestamp to
+end of observable coverage, and
+\[
+s_m:=\min(T_m,C_m), \qquad \delta_m:=\mathbf{1}\{T_m\le C_m\}.
+\]
+Primary estimands are:
+\begin{itemize}
+\item \textbf{Direct-reply incidence:}
+\(p_{\mathrm{obs}}:=\Prob(\delta_m=1)\), estimated empirically as
+\(N_{\mathrm{reply}}/N_{\mathrm{risk}}\).
+\item \textbf{Conditional reply timing:}
+\(F_{T\mid \delta=1}(t):=\Prob(T_m\le t\mid \delta_m=1)\), summarized by
+quantiles such as \(\tilde{s}_{0.5}^{\mathrm{obs}}\).
+\item \textbf{Kernel decay timescale:}
+\(\beta\) in \cref{eq:reply-intensity}, reported as half-life
+\(h=\ln 2/\beta\) (\cref{def:halflife}).
+\item \textbf{Depth-tail decay summary:}
+effective tail slope \(\hat{\mu}\) from
+\(\log \Prob(D_j\ge k)\approx c+k\log\mu\), interpreted descriptively because
+\cref{eq:depth-tail} is a bound.
+\item \textbf{Periodicity detectability target:}
+power concentration near \(f_\tau=1/\tau\) implied by \cref{prop:periodicity}.
+\end{itemize}
+We also report
+\(p_\infty:=1-\exp(-\hat\alpha/\hat\beta)\) as a model-implied diagnostic
+quantity, not as a direct empirical estimand.
 
 \subsection{Interaction Half-Life}
 \label{sec:model:halflife}
@@ -341,33 +377,11 @@ agent-level autocorrelation diagnostics.
 \subsection{Connection to Platform Mechanisms}
 \label{sec:model:mechanisms}
 
-Model parameters map to design mechanisms. Heartbeat scheduling affects
-availability periodicity \(b(t)\) and therefore potential spectral structure.
-Memory limits and context loss affect \(\beta_i\), shifting half-life and
-branching depth. Interface visibility and ranking affect which parents attract
-replies; a formal visibility-weighted parent-assignment rule is given in
-\Cref{sec:model:extensions}.
-
-\subsection{Summary of Model Predictions}
-\label{sec:model:summary}
-
-\begin{table}[t]
-\centering
-\caption{Summary of model predictions and corresponding empirical tests.}
-\label{tab:predictions}
-\small
-\begin{tabular}{@{}p{4cm}p{5cm}p{4.5cm}@{}}
-\toprule
-\textbf{Prediction} & \textbf{Mechanism} & \textbf{Empirical Test} \\
-\midrule
-Short interaction half-life ($h = \ln 2/\beta$) & Context limits + task switching (staleness) & Survival analysis of inter-reply times \\
-Shallow conversation trees & High $\beta$ $\Rightarrow$ low $\mu$ $\Rightarrow$ exponential depth decay & Depth distribution analysis \\
-Star-shaped structure & Root-reply affordances + staleness decay & Branching factor by depth level \\
-Periodic activity patterns (near $\tau \approx 4$ hours) & Heartbeat synchronization $b(t)$ & Spectral analysis of timestamps \\
-Heterogeneous re-entry & Variable agent re-entry propensity & Re-entry rate distribution \\
-Topic moderation & Topic-conditioned persistence heterogeneity & Half-life by submolt category \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Row-level empirical readout is as follows: short interaction half-life \(\rightarrow\) \S\ref{sec:results:halflife}; shallow conversation trees \(\rightarrow\) \S\ref{sec:results:geometry}; star-shaped structure \(\rightarrow\) \S\ref{sec:results:geometry}; periodic activity near \(\tau\approx4\) hours \(\rightarrow\) \S\ref{sec:results:periodicity}; heterogeneous re-entry \(\rightarrow\) \S\ref{sec:results:geometry} (with overlap-region contrast in \S\ref{sec:results:comparison}); topic moderation \(\rightarrow\) \S\ref{sec:results:halflife}.
+Model parameters map to platform mechanisms, with estimation separated from
+mechanism interpretation. Heartbeat scheduling affects availability periodicity
+\(b(t)\) and therefore potential spectral structure. Memory limits and context
+loss affect \(\beta_i\), shifting timing decay and branching depth. Interface
+visibility and ranking affect which parents attract replies; a formal
+visibility-weighted parent-assignment rule is given in
+\Cref{sec:model:extensions}. Design implications based on these mappings are
+discussed downstream in \Cref{sec:discussion}.

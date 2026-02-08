@@ -11,14 +11,13 @@ Early observations of Moltbook revealed a striking pattern: agents appear substa
 
 We focus on a specific architectural feature that may explain these dynamics: the \emph{heartbeat mechanism}. Moltbook agents are typically configured to check the platform at regular intervals (approximately every four hours), creating a mechanically induced ``attention clock'' \citep{willison2026moltbook}. In observatory data, however, per-account heartbeat schedules are latent: we observe timestamped posts/comments but not direct scheduler logs. We therefore treat heartbeat effects as a testable aggregate hypothesis: sufficiently synchronized check-ins should yield spectral concentration near 4 hours, whereas substantial dephasing or jitter can make the same mechanism weakly detectable or undetectable in aggregate over finite windows. This framing is paired with finite context windows, which motivate separate tests of rapid within-thread staleness.
 
-Our central research questions are how quickly direct-reply responsiveness
-decays on Moltbook (conversation persistence, operationalized via reply hazard)
-and whether aggregate activity exhibits a detectable $\sim$4-hour periodic signature;
-which structural properties (depth, branching, reciprocity) characterize Moltbook
-discussion trees relative to human-platform baselines; and which factors---topic
-domain, agent reputation, and early engagement---are associated with extended
-conversational persistence. Thread duration is analyzed separately as a distinct
-outcome.
+Our central research questions are methodological: which estimands provide a
+coherent decomposition of conversation persistence, how these estimands map to
+minimal stochastic-process mechanisms, and how reliably they can be estimated
+under heavy censoring and finite observation windows. Concretely, we target
+reply incidence, conditional reply timing, depth-tail decay, and periodicity
+detectability, then examine how these estimands vary by topic and agent
+attributes. Thread duration is analyzed separately as a distinct outcome.
 
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
@@ -39,7 +38,8 @@ in half-life and depth across submolts. H4 posits that agent-level covariates
 (account claim status and follower count) are associated with variation in reply
 incidence and conversational persistence.
 
-We operationalize these hypotheses via the metrics and estimators described in \Cref{sec:methods} and evaluate them in \Cref{sec:results}.
+We operationalize these hypotheses via the estimands defined in \Cref{sec:model}
+and the estimators in \Cref{sec:methods}, and evaluate them in \Cref{sec:results}.
 For H1b, non-significant evidence at the target frequency is interpreted as
 ``not detected in this snapshot'' rather than as evidence of absence.
 
@@ -55,7 +55,12 @@ on agent attention.
 
 \subsection{Approach and Contributions}
 
-We develop a \emph{horizon-limited interaction cascade} model that formalizes conversation dynamics on agent platforms. Our framework combines self-exciting point processes (Hawkes processes) with age-dependent branching dynamics, explicitly incorporating periodic availability modulation to capture the heartbeat mechanism. The model yields closed-form expressions linking platform design parameters to observable quantities: interaction half-life, maximum-depth tail behavior, and agent re-entry rates.
+We develop a \emph{horizon-limited interaction cascade} measurement framework
+for agent-platform conversations. The framework combines self-exciting point
+process dynamics with age-dependent branching and periodic availability
+modulation, then maps these mechanisms to observable estimands:
+reply incidence, conditional reply timing, depth-tail decay, and aggregate
+periodic signatures.
 
 We evaluate this framework empirically with a Moltbook-first design using the Moltbook
 Observatory Archive \citep{simulamet2026observatoryarchive}. A run-scoped curated Reddit
@@ -66,15 +71,28 @@ geometry, (2)~estimation of Moltbook temporal decay parameters via survival anal
 baseline analysis under the same estimators, and (5)~a coarse matched observational
 comparison with paired effect estimation.
 
-Our contributions are fourfold. First, we introduce interaction half-life as a
-portable metric of collective persistence that is estimable from timestamped
-reply data. Second, we provide a mechanism-grounded explanation linking shallow
-conversation structure to measurable temporal decay under architectural
-constraints. Third, we identify design levers---including memory scaffolding,
-thread summarization, and return-to-thread incentives---that could extend
-coordination horizons in agent systems. Fourth, we provide a reproducible
-research workflow that makes the empirical claims auditable and extensible.
+Our contributions are fourfold. First, we formalize a two-component persistence
+measurement target that separates direct-reply incidence from conditional reply
+timing, with half-life treated as a kernel-timescale summary. Second, we
+provide a mechanism-to-estimand mapping that links staleness, branching, and
+availability modulation to identifiable empirical quantities. Third, we
+implement and calibrate an estimation workflow (survival-based timing
+inference, depth-tail summaries, and periodicity tests) under a common
+reproducible pipeline. Fourth, we derive downstream design implications as
+model-consistent hypotheses, while keeping the primary contribution in
+measurement and inference.
 
 \subsection{Paper Organization}
 
-The remainder of this paper is organized as follows. \Cref{sec:background} reviews related work on information cascades, conversation modeling, and emerging research on AI agent systems. \Cref{sec:model} presents our formal model of horizon-limited interaction cascades. \Cref{sec:data} describes our datasets and preprocessing pipeline. \Cref{sec:methods} details our empirical methodology. \Cref{sec:results} presents our findings. \Cref{sec:discussion} interprets results and discusses implications for platform design. \Cref{sec:limitations} addresses limitations and ethical considerations. \Cref{sec:conclusion} concludes with key takeaways and directions for future work. \Cref{sec:reproducibility} summarizes reproducibility details (Appendix A), and \Cref{sec:appendix} provides supplementary derivations and robustness material (Appendix B).
+The remainder of this paper is organized as follows. \Cref{sec:background}
+reviews related work on stochastic-process modeling of interaction systems.
+\Cref{sec:model} presents the minimal model and primary estimands.
+\Cref{sec:data} describes data construction and preprocessing.
+\Cref{sec:methods} details estimation and empirical procedures.
+\Cref{sec:results} reports empirical findings and model-consistency checks.
+\Cref{sec:discussion} interprets implications, including short downstream design
+considerations. \Cref{sec:limitations} addresses limitations and ethical
+considerations. \Cref{sec:conclusion} concludes with key takeaways and future
+work. \Cref{sec:reproducibility} summarizes reproducibility details (Appendix
+A), and \Cref{sec:appendix} provides supplementary derivations and operational
+details (Appendix B).

@@ -5,16 +5,15 @@ We report Moltbook results from the curated Observatory Archive snapshot
 and Reddit full-scale baseline results from the run-scoped curated Reddit
 corpus.
 Reproducibility details are provided in \Cref{sec:reproducibility}.
-The presentation proceeds in five steps: we first characterize Moltbook
-conversation geometry, then decompose reply dynamics into incidence and timing
-through the half-life analysis, then test periodic structure at the
-hypothesized 4-hour frequency, then report the Reddit full-scale baseline, and
-finally present a coarse matched cross-platform comparison as secondary
-contextual evidence on overlap support.
+The empirical chain is organized around five results: (1) thread geometry,
+(2) persistence decomposition into incidence versus conditional timing,
+(3) model-to-data consistency checks, (4) periodicity tests as secondary
+evidence, and (5) Reddit baseline and overlap-restricted matching as contextual
+comparisons.
 Metric terminology follows the canonical glossary in
 \Cref{sec:methods:def-est}.
 
-\subsection{Conversation Geometry on Moltbook}
+\subsection{Result 1: Thread Geometry on Moltbook}
 \label{sec:results:geometry}
 
 \subsubsection{Depth Distribution}
@@ -53,10 +52,8 @@ comments.}
 \Cref{fig:branching-by-depth} shows strong root concentration. The root receives 5.57 direct
 replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
 respectively. This is the expected star-shaped pattern under rapid branching decay.
-Applying the root-special branching approximation (\cref{prop:thread-size}) with $\mu_0 \approx 5.57$ (root)
-and descriptive \(\hat{\mu} \approx 0.154\) (non-root tail-slope proxy) gives the
-heuristic expectation \(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\)
-comments per thread, closely matching the observed mean of 6.43 (\cref{tab:descriptive}).
+We evaluate the corresponding thread-size consistency implication explicitly in
+Result 3 (\Cref{sec:results:consistency}).
 
 \subsubsection{Reciprocity and Re-Entry}
 
@@ -79,7 +76,7 @@ dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
 pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
 mean unique participants per thread, from 4.57 to 4.60.
 
-\subsection{Interaction Half-Life}
+\subsection{Result 2: Persistence Decomposition (Incidence vs.\ Conditional Timing)}
 \label{sec:results:halflife}
 
 \subsubsection{Overall Estimate and Two-Regime Finding}
@@ -151,25 +148,7 @@ to minutes (overall median 0.076~minutes, i.e., $\approx$4.6~seconds), while
 Reddit conditional timing is much slower (39.3~minutes median). The implied eventual percentages are model-diagnostic quantities
 under the exponential-kernel fit, not direct empirical estimands.
 
-Model check (conditional median vs.\ half-life):
-Under the fitted exponential-kernel model in the low-reply-probability regime
-($\hat{\alpha}/\hat{\beta} \approx 0.097 \ll 1$), the conditional distribution
-of the first reply time---given a reply occurs---is approximately
-$\mathrm{Exponential}(\hat{\beta})$ (rare-event approximation), whose median
-equals the kernel half-life ($\approx 0.80$~minutes); the exact conditional
-density is given in \Cref{eq:appendix-conditional-density}.
-The empirical conditional median is 0.076~minutes, roughly $10\times$ smaller.
-This gap indicates that the single-parameter exponential kernel captures the overall
-timescale of hazard decay but understates early-time concentration:
-observed replies arrive even faster than the fitted exponential predicts.
-The Weibull shape parameter $\hat{\gamma} = 0.112 \ll 1$ (\Cref{sec:results:halflife})
-and the empirical hazard profile in \Cref{fig:reply-hazard-moltbook} confirm this
-departure---a decreasing hazard that is steeply concentrated in the first seconds.
-Accordingly, the half-life reported throughout should be interpreted as a
-\emph{coarse exponential-kernel timescale}, not as a precise predictor of conditional
-reply timing.
-
-\subsubsection{Weibull Shape Parameter}
+\subsubsection{Timing Shape Diagnostic}
 
 The Weibull model gives shape \(\hat{\gamma}=0.112\) (95\% bootstrap CI:
 [0.111, 0.112]), far below 1. This indicates strong early-time hazard concentration and
@@ -203,7 +182,7 @@ Overall & 31,472 & 199,000 & 0.013 & [0.009, 0.019] \\
 Half-life varies across categories in this first-pass estimate. Philosophy/Meta is longest,
 while Social/Casual and Creative are shortest.
 
-\subsubsection{Agent Heterogeneity}
+\subsubsection{Agent Heterogeneity in Incidence and Timing}
 
 \begin{table}[t]
 \centering
@@ -237,10 +216,40 @@ follower-bin split is non-monotonic: \(1\text{--}9\) followers is highest-incide
 snapshot, while the 10+ bin is sparse (\(n=238\) at-risk comments), so that estimate is
 interpreted cautiously.
 
-\subsection{Periodicity Detection}
-\label{sec:results:periodicity}
+\subsection{Result 3: Model-to-Data Consistency Checks}
+\label{sec:results:consistency}
 
-\subsubsection{Spectral Analysis}
+\subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
+
+Applying the root-special branching approximation (\cref{prop:thread-size}) with
+\(\mu_0 \approx 5.57\) (root) and descriptive \(\hat{\mu} \approx 0.154\)
+(non-root tail-slope proxy) gives the heuristic expectation
+\(\E[N_j] \approx \mu_0/(1-\hat{\mu}) \approx 6.6\) comments per thread, closely
+matching the observed mean of 6.43 (\cref{tab:descriptive}).
+
+\subsubsection{Incidence Consistency: Observed vs.\ Model-Implied Event Probability}
+
+In \Cref{tab:reply-dynamics}, the exponential-kernel implied eventual reply
+probability is 9.3\% versus observed 9.0\% on Moltbook and 38.7\% versus 36.2\%
+on Reddit. This supports using the fitted kernel as a coarse incidence-level
+diagnostic, while keeping causal interpretation out of scope.
+
+\subsubsection{Timing Consistency: Conditional Median vs.\ Kernel Timescale}
+
+Under the fitted exponential-kernel model in the low-reply-probability regime
+(\(\hat{\alpha}/\hat{\beta} \approx 0.097 \ll 1\)), the conditional distribution
+of first reply time---given that a reply occurs---is approximately
+\(\mathrm{Exponential}(\hat{\beta})\) (rare-event approximation), whose median
+equals the kernel half-life (\(\approx 0.80\) minutes); the exact conditional
+density is given in \Cref{eq:appendix-conditional-density}. The empirical
+conditional median is 0.076 minutes, roughly \(10\times\) smaller. Together with
+\(\hat{\gamma}=0.112 \ll 1\) and \Cref{fig:reply-hazard-moltbook}, this indicates
+that the exponential kernel captures a broad decay timescale but understates
+the extreme early-time concentration. We therefore treat half-life as a coarse
+kernel timescale summary, not a precise predictor of conditional timing.
+
+\subsection{Result 4 (Secondary): Periodicity Tests}
+\label{sec:results:periodicity}
 
 \begin{figure}[t]
 \centering
@@ -262,19 +271,11 @@ power across positive frequencies excluding the
 (Fisher's \(g=0.094\), \(p=0.686\); target-frequency power \(p=0.501\)).
 The dominant spectral component is at 0.156 hr\(^{-1}\) (period 6.4 hours), not 4 hours.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/periodicity_bin_robustness_moltbook.png}
-\caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
-\label{fig:periodicity-bin-robustness}
-\end{figure}
-
 The non-significant 4-hour conclusion is stable across bin widths on the same contiguous
 segment: target-frequency AR(1)-calibrated \(p\)-values are 0.508 (5 min), 0.501 (15 min),
 and 0.556 (30 min). The dominant period shifts from 5.33 to 8.0 hours across these binning
-choices, but none imply a significant 4-hour peak.
-
-\subsubsection{Agent-Level Autocorrelation}
+choices, but none imply a significant 4-hour peak; the corresponding robustness
+plot is provided in \Cref{sec:appendix:periodicity-robustness}.
 
 Among 1,076 agents with at least 10 comments in the contiguous segment, mean lag-4-hour
 autocorrelation in 15-minute binned activity is 0.111
@@ -285,119 +286,33 @@ a 4-hour periodic driver, and it is consistent with weak or dephased heartbeat-l
 behavior that is not strong enough to produce a significant aggregate spectral peak
 in this short contiguous window.
 
-\subsection{Reddit Full-Scale Baseline}
+\subsection{Result 5 (Secondary Context): Reddit Baseline and Overlap-Restricted Matching}
 \label{sec:results:reddit-full-scale}
 
 The Reddit baseline corpus (\Cref{sec:data:reddit}) contains 1,772
 submissions, 9,878 comments, and 1,104 threads with at least one comment. Comment timestamps
-span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z.
+span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z. Under the same estimators,
+Reddit is deeper and slower: mean maximum depth 2.17 (vs.\ 1.38 on Moltbook),
+reply incidence 36.2\% (vs.\ 9.0\%), and reply-kernel half-life 2.61 hours
+(95\% CI: [2.29, 2.95], vs.\ 0.013 hours on Moltbook). Reddit periodicity also
+does not show a significant 4-hour target peak under AR(1)-calibrated tests
+(\(p=0.685\)), despite detectable periodic structure at other frequencies
+(Fisher's \(g\), \(p<0.001\)). Full Reddit diagnostics are reported in
+\Cref{sec:appendix:reddit-details}.
 
-\subsubsection{Geometry, Branching, and Re-Entry}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/depth_distribution_reddit.png}
-\caption{Distribution of maximum thread depth \(D_j\) over Reddit threads with
-at least one comment (\(N=1{,}104\)); root submissions are fixed at depth 0, and
-in this sample \(D_j\) therefore coincides with maximum comment depth.}
-\label{fig:depth-distribution-reddit}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/branching_by_depth_reddit.png}
-\caption{Mean direct-children count by node depth for Reddit threads with at
-least one comment; depth 0 is the root submission and depths \(\geq 1\) are
-non-root comments.}
-\label{fig:branching-by-depth-reddit}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/reentry_distribution_reddit.png}
-\caption{Distribution of thread-level re-entry rate
-\(\mathrm{RE}_j^{\mathrm{comment}}\) for Reddit threads with at least one
-comment; root-submission authorship is excluded unless the root author later
-appears in the comment sequence.}
-\label{fig:reentry-distribution-reddit}
-\end{figure}
-
-Conversation geometry is materially deeper than a pure star regime but still root-concentrated.
-Mean maximum depth per thread is 2.17 (median maximum depth 1),
-\(\Prob(D \ge 5)=11.32\%\),
-\(\Prob(D \ge 10)=1.54\%\), mean branching factor is 4.31 at depth 0 and 0.45 at depth 1,
-and re-entry has mean 0.094 and median 0.
-
-\subsubsection{Reply-Kernel Half-Life}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/survival_curve_reddit.png}
-\caption{Kaplan--Meier survival curve and fitted exponential-kernel hazard model for the Reddit run.}
-\label{fig:survival-curve-reddit}
-\end{figure}
-
-The primary survival sample includes 9,547 at-risk comments (candidate parents) (3,456 events; 6,091 censored),
-after excluding 329 parents within the 4-hour right-boundary window. The exponential estimate
-gives a reply-kernel half-life of 2.61 hours (95\% CI: [2.29, 2.95]). A no-boundary
-sensitivity estimate is similar at 2.58 hours. The observed direct-reply probability is
-36.20\% (3,456/9,547), with implied eventual probability 38.70\% under the fitted
-exponential-kernel hazard model.
-
-\subsubsection{Periodicity}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/psd_reddit.png}
-\caption{Power spectral density of aggregate Reddit comment activity in the run window.}
-\label{fig:psd-reddit}
-\end{figure}
-
-Spectral analysis finds a dominant frequency of 0.031 hr\(^{-1}\), corresponding to a
-32-hour period. For the 4-hour target frequency test, AR(1)-calibrated target-power
-\(p=0.685\). Fisher's \(g\) test yields \(p<0.001\) (0/2000 exceedances), indicating
-detectable periodic structure at some frequency but not specifically at 4 hours under this
-test.
-
-\subsubsection{Run-Scoped Caveats}
-
-Two upstream caveats from collection and curation are carried into interpretation:
-1,570 comments were dropped during curation due to missing submission IDs, and
-the request log includes 2 non-200/error responses. These caveats do not
-invalidate the run, but they bound claims to the curated, observed corpus.
-
-\subsection{Cross-Platform Comparison}
+\subsubsection{Coarse Matched Cross-Platform Context}
 \label{sec:results:comparison}
 
-This section is secondary contextual evidence on overlap support rather than a
-core causal identification pillar. Under deterministic coarse matching
-(\Cref{sec:methods:comparison}), 813 pairs are formed, and all paired outcome
-differences in \Cref{tab:cross-platform-paired-effects} are negative for
-Moltbook relative to Reddit; all two-sided Wilcoxon signed-rank tests reject at
-conventional levels (\(p < 10^{-8}\)). The re-entry contrast remains negative
-in matched support even though the full-sample descriptive contrast is positive.
-Sample-flow accounting, balance diagnostics, paired-effect visualization, and
-matched-subset half-life details are reported in
+The matched comparison is used only as non-causal overlap-region context.
+Under deterministic coarse matching (\Cref{sec:methods:comparison}), 813 pairs
+are formed; paired means are lower for Moltbook across comments per thread,
+depth, unique participants, thread duration, and re-entry
+(\Cref{tab:cross-platform-paired-effects}), and all two-sided Wilcoxon
+signed-rank tests reject at conventional levels (\(p < 10^{-8}\)). Because only
+2.34\% of Moltbook threads appear in the matched sample, this readout should
+not be interpreted as a platform-wide causal effect. Flow accounting, balance
+diagnostics, paired plots, and matched-subset half-life details are reported in
 \Cref{sec:appendix:comparison-details,sec:appendix:balance,sec:appendix:match-halflife}.
-
-\begin{table}[t]
-\centering
-\caption{Paired cross-platform outcome differences in the matched sample
-(Moltbook minus Reddit).}
-\label{tab:cross-platform-paired-effects}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
-\textbf{Outcome} & \textbf{\(n\) pairs} & \textbf{Moltbook mean} & \textbf{Reddit mean} & \textbf{Mean diff [95\% CI]} \\
-\midrule
-Comments per thread & 813 & 2.34 & 10.0 & \(-7.70\) [\(-9.43\), \(-6.06\)] \\
-Maximum depth & 813 & 1.02 & 2.21 & \(-1.19\) [\(-1.34\), \(-1.04\)] \\
-Unique participants & 813 & 2.04 & 7.05 & \(-5.01\) [\(-6.10\), \(-4.00\)] \\
-Thread duration (hours) & 813 & 0.051 & 8.66 & \(-8.61\) [\(-10.0\), \(-7.34\)] \\
-Re-entry rate & 792 & 0.056 & 0.096 & \(-0.040\) [\(-0.054\), \(-0.027\)] \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
@@ -409,15 +324,14 @@ specification yields a very short reply-kernel half-life of 0.013 hours
 (0.80 minutes; 95\% CI: [0.53, 1.13] minutes), alongside a two-regime reply
 pattern in which observed direct-reply incidence is 9.00\% on Moltbook versus
 36.20\% on Reddit and conditional timing differs by orders of magnitude.
-Although power at the 4-hour target frequency is elevated relative to
-background (median power outside the \(\pm0.03\) hr\(^{-1}\) target neighborhood),
-AR(1)-based tests remain non-significant across 5/15/30-minute
-binning choices.
-Taken together, these results jointly evaluate the model-prediction bundle
-(reply-kernel timescale, depth-tail behavior, branching concentration,
-reciprocity/re-entry, and periodic signatures), giving an internally consistent
-first-pass empirical readout of horizon-limited cascade dynamics in this early
-Moltbook window.
+Consistency checks show that the branching approximation reproduces observed
+mean thread size and that model-implied eventual reply probabilities are close
+to observed incidence, while conditional timing remains substantially faster
+than exponential-kernel prediction. Periodicity and cross-platform matching are
+secondary: 4-hour periodicity is not detected under AR(1)-calibrated tests, and
+matched cross-platform contrasts are overlap-region, non-causal context.
+Taken together, the core empirical spine supports a ``fast response or
+silence'' persistence regime in this early Moltbook window.
 
 \subsubsection{H1a Readout (Short Hazard Half-Life)}
 \label{sec:results:h1a}
