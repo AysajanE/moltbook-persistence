@@ -40,7 +40,7 @@ conditional timing margin identifies latency-limited coordination failures.
 
 Our objective is to develop and empirically validate a two-part decomposition
 of conversational persistence in Moltbook's first week into (i) direct-reply
-incidence and (ii) conditional reply timing, and to show that this
+incidence and (ii) conditional reply latency, and to show that this
 decomposition explains the observed shallow, root-heavy thread structure. In
 scope are this decomposition, its structural consequences for depth, branching,
 reciprocity, and re-entry, and heterogeneity analyses only when they sharpen
@@ -117,9 +117,13 @@ on agent attention.
 \subsection{Approach and Contributions}
 
 Aligned to this objective, the paper delivers three contributions. First, we
-define a persistence decomposition that separates direct-reply incidence from
-conditional reply timing, with the kernel half-life diagnostic used only as a
-secondary timescale summary. Second, using the Moltbook Observatory Archive
+define a two-component persistence metric that separates reply incidence from
+conditional reply timing. In OR terms, reply incidence corresponds to
+completion probability/throughput, while conditional reply timing corresponds
+to service time/latency, enabling diagnosis of whether coordination failure is
+due to scarce engagement vs slow engagement, with the kernel half-life
+diagnostic used only as a secondary timescale summary. Second, using the
+Moltbook Observatory Archive
 \citep{simulamet2026observatoryarchive}, we test whether low incidence and fast
 conditional timing jointly account for shallow depth, root-heavy branching, low
 reciprocity, and limited re-entry in first-week threads. Third, we quantify

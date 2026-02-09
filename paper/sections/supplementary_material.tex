@@ -27,18 +27,25 @@ Conditional on an event at time \(t\), parent assignment follows competing risks
 This is the formal construction deferred from the main manuscript section
 ``Framework and Estimands.''
 
-\paragraph{S0.2 Deferred proposition statements.}
-\textbf{Influence--persistence trade-off.} Under nonnegative availability,
+\paragraph{S0.2 Deferred formal statements.}
+
+\paragraph{S0.2.1 Influence--persistence trade-off (formal statement).}
+\label{supp:s0-tradeoff}
+Under nonnegative availability,
 \(\mu_i(s)=\int_0^\infty b(s+u)\alpha_i e^{-\beta_i u}\,du\) is increasing in
 \(\alpha_i\) and decreasing in \(\beta_i\).
 
-\textbf{Root-special expected thread size.} With root offspring mean \(\mu_0\),
+\paragraph{S0.2.2 Root-special expected thread size (formal statement).}
+\label{supp:s0-thread-size}
+With root offspring mean \(\mu_0\),
 non-root offspring mean \(\mu<1\), and standard independence assumptions,
 \[
 \mathbb{E}[N_j]=\frac{\mu_0}{1-\mu}.
 \]
 
-\textbf{Periodic mean-intensity detectability.} If
+\paragraph{S0.2.3 Periodic mean-intensity detectability (formal statement).}
+\label{supp:s0-periodicity}
+If
 \(\lambda(t)=b(t)g(t)\), \(b(t)\) is \(\tau\)-periodic, and \(\mathbb{E}[g(t)]\) is
 \(\tau\)-periodic (or approximately constant on the \(\tau\)-scale), then
 \(\mathbb{E}[\lambda(t)]\) is \(\tau\)-periodic and long-window binned-count spectra
@@ -46,7 +53,8 @@ exhibit mass near \(\ell/\tau\), up to finite-window and leakage effects.
 
 \subsection*{S1. Full Proofs}
 
-\paragraph{S1.1 Proof of influence--persistence trade-off proposition.}
+\paragraph{S1.1 Proof of S0.2.1 (influence--persistence trade-off).}
+\label{supp:s1-tradeoff}
 For fixed \(s\), use
 \[
 \mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
@@ -64,7 +72,8 @@ and
 Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
 decreasing in \(\beta_i\).
 
-\paragraph{S1.2 Proof of expected thread-size proposition.}
+\paragraph{S1.2 Proof of S0.2.2 (root-special expected thread size).}
+\label{supp:s1-thread-size}
 Let \(X_0\) denote depth-1 comments from the root, with \(\mathbb{E}[X_0]=\mu_0\).
 Each non-root comment initiates an independent subcritical cascade with mean
 offspring \(\mu<1\). Expected non-root comments in generation \(k\) beyond depth 1
@@ -73,7 +82,8 @@ are \(\mu_0\mu^k\), \(k\ge0\). Therefore
 \mathbb{E}[N_j]=\sum_{k=0}^{\infty}\mu_0\mu^k=\frac{\mu_0}{1-\mu}.
 \]
 
-\paragraph{S1.3 Proof of periodicity proposition.}
+\paragraph{S1.3 Proof of S0.2.3 (periodic mean-intensity detectability).}
+\label{supp:s1-periodicity}
 Under assumptions, mean intensity is
 \[
 m(t):=\mathbb{E}[\lambda(t)]=\mathbb{E}[b(t)g(t)]=b(t)\mathbb{E}[g(t)].
