@@ -33,3 +33,15 @@ Keep this file short and pragmatic: record decisions that prevent rework.
 - **arXiv packaging workflow:** build source bundles via
   `scripts/build_arxiv_bundle.py` (`make arxiv-bundle`) to produce timestamped
   tarballs under `outputs/arxiv/` with optional compile checks.
+
+## 2026-02-09
+
+- **Live Moltbook campaign operations:** run API collection in daily chunks using
+  `scripts/run_moltbook_live_campaign.py` to avoid single long-process fragility,
+  produce per-day manifests, and preserve reproducibility.
+- **Storage policy for live collection:** keep feed cadence/limit unchanged
+  (60-second hot/new, limit 100) and apply lossless gzip compression to raw JSON
+  after curation/validation to reduce disk usage without changing data fidelity.
+- **Comment pulse option:** when deeper re-entry traces are needed, enable
+  periodic comment polling (`comment-poll-every-rounds`, `comment-poll-top-k`)
+  in `scripts/run_moltbook_live_campaign.py`; keep feed cadence unchanged.

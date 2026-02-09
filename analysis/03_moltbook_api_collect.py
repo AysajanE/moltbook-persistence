@@ -302,6 +302,24 @@ def parse_args() -> argparse.Namespace:
         help="Max number of posts to fetch comment threads for (/posts/:id/comments).",
     )
     parser.add_argument(
+        "--comment-poll-every-rounds",
+        type=int,
+        default=0,
+        help=(
+            "If >0, poll /posts/:id/comments periodically every N snapshot rounds using "
+            "--comment-poll-top-k top posts from that round."
+        ),
+    )
+    parser.add_argument(
+        "--comment-poll-top-k",
+        type=int,
+        default=0,
+        help=(
+            "If >0 with --comment-poll-every-rounds, number of top posts per poll "
+            "for /posts/:id/comments."
+        ),
+    )
+    parser.add_argument(
         "--include-submolts",
         action="store_true",
         help="If set, also fetch /submolts (GET only).",
@@ -335,6 +353,16 @@ def main() -> None:
     if unknown_sorts:
         raise SystemExit(f"Unknown sort(s): {unknown_sorts}. Allowed: {sorted(ALLOWED_SORTS)}")
 
+    comment_poll_every_rounds = int(args.comment_poll_every_rounds)
+    comment_poll_top_k = int(args.comment_poll_top_k)
+    if comment_poll_every_rounds < 0 or comment_poll_top_k < 0:
+        raise SystemExit("--comment-poll-every-rounds and --comment-poll-top-k must be >= 0.")
+    if (comment_poll_every_rounds == 0) != (comment_poll_top_k == 0):
+        raise SystemExit(
+            "Both --comment-poll-every-rounds and --comment-poll-top-k must be set together "
+            "(both zero to disable, both >0 to enable)."
+        )
+
     request_log_path = out_root / date / "request_log" / f"{attempt_id}.jsonl"
 
     api_key = os.getenv("MOLTBOOK_API_KEY")
@@ -358,6 +386,11 @@ def main() -> None:
     fallback_to_stub = False
 
     collected_posts: list[dict[str, Any]] = []
+
+    def _sort_key(p: dict[str, Any]) -> tuple[int, str]:
+        cc = p.get("comment_count")
+        cc_int = cc if isinstance(cc, int) else (-1 if cc is None else int(cc))
+        return (cc_int, str(p.get("post_id")))
 
     def _log_request(
         *,
@@ -476,6 +509,7 @@ def main() -> None:
 
     # 1) Feed snapshots
     for snapshot_index in range(int(args.snapshots)):
+        round_posts: list[dict[str, Any]] = []
         for sort in sorts:
             payload = _request_json(
                 mode=effective_mode,
@@ -491,12 +525,40 @@ def main() -> None:
                 pid = _extract_post_id(post)
                 if pid is None:
                     continue
-                collected_posts.append(
-                    {
-                        "post_id": pid,
-                        "comment_count": _extract_comment_count(post),
-                    }
-                )
+                post_item = {
+                    "post_id": pid,
+                    "comment_count": _extract_comment_count(post),
+                }
+                collected_posts.append(post_item)
+                round_posts.append(post_item)
+
+        if comment_poll_every_rounds > 0 and comment_poll_top_k > 0:
+            round_number = snapshot_index + 1
+            if round_number % comment_poll_every_rounds == 0:
+                seen_round: set[str] = set()
+                unique_round_posts: list[dict[str, Any]] = []
+                for p in round_posts:
+                    pid = str(p["post_id"])
+                    if pid in seen_round:
+                        continue
+                    seen_round.add(pid)
+                    unique_round_posts.append(p)
+                round_top_post_ids = [
+                    p["post_id"]
+                    for p in sorted(unique_round_posts, key=_sort_key, reverse=True)[
+                        :comment_poll_top_k
+                    ]
+                ]
+                for pid in round_top_post_ids:
+                    _request_json(
+                        mode=effective_mode,
+                        endpoint=f"/posts/{pid}/comments",
+                        params={"sort": "new"},
+                        out_dir_name="posts_comments",
+                        file_suffix=f"__post_id={pid}__sort=new__round={round_number:06d}",
+                        stub_payload=_stub_comments_payload(post_id=pid, date=date),
+                    )
+
         if snapshot_index < int(args.snapshots) - 1:
             time.sleep(int(args.interval_seconds))
 
@@ -511,11 +573,6 @@ def main() -> None:
             continue
         seen.add(pid)
         unique_posts.append(p)
-
-    def _sort_key(p: dict[str, Any]) -> tuple[int, str]:
-        cc = p.get("comment_count")
-        cc_int = cc if isinstance(cc, int) else (-1 if cc is None else int(cc))
-        return (cc_int, str(p.get("post_id")))
 
     unique_posts_sorted = sorted(unique_posts, key=_sort_key, reverse=True)
     post_ids_for_details = [p["post_id"] for p in unique_posts_sorted[: int(args.max_post_details)]]
@@ -565,6 +622,8 @@ def main() -> None:
                 "mode_requested": args.mode,
                 "mode_initial": initial_mode,
                 "mode_effective": ("stub" if fallback_to_stub else effective_mode),
+                "comment_poll_every_rounds": comment_poll_every_rounds,
+                "comment_poll_top_k": comment_poll_top_k,
                 "request_log_path": str(request_log_path),
             },
             indent=2,

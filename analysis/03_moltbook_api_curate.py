@@ -12,6 +12,53 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.dataset as ds
 
+FEED_COLUMNS = [
+    "run_id",
+    "dt",
+    "snapshot_time_raw",
+    "sort",
+    "limit",
+    "rank",
+    "post_id",
+    "post_created_at_raw",
+    "score",
+    "comment_count",
+    "submolt_name",
+    "author_id",
+    "author_name",
+    "synthetic",
+]
+POST_COLUMNS = [
+    "run_id",
+    "dt",
+    "retrieved_at_raw",
+    "post_id",
+    "created_at_raw",
+    "title",
+    "url",
+    "score",
+    "comment_count",
+    "submolt_name",
+    "author_id",
+    "author_name",
+    "synthetic",
+]
+COMMENT_COLUMNS = [
+    "post_id",
+    "comment_id",
+    "parent_id",
+    "author_id",
+    "author_name",
+    "created_at_raw",
+    "score",
+    "depth",
+    "run_id",
+    "dt",
+    "retrieved_at_raw",
+    "comment_sort",
+    "synthetic",
+]
+
 
 def _utc_now_iso() -> str:
     return datetime.now(UTC).isoformat()
@@ -114,6 +161,14 @@ def _extract_author_fields(obj: dict[str, Any]) -> tuple[str | None, str | None]
     if isinstance(author, str):
         return None, author
     return None, None
+
+
+def _ensure_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    out = df.copy()
+    for col in columns:
+        if col not in out.columns:
+            out[col] = pd.NA
+    return out.loc[:, columns]
 
 
 def _extract_submolt_name(obj: dict[str, Any]) -> str | None:
@@ -326,9 +381,9 @@ def main() -> None:
             )
 
     # Convert to DataFrames and parse timestamps
-    feed_df = pd.DataFrame(feed_rows)
-    posts_df = pd.DataFrame(post_rows)
-    comments_df = pd.DataFrame(comment_rows)
+    feed_df = _ensure_columns(pd.DataFrame(feed_rows), FEED_COLUMNS)
+    posts_df = _ensure_columns(pd.DataFrame(post_rows), POST_COLUMNS)
+    comments_df = _ensure_columns(pd.DataFrame(comment_rows), COMMENT_COLUMNS)
 
     ts_stats: dict[str, Any] = {"feed_snapshots": {}, "posts": {}, "comments": {}}
 
@@ -367,8 +422,20 @@ def main() -> None:
     outputs: dict[str, dict[str, Any]] = {}
     for name, df in [("feed_snapshots", feed_df), ("posts", posts_df), ("comments", comments_df)]:
         out_dir = out_root / name
-        _ensure_no_overwrite(out_dir, run_id=run_id)
         out_dir.mkdir(parents=True, exist_ok=True)
+
+        if df.empty:
+            outputs[name] = {
+                "rows": 0,
+                "columns": list(df.columns),
+                "out_dir": str(out_dir),
+                "partitioning": "hive(run_id=.../dt=YYYY-MM-DD)",
+                "written": False,
+                "reason": "empty_table",
+            }
+            continue
+
+        _ensure_no_overwrite(out_dir, run_id=run_id)
 
         table = pa.Table.from_pandas(df, preserve_index=False)
         ds.write_dataset(
@@ -385,6 +452,7 @@ def main() -> None:
             "columns": list(df.columns),
             "out_dir": str(out_dir),
             "partitioning": "hive(run_id=.../dt=YYYY-MM-DD)",
+            "written": True,
         }
 
     manifest: dict[str, Any] = {

@@ -39,11 +39,17 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def _read_dataset(curated_root: Path, subset: str) -> pd.DataFrame:
-    dataset = ds.dataset(
-        str(curated_root / subset),
-        format="parquet",
-        partitioning="hive",
-    )
+    subset_root = curated_root / subset
+    if not subset_root.exists():
+        return pd.DataFrame()
+    try:
+        dataset = ds.dataset(
+            str(subset_root),
+            format="parquet",
+            partitioning="hive",
+        )
+    except Exception:  # noqa: BLE001
+        return pd.DataFrame()
     return dataset.to_table().to_pandas()
 
 
