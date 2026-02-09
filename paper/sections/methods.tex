@@ -3,8 +3,8 @@
 
 Estimands are defined in \Cref{sec:model:estimands}. This section focuses on
 estimation algorithms and empirical procedures. Low-level operational settings
-(binning, detrending, bootstrap mechanics, and matching construction) are
-reported in \Cref{sec:appendix:operational-details}.
+(binning, detrending, and bootstrap mechanics) are documented in supplementary
+material.
 
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
@@ -28,7 +28,7 @@ Reciprocity is measured from directed dyads within threads as the fraction of
 dyads with bidirectional replies, and reciprocal-chain length is defined as the
 maximal alternating exchange between two agents. Re-entry is measured by
 \(\mathrm{RE}_j\) in \cref{eq:reentry-rate}. Missing-author-identifier handling rules
-are deterministic and documented in \Cref{sec:appendix:operational-details}.
+are deterministic.
 
 \subsection{Two-Part Reply Dynamics Estimation}
 \label{sec:methods:two-part}
@@ -104,7 +104,7 @@ category and claim status, plus one-parent-per-thread sensitivity readouts to
 bound within-thread clustering effects.
 
 Uncertainty is quantified with thread-cluster bootstrap confidence intervals
-using fixed deterministic resampling settings (\Cref{sec:appendix:operational-details}).
+using fixed deterministic resampling settings.
 
 \subsection{Periodicity Detection}
 \label{sec:methods:periodicity}
@@ -125,33 +125,17 @@ same Monte Carlo calibration procedure. We then report
 minimum concentration amplitude detectable with at least 80\% power under this
 window length and event count.
 
-PSD/AR(1) and bin-width diagnostics are retained as supplementary checks
-(\Cref{sec:appendix:periodicity-robustness}) rather than primary inferential
-tests in the main manuscript.
+PSD/AR(1) and bin-width diagnostics are retained as supplementary checks rather
+than primary inferential tests in the main manuscript.
 
-\subsection{Cross-Platform Comparison}
+\subsection{Reddit Baseline Context}
 \label{sec:methods:comparison}
 
-To contextualize Moltbook against a human-platform baseline, we run a coarse
-matched observational comparison with Reddit threads.
-
-Matching uses coarsened exact strata on early engagement, coarse topic, and UTC
-posting hour, then deterministic one-to-one pairing within shared strata.
-Exact strata definitions and pairing rules are documented in
-\Cref{sec:appendix:operational-details}.
-
-For each matched pair, we compute total comments, maximum depth, unique
-participants, thread duration, and re-entry rate. Kernel half-life diagnostics are
-also estimated on matched-thread subsets for each platform (platform-level
-estimation, not thread-level paired survival effects).
-
-Inference uses two-sided Wilcoxon signed-rank tests on paired differences,
-paired Cohen's \(d\), and bootstrap 95\% confidence intervals for mean paired
-differences. Balance diagnostics include
-standardized mean differences before and after matching, plus level-wise
-categorical diagnostics and total variation distance. Resampling mechanics are
-reported in \Cref{sec:appendix:operational-details}.
+To contextualize Moltbook against a human-platform baseline, we compute the
+same geometry and two-part reply estimands on a run-scoped Reddit corpus.
+Baseline comparisons are descriptive, non-causal, and reported only as
+secondary context in the main manuscript.
 
 All analyses are run in Python with fixed seeds and deterministic preprocessing;
-manuscript-level reproducibility metadata are provided in
-\Cref{sec:reproducibility}.
+reproducibility and data-availability details are provided in the required
+manuscript statements.

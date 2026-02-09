@@ -3,11 +3,9 @@
 
 This section adopts an estimands-first framework for conversation persistence in
 agent social networks. The main text keeps only the measurement targets and
-structural definitions used in the empirical analysis, plus one quantitative
-result used directly in \Cref{sec:results:consistency}. Full continuous-time
-intensity formalism, competing-risks parent-selection details, and all other
-formal statements/proofs are deferred to supplementary material
-(\Cref{sec:model:formal-deferred}).
+structural definitions used in the empirical analysis. Full continuous-time
+intensity formalism, competing-risks parent-selection details, and formal
+statements/proofs are deferred to supplementary material.
 
 \subsection{Scope and Mechanism Interpretation}
 \label{sec:model:scope}
@@ -128,39 +126,3 @@ reciprocity \(\mathrm{R}_j\), and re-entry \(\mathrm{RE}_j\).
 kernel half-life diagnostic \(h=\ln 2/\beta\), interpreted as secondary to
 incidence and conditional timing.
 \end{itemize}
-
-\subsection{Deferred Formal Model and Implications}
-\label{sec:model:formal-deferred}
-
-The following formal components are intentionally moved out of the main text to
-keep this section estimands-first: (i) full continuous-time intensity
-specification, (ii) competing-risks parent-selection equations, and
-(iii) deferred formal statements and proofs. These appear in supplementary
-material (Sections S0--S1).
-
-\begin{proposition}[Root-special expected thread size]
-\label{prop:thread-size}
-With root offspring mean \(\mu_0\), non-root offspring mean \(\mu<1\), and
-standard independence assumptions,
-\[
-\E[N_j]=\frac{\mu_0}{1-\mu}.
-\]
-\end{proposition}
-This is the only formal result retained in the main text because it is used
-quantitatively in \Cref{sec:results:consistency}. The full proof is in
-supplementary Section S1.2.
-
-\noindent\textbf{Implication (influence--persistence trade-off).}
-Higher effective participation amplitude \(\alpha_i\) increases expected
-direct-reply opportunity, while faster staleness decay \(\beta_i\) reduces it.
-Formal statement and proof are deferred to supplementary Sections S0.2.1 and
-S1.1.
-
-\noindent\textbf{Implication (periodic mean-intensity detectability).}
-If baseline activity and mean excitation share period \(\tau\), expected
-intensity inherits \(\tau\)-periodicity and binned-count spectra can
-concentrate near harmonics \(\ell/\tau\), up to finite-window effects. Formal
-statement and proof are deferred to supplementary Sections S0.2.3 and S1.3.
-
-Richer heterogeneity and visibility-weighted extensions used for future
-estimation are documented in \Cref{sec:model:extensions}.

@@ -1,11 +1,13 @@
-\section*{Supplementary Material: Extended Technical Details}
+\section*{Supplementary Material: Deferred Appendices and Extended Technical Details}
 
-This supplementary file contains extended material that supports the main
-manuscript: full proofs, expanded categorization triggers, periodicity
-robustness artifacts, and detailed cross-platform matching
-diagnostics.
+This supplementary file is the full home for technical/deferred Appendix A/B
+content from the main manuscript: formal derivations, periodicity
+detectability details, matching diagnostics/mechanics, robustness tables moved
+from main, and reproducibility/data-availability details.
 
-\subsection*{S0. Deferred Main-Text Formalism}
+\subsection*{S0. Deferred Main-Text Formalism and Proof Targets}
+\label{sec:appendix}
+\label{sec:appendix:proofs}
 
 \paragraph{S0.1 Full intensity and competing-risks parent selection.}
 For thread \(j\), let \(\mathcal{H}_j(t)\) denote history up to \(t\). For an
@@ -31,12 +33,14 @@ This is the formal construction deferred from the main manuscript section
 
 \paragraph{S0.2.1 Influence--persistence trade-off (formal statement).}
 \label{supp:s0-tradeoff}
+\label{app:proof-tradeoff}
 Under nonnegative availability,
 \(\mu_i(s)=\int_0^\infty b(s+u)\alpha_i e^{-\beta_i u}\,du\) is increasing in
 \(\alpha_i\) and decreasing in \(\beta_i\).
 
 \paragraph{S0.2.2 Root-special expected thread size (formal statement).}
 \label{supp:s0-thread-size}
+\label{app:proof-thread-size}
 With root offspring mean \(\mu_0\),
 non-root offspring mean \(\mu<1\), and standard independence assumptions,
 \[
@@ -45,11 +49,18 @@ non-root offspring mean \(\mu<1\), and standard independence assumptions,
 
 \paragraph{S0.2.3 Periodic mean-intensity detectability (formal statement).}
 \label{supp:s0-periodicity}
+\label{app:proof-periodicity}
 If
 \(\lambda(t)=b(t)g(t)\), \(b(t)\) is \(\tau\)-periodic, and \(\mathbb{E}[g(t)]\) is
 \(\tau\)-periodic (or approximately constant on the \(\tau\)-scale), then
 \(\mathbb{E}[\lambda(t)]\) is \(\tau\)-periodic and long-window binned-count spectra
 exhibit mass near \(\ell/\tau\), up to finite-window and leakage effects.
+
+\paragraph{S0.3 Deferred model extensions for future estimation.}
+\label{sec:model:extensions}
+Richer extensions (hierarchical random effects, re-entry self-excitation, and
+visibility-weighted parent assignment) are deferred from the main paper and are
+not used for identification in this first-week snapshot.
 
 \subsection*{S1. Full Proofs}
 
@@ -97,11 +108,13 @@ so expected discrete-time counts inherit periodic structure and produce elevated
 periodogram/PSD mass near harmonics \(\ell/\tau\), up to finite-window leakage.
 
 \subsection*{S2. Submolt Keyword Triggers (Expanded)}
+\label{sec:appendix:submolts}
 
 \begin{table}[h]
 \centering
 \caption{Representative keyword triggers per submolt category. Categories are
 applied in priority order (Spam first).}
+\label{tab:submolt-examples}
 \small
 \begin{tabular}{@{}lp{9cm}@{}}
 \toprule
@@ -117,32 +130,77 @@ Other & (default: no keyword match) \\
 \end{tabular}
 \end{table}
 
-\subsection*{S3. Periodicity Robustness Beyond Main Test}
+\subsection*{S3. Periodicity Robustness and Detectability Mechanics}
+\label{sec:appendix:periodicity-robustness}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/periodicity_bin_robustness_moltbook.png}
 \caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
+\label{fig:supp-periodicity-bin-robustness}
 \end{figure}
 
-On the longest contiguous segment (\(N=220{,}461\) events), event-time
-modulo-4-hour testing gives resultant length \(r=0.0308\),
-\(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and mean phase 153.2 minutes.
-Detectability simulations (50,000 reps) show near-nominal null size at
-\(\kappa=0\) (power \(=0.0496\)) and power \(=1.0\) by \(\kappa=0.2\), with
-80\% power crossing at \(\kappa=0.2\).
+\paragraph{S3.1 Event-time modulo-\(4\)-hour test and detectability setup.}
+Periodicity is evaluated on the longest contiguous segment only (segment index
+1; 63.5175 hours; \(N=220{,}461\) events; window
+2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; gap-threshold setting 6 hours).
+Event-time modulo-4-hour testing gives resultant length \(r=0.0308\),
+\(Z=209.57\), Monte Carlo \(p=5\times10^{-6}\), and mean phase 153.2 minutes.
+The null calibration uses 200,000 Monte Carlo draws at \(\alpha=0.05\), giving
+critical \(Z=2.9940\).
 
+\begin{table}[h]
+\centering
+\caption{Detectability simulation mechanics and provenance for the Moltbook
+periodicity test. Source tables:
+\texttt{paper/tables/moltbook\_periodicity\_event\_time\_test.csv} and
+\texttt{paper/tables/moltbook\_periodicity\_detectability\_power.csv}.}
+\label{tab:supp-periodicity-detectability}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Component} & \textbf{Value} \\
+\midrule
+Target period \(\tau\) & 4.0 hours \\
+Segment event count & 220,461 \\
+Segment duration & 63.5175 hours \\
+Null Monte Carlo reps (Rayleigh) & 200,000 \\
+Power simulation method & noncentral\_chi\_square\_monte\_carlo \\
+\(\kappa\) grid & 0.0, 0.2, \ldots, 3.0 \\
+Power reps per \(\kappa\) & 50,000 \\
+Seed & 20260208 \\
+Estimated null size at \(\kappa=0\) & 0.04964 \\
+Estimated 80\% power threshold \(\kappa^\star\) & 0.2 \\
+Estimated power at \(\kappa=0.2\) & 1.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The simulation stores mean resultant-length mapping
+\(\rho=I_1(\kappa)/I_0(\kappa)\); for example, \(\rho=0.0995\) at
+\(\kappa=0.2\). This section is the detailed detectability record deferred from
+main text.
+
+\paragraph{S3.2 PSD robustness.}
 Supplementary PSD robustness for the 4-hour target frequency yields AR(1)-
 calibrated \(p\)-values 0.508 (5-minute bins), 0.501 (15-minute bins), and
 0.556 (30-minute bins).
 
-\subsection*{S4. Cross-Platform Matching Diagnostics (Expanded)}
+\paragraph{S3.3 Reddit baseline supplementary diagnostics.}
+\label{sec:appendix:reddit-details}
+Under the same estimators, Reddit shows deeper threads (mean maximum depth
+2.17), higher direct-reply incidence (36.2\%), and longer kernel half-life
+diagnostic values (2.61 hours; 95\% CI: [2.29, 2.95]) than Moltbook.
+
+\subsection*{S4. Cross-Platform Matching Diagnostics and Mechanics}
+\label{sec:appendix:comparison-details}
 
 \paragraph{S4.1 Matched-sample flow.}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
 \caption{Matched-sample flow for the coarse cross-platform design.}
+\label{fig:supp-matched-sample-flow}
 \end{figure}
 
 Input includes 34,730 Moltbook threads and 1,104 Reddit threads. Exact-overlap
@@ -156,6 +214,7 @@ Moltbook threads and 888 Reddit threads across 118 shared strata. Deterministic
 \caption{Covariate balance before and after coarsened exact matching.
 SMD = standardized mean difference (absolute value);
 TVD = total variation distance (categorical covariates only).}
+\label{tab:supp-matching-balance}
 \small
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -172,14 +231,36 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \end{tabular}
 \end{table}
 
-\paragraph{S4.3 Matched-subset kernel half-life diagnostic details.}
+\paragraph{S4.3 Matched paired-effects summary.}
+\begin{table}[h]
+\centering
+\caption{Matched paired-effects diagnostics from
+\texttt{paper/tables/cross\_platform\_matched\_paired\_effects.csv}.}
+\label{tab:cross-platform-paired-effects}
+\scriptsize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Outcome} & \textbf{\(n\) pairs} & \textbf{Mean diff. (M-R)} & \textbf{95\% CI} & \textbf{Wilcoxon \(p\)} \\
+\midrule
+Comments per thread & 813 & -7.70 & [-9.43, -6.06] & \(1.43\times10^{-49}\) \\
+Max depth & 813 & -1.19 & [-1.34, -1.04] & \(5.16\times10^{-54}\) \\
+Unique participants & 813 & -5.01 & [-6.10, -4.00] & \(7.62\times10^{-45}\) \\
+Thread duration (hours) & 813 & -8.61 & [-10.00, -7.34] & \(6.50\times10^{-41}\) \\
+Re-entry rate & 792 & -0.040 & [-0.054, -0.027] & \(4.77\times10^{-9}\) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{S4.4 Matched-subset kernel half-life diagnostic details.}
+\label{sec:appendix:match-halflife}
 Restricting survival units to matched threads gives 0.063 hours on Moltbook
 (3.77 minutes; 95\% CI: [1.19, 7.06] minutes; \(n=1{,}841\), 22 events) and
 2.44 hours on Reddit (95\% CI: [2.13, 2.79] hours; \(n=7{,}979\), 2,882
-Events). These are platform-level contextual contrasts, not paired
+events). These are platform-level contextual contrasts, not paired
 thread-level survival effects.
 
 \subsection*{S5. Operational Estimation Settings}
+\label{sec:appendix:operational-details}
 
 \begin{itemize}
 \item Coverage and at-risk rules: each non-root comment is one candidate-parent
@@ -191,15 +272,91 @@ robustness repeats.
 \item Bootstrap mechanics: Moltbook-only and Reddit-only confidence intervals
 use thread-cluster bootstrap with \texttt{bootstrap\_reps=400}; matched paired
 effects use \texttt{bootstrap\_reps=1000}; matched-subset kernel half-life
-diagnostic intervals use
-\texttt{half\_life\_bootstrap\_reps=400}.
+diagnostic intervals use \texttt{half\_life\_bootstrap\_reps=400}.
 \item Matching mechanics: coarsened exact matching uses first-30-minute action
 volume bins, deterministic coarse topic map
 (\texttt{tech}/\texttt{meta}/\texttt{general}/\texttt{spam}), and exact UTC posting hour;
 within each shared stratum, threads are paired deterministically one-to-one.
 \end{itemize}
 
-\subsection*{S6. Full Submolt Uncertainty Table}
+\subsection*{S6. Robustness Tables Relocated from Main Text}
+
+\paragraph{S6.1 Timing fit diagnostic table (moved from main).}
+\begin{table}[h]
+\centering
+\caption{Observed vs.\ fitted timing-model diagnostics for conditional reply
+times and event probability (migrated from main results).}
+\label{tab:timing-model-fit}
+\scriptsize
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Moltbook (seconds)} & \textbf{Observed} & \textbf{Fitted} & \textbf{Residual (fit - obs)} \\
+\midrule
+Event probability (\%) & 9.60 & 9.91 & +0.31 \\
+\(p_{10}\) (s) & 3.67 & 6.00 & +2.33 \\
+\(p_{50}\) (s) & 4.55 & 39.94 & +35.39 \\
+\(p_{90}\) (s) & 50.05 & 134.98 & +84.93 \\
+\midrule
+\textbf{Reddit (seconds; minutes in parentheses)} & \textbf{Observed} & \textbf{Fitted} & \textbf{Residual (fit - obs)} \\
+\midrule
+Event probability (\%) & 36.20 & 38.70 & +2.50 \\
+\(p_{10}\) (s) & 200.00 (3.33 min) & 1138.35 (18.97 min) & +938.35 (+15.64 min) \\
+\(p_{50}\) (s) & 2359.00 (39.32 min) & 7835.63 (130.59 min) & +5476.63 (+91.27 min) \\
+\(p_{90}\) (s) & 33732.50 (562.21 min) & 28141.25 (469.02 min) & -5591.25 (-93.19 min) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{S6.2 Model-observable validation table (moved from main).}
+\begin{table}[h]
+\centering
+\caption{Model-to-observable validation: predicted vs.\ observed incidence,
+non-root branching, and depth tails (overall and key stratifications; migrated
+from main results).}
+\label{tab:model-observable-validation}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+\textbf{Group} & \textbf{Pred. inc. \%} & \textbf{Obs. inc. \%} & \textbf{Pred. branch} & \textbf{Obs. branch} & \textbf{Pred. \(\Pr(D\ge3)\)} & \textbf{Obs. \(\Pr(D\ge3)\)} & \textbf{Pred. \(\Pr(D\ge5)\)} & \textbf{Obs. \(\Pr(D\ge5)\)} \\
+\midrule
+Overall & 9.91 & 9.60 & 0.104 & 0.134 & 0.0109 & 0.0013 & 0.00012 & 0.00001 \\
+Claimed & 20.49 & 19.23 & 0.229 & 0.274 & 0.0526 & 0.0030 & 0.00276 & 0.00000 \\
+Unclaimed & 8.90 & 8.65 & 0.093 & 0.120 & 0.0087 & 0.0012 & 0.00008 & 0.00001 \\
+Builder/Technical & 1.72 & 1.72 & 0.017 & 0.017 & 0.0003 & 0.0001 & 0.00000 & 0.00000 \\
+Creative & 1.62 & 1.62 & 0.016 & 0.016 & 0.0003 & 0.0000 & 0.00000 & 0.00000 \\
+Other & 2.27 & 2.26 & 0.023 & 0.025 & 0.0005 & 0.0001 & 0.00000 & 0.00000 \\
+Philosophy/Meta & 1.81 & 1.80 & 0.018 & 0.018 & 0.0003 & 0.0002 & 0.00000 & 0.00000 \\
+Social/Casual & 11.36 & 10.95 & 0.121 & 0.154 & 0.0145 & 0.0015 & 0.00021 & 0.00001 \\
+Spam/Low-Signal & 0.88 & 0.88 & 0.009 & 0.009 & 0.0001 & 0.0000 & 0.00000 & 0.00000 \\
+\bottomrule
+\end{tabular}
+\par}
+\endgroup
+\end{table}
+
+\paragraph{S6.3 One-parent-per-thread robustness table (moved from main).}
+\begin{table}[h]
+\centering
+\caption{One-parent-per-thread robustness against within-thread clustering
+dependence (migrated from main results).}
+\label{tab:dependence-robustness}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Primary} & \textbf{One-parent/thread} & \textbf{Abs.\ diff.} & \textbf{Rel.\ diff. \%} \\
+\midrule
+Reply incidence \(\Pr(\delta=1)\) & 0.09596 & 0.07213 & 0.02383 & -24.84 \\
+Conditional \(t_{50}\) (s) & 4.55 & 4.51 & 0.04 & -0.93 \\
+Conditional \(t_{90}\) (s) & 50.05 & 41.08 & 8.97 & -17.92 \\
+Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S7. Full Submolt Uncertainty Table}
 
 \begin{table}[h]
 \centering
@@ -228,3 +385,29 @@ Overall & 223,316 & 9.60 [9.44, 9.75] & 4.55 [4.53, 4.58] & 50.05 [39.16, 60.52]
 \par}
 \endgroup
 \end{table}
+
+\subsection*{S8. Data and Code Availability (migrated from main Appendix A)}
+\label{sec:reproducibility}
+
+Code and derived reproducibility artifacts for this manuscript version are
+archived in a Zenodo release (\texttt{eziz2026zenodoejorrepro}). The archive
+contains analysis scripts, manuscript-facing figures/tables, run manifests,
+checksum manifests, and sanitized instance-level derived tables.
+
+The Moltbook source dataset is publicly available on Hugging Face. Raw Reddit
+exports are not redistributed because of platform terms; only IDs/anonymized
+derivatives and aggregate outputs are shared.
+
+\paragraph{Reproducibility recipe (canonical runs).}
+\begin{itemize}
+\item Create the Python 3.11 environment with \texttt{make install}.
+\item Use pinned curated inputs documented in the Zenodo manifest and repository
+\texttt{README.md}.
+\item Re-run the three analysis pipelines with seed \texttt{20260206}.
+\item Verify run manifests for Moltbook-only, Reddit-only, and matched runs.
+\item Confirm manuscript artifact linkage with
+\texttt{MANUSCRIPT\_ARTIFACT\_PROVENANCE.csv}.
+\item Validate release integrity with \texttt{SHA256SUMS.txt}.
+\item Use repository docs for environment and operational details not needed in
+main text.
+\end{itemize}

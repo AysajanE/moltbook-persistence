@@ -45,15 +45,15 @@ decomposition explains the observed shallow, root-heavy thread structure. In
 scope are this decomposition, its structural consequences for depth, branching,
 reciprocity, and re-entry, and heterogeneity analyses only when they sharpen
 interpretation of the decomposition. Out of scope are dedicated thread-duration
-inference, cross-platform matching, and detailed periodicity machinery as
+inference, cross-platform baseline-comparison mechanics, and detailed periodicity machinery as
 primary claims; thread duration is reported only as an ancillary
-descriptive/contextual metric, and matching/periodicity are treated as
+descriptive/contextual metric, and Reddit baseline context/periodicity are treated as
 secondary contextual or supplementary analyses.
 
 \paragraph{Identification scope.}
 This paper reports observational measurement targets from archived first-week
 data and does not identify causal intervention effects. Periodicity and
-cross-platform matching are contextual checks rather than primary
+cross-platform baseline comparisons are contextual checks rather than primary
 identification strategies. For heartbeat periodicity, ``not detected in this
 snapshot'' denotes finite-window detectability limits rather than evidence of
 absence.
@@ -73,7 +73,7 @@ dephasing or jitter, aggregate detectability may be weak in finite samples.
 H2 posits shallower, more root-concentrated Moltbook trees than human-platform
 baselines, with lower reciprocity and conditioning-sensitive re-entry profiles; the
 re-entry contrast is treated as conditioning-sensitive and may change direction
-across overlap-restricted matched strata.
+across baseline conditioning sets.
 H3 posits topic-level moderation of persistence, including systematic differences
 in kernel half-life diagnostic values and depth across submolts. H4 posits that
 agent-level covariates
@@ -99,8 +99,8 @@ readout sections.
 \textbf{Hyp.} & \textbf{Measurement target(s)} & \textbf{Section where tested} & \textbf{Key result} \\
 \midrule
 H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and kernel half-life diagnostic \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
-H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity,sec:results:h1b}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
-H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and overlap-restricted matched baseline contrasts. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
+H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
+H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and Reddit baseline contrasts under the same estimators. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
 H3 & Submolt-stratified incidence/timing measurement targets, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:heterogeneity,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
 H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:agent-covariates,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
 \bottomrule
@@ -135,7 +135,7 @@ conditional timing jointly account for shallow depth, root-heavy branching, low
 reciprocity, and limited re-entry in first-week threads. Third, we quantify
 topic- and agent-level heterogeneity only insofar as it clarifies which margin
 of the decomposition drives those structural outcomes; thread-duration
-summaries, cross-platform matching, and detailed periodicity analyses are
+summaries, Reddit baseline context, and detailed periodicity analyses are
 retained as contextual or supplementary material rather than core deliverables.
 
 \subsection{Paper Organization}
@@ -149,6 +149,6 @@ reviews stochastic-process foundations for interaction persistence, then network
 \Cref{sec:discussion} interprets implications, including short downstream design
 considerations. \Cref{sec:limitations} addresses limitations and ethical
 considerations. \Cref{sec:conclusion} concludes with key takeaways and future
-work. \Cref{sec:reproducibility} summarizes reproducibility details (Appendix
-A), and \Cref{sec:appendix} provides supplementary derivations and operational
-details (Appendix B).
+work. Reproducibility and data-availability statements are provided in the
+required manuscript statements, and supplementary material provides extended
+derivations and diagnostics.
