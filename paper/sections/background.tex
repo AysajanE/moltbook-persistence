@@ -1,40 +1,35 @@
 \section{Background and Related Work}
 \label{sec:background}
 
-This section reviews three strands of prior work: stochastic-process
-foundations for service and interaction dynamics, networked conversation
-structure, and agent-platform applications.
+This section is organized around the three literature pillars that map
+directly to the estimands used in \Cref{sec:model}.
 
-\subsection{Stochastic Foundations for Service and Interaction Dynamics}
+\subsection{Operational Pillars Tied to Estimands}
 
-Operations and service-systems models frequently link service dynamics to stochastic-process structure. Self-exciting point processes capture temporal reinforcement \citep{hawkes1971spectra}, survival/hazard models encode time-to-event behavior under censoring \citep{cox1972regression}, and branching-process formulations characterize propagation depth and stability in subcritical regimes \citep{harris1963theory}.
+\textbf{Event-time reinforcement (Hawkes/self-excitation).}
+Self-exciting point processes formalize local reinforcement in event arrivals
+\citep{hawkes1971spectra}. In this paper, this pillar supports the
+availability--staleness interpretation and the secondary
+exponential-equivalent half-life diagnostic.
 
-Recent work applies these tools directly in operations contexts.
-Contact-center interactions have been modeled with Hawkes processes
-\citep{daw2025coproduction}. Queueing models analyze impatience and abandonment
-under constrained capacity \citep{whitt2004efficiency,reed2012hazard,jouini2010online}.
-Coordination models in service operations also connect decentralized staffing
-choices to service-quality outcomes in service systems
-\citep{ren2008callcenter}.
+\textbf{Censored reply-time measurement (survival/hazard).}
+Survival and hazard models provide the standard framework for time-to-event
+data under right censoring \citep{cox1972regression}. This directly underpins
+our two-part persistence decomposition into direct-reply incidence and
+conditional reply timing.
 
-Computational social science contributes complementary diffusion evidence. Response-function and Hawkes-style popularity models on online platforms \citep{crane2008robust,zhao2015seismic,rizoiu2017expecting} motivate our event-time persistence perspective. Relative to that literature, our focus is a measurement framework for incidence, conditional timing, and depth stability under explicit availability and staleness mechanisms.
+\textbf{Cascade structure (branching consequences).}
+Branching-process intuition links persistence to whether cascades remain
+shallow or develop deeper tails \citep{harris1963theory}. This maps to the
+structural readouts used here: depth, branching-by-depth, reciprocity, and
+re-entry.
 
-\subsection{Networked Interaction Structure}
+\subsection{Compact Context: Discussion Networks and Agent Platforms}
 
-Beyond temporal dynamics, researchers have studied the \emph{structural} properties of online discussions. Comment threads form tree structures, and the shape of these trees---their depth, breadth, and branching patterns---reveals how conversations unfold.
-
-\citet{gomez2013structure} modeled discussion cascades using preferential attachment with root bias, showing this captures the tendency for replies to cluster near the original post---a pattern we also observe on Moltbook. \citet{aragon2017thread} studied the impact of conversation threading on social reciprocity, finding that threaded interfaces increase bidirectional exchange and reciprocity. More recently, \citet{meital2024branch} studied branching prediction on Reddit---whether new comments reply to leaf nodes or interior nodes---finding that structural, temporal, and linguistic features all contribute, a question directly relevant to the root-concentrated branching we observe on Moltbook.
-
-\subsection{Agent Platforms as a New Application Domain}
-
-The emergence of LLM-powered agents that interact autonomously with digital environments raises new questions about collective AI behavior. \citet{park2023generative} reported that 25 LLM agents in a controlled sandbox can exhibit social behaviors---forming relationships, initiating conversations, and coordinating events. Moltbook extends this paradigm from a controlled simulation to a deployed platform with over 25{,}000 agents, providing an opportunity to measure LLM agent social dynamics at scale. The Observatory dataset we employ is publicly archived on Hugging Face \citep{simulamet2026observatoryarchive}.
-
-\subsection{Contribution Relative to Prior Work}
-
-Prior work on conversation dynamics focuses primarily on human-populated
-platforms. We extend measurement ideas from operations and service-systems
-research to agent-populated networks by formalizing a two-part persistence
-decomposition (reply incidence and conditional timing), linking estimands to
-availability and staleness mechanisms, and connecting them to depth-tail
-stability diagnostics. The focus is a mechanism-to-measurement mapping for a
-new application domain, not a new stochastic-process class.
+Adjacent work on human online discussions documents root-biased thread
+structure and variation in reciprocity \citep{gomez2013structure,aragon2017thread,meital2024branch}.
+Early multi-agent social simulations and the Moltbook public archive motivate
+the application domain and data source
+\citep{park2023generative,simulamet2026observatoryarchive}. These studies
+provide contextual grounding, while the three pillars above define the
+operational framing used for this paper's methods and results.

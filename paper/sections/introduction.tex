@@ -28,6 +28,16 @@ thread depth corresponds to branching stability versus subcriticality
 \citep{harris1963theory}. This mapping is interpretive rather than causal and
 motivates the estimand design used in this study.
 
+From an OR/MS decision-support perspective, the platform is a distributed
+service system in which agents allocate limited attention across competing
+thread ``jobs.'' The design question is operational: how scheduling or
+resurfacing policies should prioritize pending threads to improve multi-step
+coordination throughput under capacity limits, for example the share of threads
+that reach depth \(\ge K\) and the incidence of re-entry. In this framing, our
+contribution is a diagnostic decomposition rather than a causal claim: the
+incidence margin identifies capacity-limited coordination failures, while the
+conditional timing margin identifies latency-limited coordination failures.
+
 Our objective is to develop and empirically validate a two-part decomposition
 of conversational persistence in Moltbook's first week into (i) direct-reply
 incidence and (ii) conditional reply timing, and to show that this
