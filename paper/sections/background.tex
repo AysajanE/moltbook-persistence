@@ -1,35 +1,85 @@
 \section{Background and Related Work}
 \label{sec:background}
 
-This section is organized around the three literature pillars that map
-directly to the estimands used in \Cref{sec:model}.
+This section positions the paper against prior work that is directly
+operationalized in our empirical design. We organize the review around three
+pillars that map one-to-one to the measurement targets in \Cref{sec:model}:
+event-time reinforcement, censored time-to-reply analysis, and
+branching/cascade structure. We then place agent-populated social platforms as
+the application context.
 
-\subsection{Operational Pillars Tied to Estimands}
+\subsection{Pillar 1: Event-Time Reinforcement and Service Availability}
 
-\textbf{Event-time reinforcement (Hawkes/self-excitation).}
-Self-exciting point processes formalize local reinforcement in event arrivals
-\citep{hawkes1971spectra}. In this paper, this pillar supports the
-availability--staleness interpretation and the secondary
-exponential-equivalent half-life diagnostic.
+Self-exciting point-process models provide a canonical way to represent
+temporal reinforcement: each event raises short-run intensity for subsequent
+events, with decay over time \citep{hawkes1971spectra}. This class has been
+used both in operations-facing settings and in online interaction systems.
+Within service operations, recent work applies Hawkes-style formulations to
+co-production interaction streams \citep{daw2025coproduction}. In computational
+social systems, related models have been used to describe popularity bursts,
+response cascades, and diffusion timing on digital platforms
+\citep{crane2008robust,zhao2015seismic,rizoiu2017expecting}. Across these
+domains, the common mechanism is that recent activity makes near-term follow-up
+activity more likely.
 
-\textbf{Censored reply-time measurement (survival/hazard).}
-Survival and hazard models provide the standard framework for time-to-event
-data under right censoring \citep{cox1972regression}. This directly underpins
-our two-part persistence decomposition into direct-reply incidence and
-conditional reply timing.
+Our use of this pillar is intentionally measurement-first rather than
+model-first. We do not claim that a fully specified Hawkes process is
+identified as the data-generating process for Moltbook. Instead, Hawkes
+intuition motivates how we interpret the availability--staleness mechanism and
+why a recency-sensitive timescale is relevant. This is why the
+exponential-equivalent half-life is treated as a secondary diagnostic summary,
+while the primary estimands remain direct-reply incidence and conditional reply
+timing.
 
-\textbf{Cascade structure (branching consequences).}
-Branching-process intuition links persistence to whether cascades remain
-shallow or develop deeper tails \citep{harris1963theory}. This maps to the
-structural readouts used here: depth, branching-by-depth, reciprocity, and
-re-entry.
+\subsection{Pillar 2: Censored Reply-Time Analysis via Survival and Hazards}
 
-\subsection{Compact Context: Discussion Networks and Agent Platforms}
+Survival and hazard frameworks are the standard statistical foundation for
+time-to-event outcomes under censoring \citep{cox1972regression}. In service
+systems, these tools connect naturally to abandonment and impatience: even when
+potential service opportunities exist, many cases do not complete within the
+observation horizon \citep{whitt2004efficiency,reed2012hazard,jouini2010online}.
+That logic maps directly to reply dynamics in threaded conversations, where
+many parent--child opportunities remain unrealized during finite windows.
 
-Adjacent work on human online discussions documents root-biased thread
-structure and variation in reciprocity \citep{gomez2013structure,aragon2017thread,meital2024branch}.
-Early multi-agent social simulations and the Moltbook public archive motivate
-the application domain and data source
-\citep{park2023generative,simulamet2026observatoryarchive}. These studies
-provide contextual grounding, while the three pillars above define the
-operational framing used for this paper's methods and results.
+This paper therefore adopts a two-part persistence decomposition that is
+consistent with hazard-based reasoning: an incidence margin (whether a direct
+reply occurs) and a conditional timing margin (how fast it occurs when it does).
+The decomposition is designed to separate distinct operational bottlenecks. Low
+incidence indicates scarce engagement capacity on candidate parent comments,
+whereas slower conditional timing indicates latency conditional on engagement.
+This separation is central to our OR diagnosis and to the estimands reported in
+the main results.
+
+\subsection{Pillar 3: Branching/Cascade Structure as Depth Consequences}
+
+Branching-process theory links local reproduction behavior to global cascade
+geometry \citep{harris1963theory}. In subcritical regimes, trees remain shallow
+and mass concentrates near roots; in higher-reproduction regimes, deeper tails
+become more prevalent. This provides the structural bridge from reply-level
+persistence mechanisms to thread-level coordination outcomes.
+
+Empirical discussion-network studies provide concrete structural benchmarks.
+\citet{gomez2013structure} document strong root bias in online discussion
+cascades, \citet{aragon2017thread} relate threaded interfaces to reciprocity,
+and \citet{meital2024branch} show that temporal and structural signals jointly
+shape where replies attach in Reddit trees. We use this strand as context for
+our structural readouts, specifically depth profiles, branching-by-depth,
+reciprocity, and re-entry. In our framework, these are consequences of the
+persistence regime rather than separate primary mechanisms.
+
+\subsection{Application Context and Contribution Boundary}
+
+The rise of LLM-based agent systems makes these measurement questions
+operationally salient in a new domain. Early simulation evidence shows that
+small groups of language-model agents can form relationships and coordinate in
+controlled environments \citep{park2023generative}. Moltbook extends that
+setting to a public, large-scale platform with archived interaction traces
+\citep{simulamet2026observatoryarchive}, enabling direct observation of
+agent-to-agent discussion dynamics.
+
+Relative to prior literature, our contribution is not to introduce a new
+stochastic-process class. Instead, we provide a mechanism-to-measurement
+mapping for an agent-populated service setting: event-time reinforcement
+intuition motivates timing diagnostics, survival logic motivates the two-part
+incidence/timing decomposition under censoring, and branching logic links those
+estimands to depth and coordination limits in observed thread structure.
