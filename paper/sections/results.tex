@@ -5,79 +5,17 @@ We report Moltbook results from the curated Observatory Archive snapshot
 and Reddit full-scale baseline results from the run-scoped curated Reddit
 corpus.
 Reproducibility details are provided in \Cref{sec:reproducibility}.
-We present five results: (1) thread geometry, (2) persistence decomposition
-into incidence versus conditional timing, (3) model-to-data consistency checks,
-(4) periodicity tests as secondary evidence, and (5) Reddit baseline with
-overlap-restricted matching as contextual comparison.
+We organize Results as a three-step pipeline: (1) persistence decomposition
+into incidence versus conditional timing, (2) structural signatures consistent
+with that decomposition, and (3) heterogeneity by topic and claim status.
+Periodicity tests and Reddit matching are retained only as compressed
+secondary context.
 Metric terminology follows the canonical glossary in
 \Cref{sec:methods:def-est}.
 
-\subsection{Result 1: Thread Geometry on Moltbook}
-\label{sec:results:geometry}
 
-\subsubsection{Depth Distribution}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/depth_distribution_moltbook.png}
-\caption{Distribution of maximum thread depth \(D_j\) over Moltbook threads with at least
-one comment (\(N=34{,}730\)); root posts are fixed at depth 0, and in this
-sample \(D_j\) therefore coincides with maximum comment depth.}
-\label{fig:depth-distribution}
-\end{figure}
-
-Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean maximum depth is 1.38
-(95\% bootstrap confidence interval (CI): [1.37, 1.38]), median maximum depth is 1, the proportion reaching depth 5+
-is 0.006\% (95\% bootstrap CI: [0.000\%, 0.014\%]), and the proportion reaching depth 10+
-is 0.000\%.
-
-Fitting a geometric log-tail slope to empirical \(\Prob(D_j \geq k)\) for
-\(k\ge2\), motivated by the bound \(\Prob(D_j \geq k) \leq \mu^k\), gives
-an effective depth-tail slope estimate
-\(\hat{s}_{\mathrm{depth}}=0.154\). We report \(\hat{s}_{\mathrm{depth}}\) as a
-descriptive depth-tail metric (not a directly identified branching ratio);
-under a heuristic branching interpretation, this indicates rapid depth-tail
-decay compatible with a strongly subcritical regime.
-
-\subsubsection{Branching Factor by Depth}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/branching_by_depth_moltbook.png}
-\caption{Mean direct-children count by node depth for Moltbook threads with at
-least one comment; depth 0 is the root post and depths \(\geq 1\) are non-root
-comments.}
-\label{fig:branching-by-depth}
-\end{figure}
-
-\Cref{fig:branching-by-depth} shows strong root concentration. The root receives 5.57 direct
-replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
-respectively. This is the expected star-shaped pattern under rapid branching decay.
-We evaluate the corresponding thread-size consistency implication explicitly in
-Result 3 (\Cref{sec:results:consistency}).
-
-\subsubsection{Reciprocity and Re-Entry}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/reentry_distribution_moltbook.png}
-\caption{Distribution of thread-level re-entry rate
-\(\mathrm{RE}_j^{\mathrm{comment}}\) over Moltbook threads with at least one
-comment; root-post authorship is excluded unless the root author later appears
-in the comment sequence.}
-\label{fig:reentry-distribution}
-\end{figure}
-
-Dyadic reciprocity is low: 1,621 of 162,430 dyads are bidirectional (0.998\%).
-Reciprocal chains are short (median chain length 2; mean 2.09). Thread-level re-entry is also
-limited (\cref{fig:reentry-distribution}), with mean 0.195 and median 0.167.
-Missing-author-identifier sensitivity is small: restricting to threads with complete
-commenter identifiers (34,476 of 34,730 threads; 99.3\%) leaves re-entry and pooled
-dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
-pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
-mean unique participants per thread, from 4.57 to 4.60.
-
-\subsection{Result 2: Two-Part Reply Dynamics (Incidence and Conditional Reply Speed)}
+\subsection{Result 1: Persistence Decomposition (Incidence vs Conditional Timing)}
+\label{sec:results:decomposition}
 \label{sec:results:two-part}
 
 \subsubsection{Overall Two-Part Readout}
@@ -188,42 +126,72 @@ Event probability (\%) & 36.20 & 38.70 & +2.50 \\
 \end{tabular}
 \end{table}
 
-\subsubsection{Stratification by Submolt Category}
-
-\begin{table}[t]
-\centering
-\caption{Submolt stratification for reply incidence and conditional reply speed. Half-life is included as a secondary diagnostic column.}
-\label{tab:submolt-two-part}
-\scriptsize
-\begin{tabular}{@{}lrrrrrr@{}}
-\toprule
-\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Half-life (min)} \\
-\midrule
-Builder/Technical & 8,396 & 1.72 & 1.731 & 7.248 & 18.332 & 2.979 \\
-Creative & 433 & 1.62 & 0.483 & 1.303 & 1.736 & 0.453 \\
-Other & 16,396 & 2.26 & 1.504 & 5.831 & 12.855 & 2.909 \\
-Philosophy/Meta & 5,831 & 1.80 & 1.717 & 47.813 & 62.683 & 7.768 \\
-Social/Casual & 189,765 & 10.95 & 0.075 & 0.414 & 1.776 & 0.593 \\
-Spam/Low-Signal & 2,495 & 0.88 & 1.315 & 4.220 & 4.341 & 1.313 \\
-\midrule
-Overall & 223,316 & 9.60 & 0.076 & 0.834 & 2.204 & 0.691 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The primary stratified pattern is incidence/speed heterogeneity. Social/Casual
-has the highest incidence (10.95\%) and very fast conditional timing
-(\(t_{90}=0.414\) minutes), whereas Builder/Technical and Philosophy/Meta have
-low incidence with materially slower conditional tails.
-
-\subsubsection{Agent Heterogeneity in Incidence and Timing}
-
-Claim-status heterogeneity is reported directly in
-\Cref{tab:reply-dynamics}: claimed accounts have higher incidence and
-materially faster upper-tail conditional timing than unclaimed accounts.
-
-\subsection{Result 3: Model-to-Observable Validation and Dependence Robustness}
+\subsection{Structural Signatures Consistent with Low Incidence / Fast Conditional Response}
+\label{sec:results:structure}
+\label{sec:results:geometry}
 \label{sec:results:consistency}
+
+\subsubsection{Depth Distribution}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/depth_distribution_moltbook.png}
+\caption{Distribution of maximum thread depth \(D_j\) over Moltbook threads with at least
+one comment (\(N=34{,}730\)); root posts are fixed at depth 0, and in this
+sample \(D_j\) therefore coincides with maximum comment depth.}
+\label{fig:depth-distribution}
+\end{figure}
+
+Moltbook conversation trees are shallow (\cref{fig:depth-distribution}): mean maximum depth is 1.38
+(95\% bootstrap confidence interval (CI): [1.37, 1.38]), median maximum depth is 1, the proportion reaching depth 5+
+is 0.006\% (95\% bootstrap CI: [0.000\%, 0.014\%]), and the proportion reaching depth 10+
+is 0.000\%.
+
+Fitting a geometric log-tail slope to empirical \(\Prob(D_j \geq k)\) for
+\(k\ge2\), motivated by the bound \(\Prob(D_j \geq k) \leq \mu^k\), gives
+an effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}}=0.154\). We report \(\hat{s}_{\mathrm{depth}}\) as a
+descriptive depth-tail metric (not a directly identified branching ratio);
+under a heuristic branching interpretation, this indicates rapid depth-tail
+decay compatible with a strongly subcritical regime.
+
+\subsubsection{Branching Factor by Depth}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/branching_by_depth_moltbook.png}
+\caption{Mean direct-children count by node depth for Moltbook threads with at
+least one comment; depth 0 is the root post and depths \(\geq 1\) are non-root
+comments.}
+\label{fig:branching-by-depth}
+\end{figure}
+
+\Cref{fig:branching-by-depth} shows strong root concentration. The root receives 5.57 direct
+replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
+respectively. This is the expected star-shaped pattern under rapid branching decay.
+We evaluate the corresponding thread-size consistency implication in this same
+structural-signatures block (\Cref{sec:results:consistency}).
+
+\subsubsection{Reciprocity and Re-Entry}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/reentry_distribution_moltbook.png}
+\caption{Distribution of thread-level re-entry rate
+\(\mathrm{RE}_j^{\mathrm{comment}}\) over Moltbook threads with at least one
+comment; root-post authorship is excluded unless the root author later appears
+in the comment sequence.}
+\label{fig:reentry-distribution}
+\end{figure}
+
+Dyadic reciprocity is low: 1,621 of 162,430 dyads are bidirectional (0.998\%).
+Reciprocal chains are short (median chain length 2; mean 2.09). Thread-level re-entry is also
+limited (\cref{fig:reentry-distribution}), with mean 0.195 and median 0.167.
+Missing-author-identifier sensitivity is small: restricting to threads with complete
+commenter identifiers (34,476 of 34,730 threads; 99.3\%) leaves re-entry and pooled
+dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
+pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
+mean unique participants per thread, from 4.57 to 4.60.
 
 \subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
 
@@ -298,30 +266,60 @@ within-thread clustering contributes to the pooled incidence level. In contrast,
 the conditional median speed is nearly unchanged (0.07590 to 0.07519 minutes),
 so the fast conditional-reply regime is robust to this dependence control.
 
-\subsection{Result 4 (Secondary): Periodicity Tests}
+\subsection{Result 3: Heterogeneity in Topic and Claim Moderation}
+\label{sec:results:heterogeneity}
+
+\subsubsection{Stratification by Submolt Category}
+
+\begin{table}[t]
+\centering
+\caption{Submolt stratification for reply incidence and conditional reply speed. Half-life is included as a secondary diagnostic column.}
+\label{tab:submolt-two-part}
+\scriptsize
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Half-life (min)} \\
+\midrule
+Builder/Technical & 8,396 & 1.72 & 1.731 & 7.248 & 18.332 & 2.979 \\
+Creative & 433 & 1.62 & 0.483 & 1.303 & 1.736 & 0.453 \\
+Other & 16,396 & 2.26 & 1.504 & 5.831 & 12.855 & 2.909 \\
+Philosophy/Meta & 5,831 & 1.80 & 1.717 & 47.813 & 62.683 & 7.768 \\
+Social/Casual & 189,765 & 10.95 & 0.075 & 0.414 & 1.776 & 0.593 \\
+Spam/Low-Signal & 2,495 & 0.88 & 1.315 & 4.220 & 4.341 & 1.313 \\
+\midrule
+Overall & 223,316 & 9.60 & 0.076 & 0.834 & 2.204 & 0.691 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary stratified pattern is incidence/speed heterogeneity. Social/Casual
+has the highest incidence (10.95\%) and very fast conditional timing
+(\(t_{90}=0.414\) minutes), whereas Builder/Technical and Philosophy/Meta have
+low incidence with materially slower conditional tails.
+
+\subsubsection{Agent Heterogeneity in Incidence and Timing}
+
+Claim-status heterogeneity is reported directly in
+\Cref{tab:reply-dynamics}: claimed accounts have higher incidence and
+materially faster upper-tail conditional timing than unclaimed accounts.
+
+\subsection{Secondary Context: Periodicity}
 \label{sec:results:periodicity}
 
 Because the canonical timeline contains a 41.7-hour gap, periodicity is
 estimated on the longest contiguous segment only
-(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours).
-
-The primary test is event-time modulo-4-hour Rayleigh concentration. On this
-segment (\(N=220{,}461\) events), resultant length is \(r=0.0308\), with
-\(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and circular mean phase
-153.2 minutes. Although statistically non-uniform, the concentration magnitude
-is small (\(\approx 3.1\%\) of perfect phase alignment).
-
-Detectability simulations (same \(N\), null calibration, and decision rule)
-show near-nominal null size (power \(=0.0496\) at \(\kappa=0\)) and an
-80\%-power threshold of \(\kappa^\star=0.2\). Therefore, this window has high
-power for moderate/strong 4-hour concentration but limited power for weak
-concentration below \(\kappa=0.2\). The observed \(r=0.0308\) is far below this
-detectability scale.
+(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours). Modulo-4-hour
+Rayleigh concentration on this segment (\(N=220{,}461\) events) gives
+\(r=0.0308\), \(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and circular
+mean phase 153.2 minutes: statistically non-uniform but weak concentration.
+Detectability simulations indicate an 80\%-power threshold
+\(\kappa^\star=0.2\), so the observed concentration is well below a practically
+moderate/strong periodic signal.
 
 PSD/AR(1) and bin-width robustness checks are retained as supplementary
 diagnostics (\Cref{sec:appendix:periodicity-robustness}).
 
-\subsection{Result 5 (Secondary Context): Reddit Baseline and Overlap-Restricted Matching}
+\subsection{Secondary Context: Reddit Baseline and Overlap-Restricted Matching}
 \label{sec:results:reddit-full-scale}
 
 Secondary Reddit context is directionally consistent with the Moltbook
@@ -335,20 +333,24 @@ matching diagnostics are provided in supplementary material
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
-Overall, Moltbook threads are predominantly star-shaped (mean maximum depth 1.38, median
-maximum depth 1, effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare bidirectional dyads (0.998\%) and
-modest re-entry (mean 0.195; median 0.167). The primary two-part readout is a
-9.60\% direct-reply incidence (95\% CI: [9.45\%, 9.76\%]) with very fast
+The primary decomposition readout is a 9.60\% direct-reply incidence
+(95\% CI: [9.45\%, 9.76\%]) with very fast
 conditional timing (\(t_{50}=4.55\) seconds, 95\% CI: [4.53, 4.58] seconds;
 \(t_{90}=50.05\) seconds),
 plus high short-window mass (8.47\% within 30 seconds and 9.41\% within
 5 minutes unconditionally). The ECDF on a log-time axis
 (\Cref{fig:reply-time-ecdf-logscale}) and observed-vs-fitted quantile checks
 (\Cref{tab:timing-model-fit}) both reinforce the same two-regime pattern.
-Model-to-observable validation shows tight
-incidence calibration but overprediction of deeper non-root branching tails.
-One-parent-per-thread robustness lowers pooled incidence but leaves conditional
-median speed essentially unchanged. Periodicity and cross-platform matching are
+Structural signatures are consistent with this regime: Moltbook threads are
+predominantly star-shaped (mean maximum depth 1.38, median maximum depth 1,
+effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare
+bidirectional dyads (0.998\%) and modest re-entry (mean 0.195; median 0.167).
+Model-to-observable validation shows tight incidence calibration but
+overprediction of deeper non-root branching tails, and one-parent-per-thread
+robustness lowers pooled incidence while leaving conditional median speed
+essentially unchanged. Topic and claim heterogeneity is substantial
+(\Cref{tab:submolt-two-part,tab:reply-dynamics}). Periodicity and cross-platform
+matching remain
 secondary: modulo-4-hour testing detects only weak concentration
 (\(r=0.0308\)) relative to the \(\kappa^\star=0.2\) detectability threshold, and
 matched cross-platform contrasts are overlap-region, non-causal context.
@@ -358,7 +360,7 @@ persistence regime in this early Moltbook window.
 \subsubsection{H1a Readout (Incidence + Conditional Speed)}
 \label{sec:results:h1a}
 H1a is supported by the low-incidence and very-fast-conditional-speed split in
-\Cref{sec:results:two-regime}.
+\Cref{sec:results:decomposition,sec:results:two-regime}.
 
 \subsubsection{H1b Readout (4-Hour Periodicity)}
 \label{sec:results:h1b}
@@ -367,3 +369,36 @@ Modulo-4-hour Rayleigh testing detects statistically non-uniform but weak phase
 concentration (\(r=0.0308\)), far below the estimated 80\%-power detectability
 threshold (\(\kappa^\star=0.2\)); this is consistent with weak/dephased
 periodicity rather than a practically strong aggregate 4-hour rhythm.
+
+\subsubsection{H2 Readout (Structure vs Baseline + Reciprocity/Re-Entry)}
+\label{sec:results:h2}
+H2 is partially supported in this snapshot. Moltbook threads are shallow and
+root-concentrated, with low pooled reciprocity and modest re-entry
+(\Cref{sec:results:structure,fig:branching-by-depth,fig:reentry-distribution}).
+Human-platform context under the same estimators points to deeper baseline
+threads (\Cref{sec:results:reddit-full-scale,sec:appendix:reddit-details}).
+The reciprocity/re-entry cross-platform contrast is conditioning-sensitive and
+currently available only through overlap-restricted, non-causal matching context
+(\Cref{sec:results:reddit-full-scale,sec:appendix:comparison-details}), so this
+component is interpreted descriptively.
+
+\subsubsection{H3 Readout (Topic Moderation)}
+\label{sec:results:h3}
+H3 is partially supported in this snapshot. Topic moderation is clear for reply
+incidence and conditional timing in
+\Cref{sec:results:heterogeneity,tab:submolt-two-part} (for example,
+Social/Casual versus Philosophy/Meta), with corresponding diagnostic half-life
+differences. Depth-related moderation appears in observed submolt tail
+probabilities in \Cref{tab:model-observable-validation}, but absolute deep-tail
+levels are very small; we therefore interpret topic heterogeneity as descriptive
+association rather than causal effect.
+
+\subsubsection{H4 Readout (Agent Covariates)}
+\label{sec:results:h4}
+H4 is partially supported in this snapshot. Claim-status covariates are
+associated with large descriptive differences in incidence and conditional timing
+(\Cref{sec:results:heterogeneity,tab:reply-dynamics}) and similar claimed/unclaimed stratified patterns in
+\Cref{tab:model-observable-validation}. However, clustered model-based precision
+for the claim indicator is limited (\Cref{sec:results:decomposition}), and
+follower-count effects are not reported as a dedicated main-text readout; the
+agent-covariate closure is therefore incomplete for that component.

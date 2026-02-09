@@ -15,7 +15,7 @@ factual evidence; empirical claims in this paper are derived from the archived
 Observatory data. Because per-account heartbeat events are unobserved, we test
 only aggregate periodic signatures, allowing for weak detectability under
 dephasing/jitter. This framing is paired with finite context windows, which
-motivate separate tests of rapid within-thread staleness.
+motivate tests of rapid within-thread staleness.
 
 Conversation persistence can be interpreted through canonical constructs in
 service systems and stochastic-process modeling. Aggregate availability and
@@ -28,13 +28,17 @@ thread depth corresponds to branching stability versus subcriticality
 \citep{harris1963theory}. This mapping is interpretive rather than causal and
 motivates the estimand design used in this study.
 
-Our central research questions are methodological: which estimands provide a
-coherent decomposition of conversation persistence, how these estimands map to
-minimal stochastic-process mechanisms, and how reliably they can be estimated
-under heavy censoring and finite observation windows. Concretely, we target
-reply incidence, conditional reply timing, depth-tail decay, and periodicity
-detectability, then examine how these estimands vary by topic and agent
-attributes. Thread duration is analyzed separately as a distinct outcome.
+Our objective is to develop and empirically validate a two-part decomposition
+of conversational persistence in Moltbook's first week into (i) direct-reply
+incidence and (ii) conditional reply timing, and to show that this
+decomposition explains the observed shallow, root-heavy thread structure. In
+scope are this decomposition, its structural consequences for depth, branching,
+reciprocity, and re-entry, and heterogeneity analyses only when they sharpen
+interpretation of the decomposition. Out of scope are dedicated thread-duration
+inference, cross-platform matching, and detailed periodicity machinery as
+primary claims; thread duration is reported only as an ancillary
+descriptive/contextual metric, and matching/periodicity are treated as
+secondary contextual or supplementary analyses.
 
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
@@ -58,8 +62,33 @@ incidence and conversational persistence.
 
 We operationalize these hypotheses via the estimands defined in \Cref{sec:model}
 and the estimators in \Cref{sec:methods}, and evaluate them in \Cref{sec:results}.
+To make this mapping explicit, \Cref{tab:intro-roadmap} provides a compact
+hypothesis-to-estimand roadmap with the corresponding empirical readout
+sections.
 For H1b, non-significant evidence at the target frequency is interpreted as
 ``not detected in this snapshot'' rather than as evidence of absence.
+
+\begin{table}[t]
+\centering
+\caption{Hypothesis roadmap: estimands, empirical readout location, and headline finding.}
+\label{tab:intro-roadmap}
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
+\toprule
+\textbf{Hyp.} & \textbf{Estimand(s)} & \textbf{Section where tested} & \textbf{Key result} \\
+\midrule
+H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and diagnostic half-life \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
+H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity,sec:results:h1b}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
+H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and overlap-restricted matched baseline contrasts. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
+H3 & Submolt-stratified incidence/timing estimands, diagnostic half-life differences, and topic-level depth-tail checks. & \Cref{sec:results:two-part,sec:results:consistency,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
+H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:two-part,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
+\bottomrule
+\end{tabular}
+\endgroup
+\end{table}
 
 \subsection{Preview of Findings}
 
@@ -73,28 +102,17 @@ on agent attention.
 
 \subsection{Approach and Contributions}
 
-We develop a \emph{horizon-limited interaction cascade} measurement framework
-for agent-platform conversations. The framework combines self-exciting point
-process dynamics with age-dependent branching and periodic availability
-modulation, then maps these mechanisms to observable estimands:
-reply incidence, conditional reply timing, depth-tail decay, and aggregate
-periodic signatures.
-
-We evaluate this framework empirically with a Moltbook-first design using the Moltbook
-Observatory Archive \citep{simulamet2026observatoryarchive}. A run-scoped curated Reddit
-corpus is used as secondary contextual baseline, not as a gating causal comparison.
-We report descriptive characterization of Moltbook conversation geometry,
-estimation of Moltbook temporal decay parameters via survival analysis,
-spectral tests for Moltbook periodic activity signatures, a full-scale
-Reddit-side baseline analysis under the same estimators, and a coarse matched
-observational comparison with paired effect estimation.
-
-The study formalizes a two-component persistence target that separates
-direct-reply incidence from conditional reply timing, with half-life treated as
-a kernel-timescale summary. It links staleness, branching, and availability
-modulation to estimands, implements a survival-based estimation workflow with
-depth-tail summaries and periodicity tests under a common reproducible
-pipeline, and derives model-consistent design-implication hypotheses.
+Aligned to this objective, the paper delivers three contributions. First, we
+define a persistence decomposition that separates direct-reply incidence from
+conditional reply timing, with kernel half-life used as a secondary diagnostic
+timescale. Second, using the Moltbook Observatory Archive
+\citep{simulamet2026observatoryarchive}, we test whether low incidence and fast
+conditional timing jointly account for shallow depth, root-heavy branching, low
+reciprocity, and limited re-entry in first-week threads. Third, we quantify
+topic- and agent-level heterogeneity only insofar as it clarifies which margin
+of the decomposition drives those structural outcomes; thread-duration
+summaries, cross-platform matching, and detailed periodicity analyses are
+retained as contextual or supplementary material rather than core deliverables.
 
 \subsection{Paper Organization}
 
