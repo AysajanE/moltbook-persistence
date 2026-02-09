@@ -46,8 +46,9 @@ secondary contextual or supplementary analyses.
 Guided by the horizon-limited cascade framework (\Cref{sec:model}) and prior
 qualitative commentary used for hypothesis motivation
 \citep{willison2026moltbook, alexander2026afterweekend},
-we test four hypotheses. H1a posits short reply-kernel half-lives consistent with
-architectural staleness constraints. H1b posits that heartbeat scheduling can
+we test four hypotheses. H1a posits short exponential-equivalent kernel half-life
+(diagnostic) values consistent with architectural staleness constraints. H1b
+posits that heartbeat scheduling can
 generate aggregate periodic structure near the hypothesized cadence
 ($\tau \approx 4$ hours) when check-ins are sufficiently synchronized; under
 dephasing or jitter, aggregate detectability may be weak in finite samples.
@@ -56,7 +57,8 @@ baselines, with lower reciprocity and conditioning-sensitive re-entry profiles; 
 re-entry contrast is treated as conditioning-sensitive and may change direction
 across overlap-restricted matched strata.
 H3 posits topic-level moderation of persistence, including systematic differences
-in half-life and depth across submolts. H4 posits that agent-level covariates
+in kernel half-life diagnostic values and depth across submolts. H4 posits that
+agent-level covariates
 (account claim status and follower count) are associated with variation in reply
 incidence and conversational persistence.
 
@@ -80,10 +82,10 @@ For H1b, non-significant evidence at the target frequency is interpreted as
 \toprule
 \textbf{Hyp.} & \textbf{Estimand(s)} & \textbf{Section where tested} & \textbf{Key result} \\
 \midrule
-H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and diagnostic half-life \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
+H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and kernel half-life diagnostic \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
 H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity,sec:results:h1b}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
 H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and overlap-restricted matched baseline contrasts. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
-H3 & Submolt-stratified incidence/timing estimands, diagnostic half-life differences, and topic-level depth-tail checks. & \Cref{sec:results:two-part,sec:results:consistency,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
+H3 & Submolt-stratified incidence/timing estimands, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:two-part,sec:results:consistency,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
 H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:two-part,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
 \bottomrule
 \end{tabular}
@@ -93,7 +95,8 @@ H4 & Agent-covariate associations (claim status and follower count) in the two-p
 \subsection{Preview of Findings}
 
 In this first-week snapshot, Moltbook conversations are predominantly star-shaped,
-with minute-scale reply-kernel decay, low direct-reply incidence, and minimal
+with minute-scale kernel half-life diagnostic values, low direct-reply
+incidence, and minimal
 reciprocity. Spectral analysis does not detect a statistically significant
 4-hour periodic peak. A run-scoped Reddit baseline shows materially longer
 persistence and deeper threads. Taken together, these patterns are consistent
@@ -104,8 +107,8 @@ on agent attention.
 
 Aligned to this objective, the paper delivers three contributions. First, we
 define a persistence decomposition that separates direct-reply incidence from
-conditional reply timing, with kernel half-life used as a secondary diagnostic
-timescale. Second, using the Moltbook Observatory Archive
+conditional reply timing, with the kernel half-life diagnostic used only as a
+secondary timescale summary. Second, using the Moltbook Observatory Archive
 \citep{simulamet2026observatoryarchive}, we test whether low incidence and fast
 conditional timing jointly account for shallow depth, root-heavy branching, low
 reciprocity, and limited re-entry in first-week threads. Third, we quantify

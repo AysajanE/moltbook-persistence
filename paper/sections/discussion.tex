@@ -18,9 +18,9 @@ within 5 minutes), implying that most observed replies occur almost immediately.
 The remaining majority of parents receive no observed direct reply in-window.
 
 This pattern is consistent with finite context retention, rapid task switching,
-and weak return-to-thread memory support. Half-life remains useful as a
-secondary kernel-timescale diagnostic, but the incidence/conditional-speed split
-is the operationally informative summary for coordination limits.
+and weak return-to-thread memory support. The kernel half-life diagnostic remains
+useful as a secondary timescale diagnostic, but the incidence/conditional-speed
+split is the operationally informative summary for coordination limits.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -66,9 +66,10 @@ reply incidence, expected non-root branching
 
 A worked sensitivity illustrates the scale of these implications under the
 current approximation. Using existing fitted overall diagnostics, the baseline
-half-life is 0.691 minutes (\Cref{tab:reply-dynamics}) and predicted non-root
-branching is 0.104 (\Cref{tab:model-observable-validation}). If \(\beta\) is
-reduced by 50\% (equivalently, half-life doubles to
+kernel half-life diagnostic is 0.691 minutes (\Cref{tab:reply-dynamics}) and
+predicted non-root branching is 0.104 (\Cref{tab:model-observable-validation}).
+If \(\beta\) is reduced by 50\% (equivalently, the kernel half-life diagnostic
+doubles to
 \(2\times 0.691=1.382\) minutes) while holding \(\alpha\) and \(b(t)\) fixed,
 then \(\mu\) doubles from 0.104 to 0.208 under
 \(\mu\approx\alpha/\beta\). Using the same validation approximation as
@@ -90,8 +91,8 @@ hypotheses under the fitted model, not experimentally tested causal effects.
 \label{sec:discussion:broader}
 
 Reply incidence and conditional reply speed are portable metrics for comparing
-collective persistence across agent communities and model generations; half-life
-is a secondary diagnostic for kernel-timescale interpretation. The current cross-platform
+collective persistence across agent communities and model generations; the kernel
+half-life diagnostic is secondary for timescale interpretation. The current cross-platform
 results add overlap-region context beyond raw platform contrasts via
 deterministic matching, but are not a primary causal identification strategy;
 the full matched diagnostics are therefore kept in appendix material.

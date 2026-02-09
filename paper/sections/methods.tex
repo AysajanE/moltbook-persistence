@@ -12,15 +12,13 @@ reported in \Cref{sec:appendix:operational-details}.
 For each thread \(j\), we compute node depths from \cref{eq:depth}, record the
 maximum depth \(D_j\), and summarize the empirical depth distribution with mean
 maximum depth, median maximum depth, and tail probabilities
-\(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\). Using the model implication in
-\cref{prop:depth-bound}, we estimate an effective depth-tail slope
+\(\Prob(D_j \ge k)\) for \(k=1,\ldots,10\). We estimate an effective depth-tail slope
 \(\hat{s}_{\mathrm{depth}}\) by zero-intercept least squares on
 \(\log \Prob(D_j \ge k)\). Because the analysis conditions on threads with at
 least one comment, \(\Prob(D_j \ge 1)=1\) by construction; the fit is therefore
-identified by \(k\ge2\). Since \cref{prop:depth-bound} is an inequality,
-\(\hat{s}_{\mathrm{depth}}\) is reported as a descriptive depth-tail decay
-summary rather than as an exact reproduction-mean estimator; branching
-interpretations are heuristic (\cref{rem:two-type}).
+identified by \(k\ge2\). This log-tail summary is reported descriptively rather
+than as an exact reproduction-mean estimator; branching interpretations are
+heuristic.
 
 We additionally compute branching-factor profiles by depth,
 \(\bar c_k = \E[\text{children at depth }k]\), including the root branching
@@ -52,7 +50,10 @@ complementary log-log (cloglog) generalized linear model:
 \label{eq:methods-incidence-cloglog}
 \log\!\left[-\log(1-\Prob(\delta_m=1\mid x_m))\right]=x_m^\top\eta,
 \end{equation}
-with \(x_m\) including categorical indicators for submolt category and
+which aligns with a discrete-time hazard interpretation and the asymmetric
+tail behavior of rare-event incidence. Here this is appropriate because most
+candidate parents receive no direct reply in-window. Covariates \(x_m\) include
+categorical indicators for submolt category and
 claimed-status group. Inference uses two-way clustered covariance by thread and
 author to address within-thread dependence and repeated-author dependence.
 
@@ -66,18 +67,17 @@ unconditional counterparts \(\Prob(\delta_m=1,T_m\le t)\) for
 \(t\in\{30\mathrm{s},5\mathrm{min}\}\). For parametric shape diagnostics, we
 fit Weibull and lognormal-style alternatives to \(T_m\mid \delta_m=1\).
 
-Under \cref{eq:reply-intensity}, the parent-age hazard is
-\begin{equation}
-\label{eq:hazard}
-\lambda(s \mid t_{jm}) = b(t_{jm}+s)\,\alpha_{a_{jm}}\,e^{-\beta_{a_{jm}}s}.
-\end{equation}
-The estimation model uses \(b(t)=1\) as a timescale-separation approximation for
-identifying \(\beta\), while periodic modulation is tested separately at the
-aggregate level (\Cref{sec:methods:periodicity}).
+For kernel diagnostics, we fit an exponential-kernel hazard with \(b(t)=1\) as
+a timescale-separation approximation for identifying \(\beta\), while periodic
+modulation is tested separately at the aggregate level
+(\Cref{sec:methods:periodicity}). The full continuous-time intensity and
+competing-risks parent-selection formalization are deferred to supplementary
+material (Section S0).
 
 \begin{remark}[Estimand interpretation]
 \label{rem:estimand}
-The \emph{reply-kernel half-life} \(\hat h = \ln 2/\hat\beta\) is a kernel-decay
+The \emph{kernel half-life diagnostic} \(\hat h = \ln 2/\hat\beta\) is an
+exponential-equivalent kernel-decay
 timescale for direct-reply hazard. It is not a median thread lifetime.
 With heavy censoring, short \(\hat h\) indicates that replies, when they occur,
 arrive quickly relative to parent age.
@@ -97,8 +97,9 @@ S(s)=\exp\!\left(-\left(\frac{s}{\lambda}\right)^\gamma\right),
 to assess departures from exponential decay.
 
 Given high censoring, we report incidence and conditional-speed estimands as
-primary readouts; \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) and half-life are
-kept as secondary diagnostics. We report stratified pooled estimates by submolt
+primary readouts; \(p_\infty=1-\exp(-\hat\alpha/\hat\beta)\) and the kernel
+half-life diagnostic are reported only as secondary diagnostics. We report stratified
+pooled estimates by submolt
 category and claim status, plus one-parent-per-thread sensitivity readouts to
 bound within-thread clustering effects.
 
@@ -140,7 +141,7 @@ Exact strata definitions and pairing rules are documented in
 \Cref{sec:appendix:operational-details}.
 
 For each matched pair, we compute total comments, maximum depth, unique
-participants, thread duration, and re-entry rate. Reply-kernel half-life is
+participants, thread duration, and re-entry rate. Kernel half-life diagnostics are
 also estimated on matched-thread subsets for each platform (platform-level
 estimation, not thread-level paired survival effects).
 

@@ -5,6 +5,45 @@ manuscript: full proofs, expanded categorization triggers, periodicity
 robustness artifacts, and detailed cross-platform matching
 diagnostics.
 
+\subsection*{S0. Deferred Main-Text Formalism}
+
+\paragraph{S0.1 Full intensity and competing-risks parent selection.}
+For thread \(j\), let \(\mathcal{H}_j(t)\) denote history up to \(t\). For an
+existing comment \(m\), direct replies follow
+\[
+\lambda_{j,m}(t\mid\mathcal{H}_j(t))
+= b(t)\,\alpha_{a_{jm}}\exp\!\left[-\beta_{a_{jm}}(t-t_{jm})\right]\mathbf{1}\{t>t_{jm}\}.
+\]
+Total thread intensity is the superposition
+\[
+\lambda_j(t\mid\mathcal{H}_j(t))
+:=\sum_{m:t_{jm}<t}\lambda_{j,m}(t\mid\mathcal{H}_j(t)).
+\]
+Conditional on an event at time \(t\), parent assignment follows competing risks:
+\[
+\mathbb{P}(p_{jn}=m\mid t_{jn}=t,\mathcal{H}_j(t))
+=\frac{\lambda_{j,m}(t\mid\mathcal{H}_j(t))}{\lambda_j(t\mid\mathcal{H}_j(t))}.
+\]
+This is the formal construction deferred from the main manuscript section
+``Framework and Estimands.''
+
+\paragraph{S0.2 Deferred proposition statements.}
+\textbf{Influence--persistence trade-off.} Under nonnegative availability,
+\(\mu_i(s)=\int_0^\infty b(s+u)\alpha_i e^{-\beta_i u}\,du\) is increasing in
+\(\alpha_i\) and decreasing in \(\beta_i\).
+
+\textbf{Root-special expected thread size.} With root offspring mean \(\mu_0\),
+non-root offspring mean \(\mu<1\), and standard independence assumptions,
+\[
+\mathbb{E}[N_j]=\frac{\mu_0}{1-\mu}.
+\]
+
+\textbf{Periodic mean-intensity detectability.} If
+\(\lambda(t)=b(t)g(t)\), \(b(t)\) is \(\tau\)-periodic, and \(\mathbb{E}[g(t)]\) is
+\(\tau\)-periodic (or approximately constant on the \(\tau\)-scale), then
+\(\mathbb{E}[\lambda(t)]\) is \(\tau\)-periodic and long-window binned-count spectra
+exhibit mass near \(\ell/\tau\), up to finite-window and leakage effects.
+
 \subsection*{S1. Full Proofs}
 
 \paragraph{S1.1 Proof of influence--persistence trade-off proposition.}
@@ -123,7 +162,7 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \end{tabular}
 \end{table}
 
-\paragraph{S4.3 Matched-subset reply-kernel half-life details.}
+\paragraph{S4.3 Matched-subset kernel half-life diagnostic details.}
 Restricting survival units to matched threads gives 0.063 hours on Moltbook
 (3.77 minutes; 95\% CI: [1.19, 7.06] minutes; \(n=1{,}841\), 22 events) and
 2.44 hours on Reddit (95\% CI: [2.13, 2.79] hours; \(n=7{,}979\), 2,882
@@ -141,7 +180,8 @@ no replies are imputed across the canonical 41.7-hour timeline gap.
 robustness repeats.
 \item Bootstrap mechanics: Moltbook-only and Reddit-only confidence intervals
 use thread-cluster bootstrap with \texttt{bootstrap\_reps=400}; matched paired
-effects use \texttt{bootstrap\_reps=1000}; matched-subset half-life intervals use
+effects use \texttt{bootstrap\_reps=1000}; matched-subset kernel half-life
+diagnostic intervals use
 \texttt{half\_life\_bootstrap\_reps=400}.
 \item Matching mechanics: coarsened exact matching uses first-30-minute action
 volume bins, deterministic coarse topic map

@@ -34,9 +34,18 @@ two-part sample includes 223,316 parents with 21,430 observed direct replies
 (reply incidence \(9.60\%\), 95\% bootstrap CI: [9.45\%, 9.76\%]).
 The conditional median reply time is 4.55 seconds (95\% bootstrap CI:
 [4.53, 4.58] seconds), with \(t_{90}=50.05\) seconds.
-Claimed accounts show a 10.58 percentage-point higher incidence than unclaimed
-(19.23\% vs.\ 8.65\%), and a much faster conditional upper tail
-(\(t_{90}=6.29\) seconds vs.\ 63.40 seconds; \(\approx 10.1\times\)).
+Claimed-status heterogeneity is large descriptively: claimed incidence is
+19.23\% (95\% bootstrap CI: [18.82\%, 19.66\%]) versus 8.65\%
+(95\% bootstrap CI: [8.50\%, 8.79\%]) for unclaimed, an absolute gap of
+10.58 percentage points (\(\approx 2.22\times\)).
+Conditional medians are similar (4.42 [4.38, 4.45] seconds for claimed vs.\
+4.59 [4.57, 4.62] seconds for unclaimed), but the conditional upper tail is
+much faster for claimed accounts (\(t_{90}=6.29\) seconds, 95\% bootstrap CI:
+[6.06, 6.83], vs.\ 63.40 seconds, 95\% bootstrap CI: [52.95, 77.31];
+\(\approx 10.1\times\)).
+Because parent units share threads and repeated authors, inference on
+claimed-status contrasts is dependence-limited in this snapshot, and these
+contrasts are treated as descriptive.
 Unconditionally, 8.47\% of at-risk parents receive a direct reply within
 30 seconds and 9.41\% within 5 minutes; conditional on a reply occurring,
 these become 88.30\% and 98.06\%. This is the core low-incidence /
@@ -57,8 +66,8 @@ substantially shifted to longer delays.
 \begin{table}[t]
 \centering
 \caption{Two-part reply dynamics headline on Moltbook. Incidence and conditional
-timing are primary; half-life is a model-implied diagnostic under the
-exponential kernel.}
+timing are primary; the kernel half-life diagnostic is model-implied under the
+exponential kernel and reported as secondary.}
 \label{tab:reply-dynamics}
 \begingroup
 \setlength{\tabcolsep}{3pt}
@@ -66,7 +75,7 @@ exponential kernel.}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{Half-life (min; diag.)} \\
+\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{Kernel half-life (diagnostic; min)} \\
 \midrule
 Overall & 223,316 & 9.60 [9.45, 9.76] & 4.55 [4.53, 4.58] & 50.05 & 88.30 & 0.691 \\
 Claimed & 20,667 & 19.23 [18.82, 19.66] & 4.42 [4.38, 4.45] & 6.29 & 94.99 & 0.419 \\
@@ -79,14 +88,16 @@ Unclaimed & 201,743 & 8.65 [8.50, 8.79] & 4.59 [4.57, 4.62] & 63.40 & 86.79 & 0.
 
 \subsubsection{Part-1 Incidence Model (cloglog) Summary}
 
-The incidence model (\cref{eq:methods-incidence-cloglog}) is well calibrated at
-the sample mean: observed incidence is 0.096304 and mean fitted incidence is
-0.096319 (absolute error \(1.52\times 10^{-5}\), \(N=222{,}410\)).
-Relative to Social/Casual (reference), all other submolts have substantially
-lower incidence on the cloglog scale (coefficients from \(-1.62\) to \(-2.56\),
-all two-way-clustered \(p\le 2.6\times 10^{-4}\)).
-The claimed-group coefficient is positive (\(+0.844\)) but imprecise under the
-two-way clustered covariance (\(p=0.181\)).
+The incidence model (\cref{eq:methods-incidence-cloglog}) is used here as a
+calibration/sensitivity diagnostic for part-1 incidence rather than as a
+standalone inferential test for claim status. Calibration at the sample mean is
+tight: observed incidence is 0.096304 and mean fitted incidence is 0.096319
+(absolute error \(1.52\times 10^{-5}\), \(N=222{,}410\)).
+Relative to Social/Casual (reference), non-reference submolts have negative
+cloglog coefficients (from \(-1.62\) to \(-2.56\)). The claimed-group
+coefficient is positive (\(+0.844\)) but has wide two-way-clustered uncertainty
+(95\% CI: [\(-0.39\), 2.08]). Accordingly, claim-status interpretation relies
+on the bootstrap descriptive contrasts in \Cref{tab:reply-dynamics}.
 
 \subsubsection{Timing Shape Diagnostic}
 
@@ -98,8 +109,9 @@ is concentrated in the first seconds to minutes.
 \Cref{tab:timing-model-fit} reports explicit observed-versus-fitted
 calibration on event probability and conditional-time quantiles.
 The exponential kernel is close on event probability but substantially misses
-early conditional timing for Moltbook, so we treat half-life as a secondary
-diagnostic and keep incidence plus conditional quantiles as primary estimands.
+early conditional timing for Moltbook, so we treat the kernel half-life
+diagnostic as secondary and keep incidence plus conditional quantiles as primary
+estimands.
 
 \begin{table}[t]
 \centering
@@ -195,7 +207,8 @@ mean unique participants per thread, from 4.57 to 4.60.
 
 \subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
 
-Applying the root-special branching approximation (\cref{prop:thread-size}) with
+Applying the root-special branching heuristic
+\(\E[N_j]\approx \mu_0/(1-\mu)\) with
 \(\mu_0 \approx 5.57\) (root) and effective depth-tail slope estimate
 \(\hat{s}_{\mathrm{depth}} \approx 0.154\), and using the heuristic mapping
 \(\mu \approx \hat{s}_{\mathrm{depth}}\), gives the heuristic expectation
@@ -255,7 +268,7 @@ descriptive consistency checks rather than exact structural equalities.
 Reply incidence \(\Pr(\delta=1)\) & 0.09596 & 0.07213 & 0.02383 & -24.84 \\
 Conditional \(t_{50}\) (min) & 0.07590 & 0.07519 & 0.00070 & -0.93 \\
 Conditional \(t_{90}\) (min) & 0.83416 & 0.68469 & 0.14947 & -17.92 \\
-Half-life (min; diagnostic) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
+Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -273,12 +286,12 @@ so the fast conditional-reply regime is robust to this dependence control.
 
 \begin{table}[t]
 \centering
-\caption{Submolt stratification for reply incidence and conditional reply speed. Half-life is included as a secondary diagnostic column.}
+\caption{Submolt stratification for reply incidence and conditional reply speed. The kernel half-life diagnostic is included only as a secondary column.}
 \label{tab:submolt-two-part}
 \scriptsize
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Half-life (min)} \\
+\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Kernel half-life (diagnostic; min)} \\
 \midrule
 Builder/Technical & 8,396 & 1.72 & 1.731 & 7.248 & 18.332 & 2.979 \\
 Creative & 433 & 1.62 & 0.483 & 1.303 & 1.736 & 0.453 \\
@@ -387,7 +400,7 @@ component is interpreted descriptively.
 H3 is partially supported in this snapshot. Topic moderation is clear for reply
 incidence and conditional timing in
 \Cref{sec:results:heterogeneity,tab:submolt-two-part} (for example,
-Social/Casual versus Philosophy/Meta), with corresponding diagnostic half-life
+Social/Casual versus Philosophy/Meta), with corresponding kernel half-life diagnostic
 differences. Depth-related moderation appears in observed submolt tail
 probabilities in \Cref{tab:model-observable-validation}, but absolute deep-tail
 levels are very small; we therefore interpret topic heterogeneity as descriptive
@@ -398,7 +411,8 @@ association rather than causal effect.
 H4 is partially supported in this snapshot. Claim-status covariates are
 associated with large descriptive differences in incidence and conditional timing
 (\Cref{sec:results:heterogeneity,tab:reply-dynamics}) and similar claimed/unclaimed stratified patterns in
-\Cref{tab:model-observable-validation}. However, clustered model-based precision
-for the claim indicator is limited (\Cref{sec:results:decomposition}), and
+\Cref{tab:model-observable-validation}. However, within-thread and repeated-author
+dependence limits model-based precision for isolating the claim indicator
+(\Cref{sec:results:decomposition}), and
 follower-count effects are not reported as a dedicated main-text readout; the
 agent-covariate closure is therefore incomplete for that component.
