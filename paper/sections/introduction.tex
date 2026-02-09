@@ -25,8 +25,8 @@ corresponds to abandonment and impatience mechanisms in waiting systems
 \citep{whitt2004efficiency,reed2012hazard,jouini2010online}. Reply incidence
 corresponds to completion/throughput outcomes under constrained capacity, and
 thread depth corresponds to branching stability versus subcriticality
-\citep{harris1963theory}. This mapping is interpretive rather than causal and
-motivates the estimand design used in this study.
+\citep{harris1963theory}. This mapping motivates the measurement-target design
+used in this study.
 
 From an OR/MS decision-support perspective, the platform is a distributed
 service system in which agents allocate limited attention across competing
@@ -34,7 +34,7 @@ thread ``jobs.'' The design question is operational: how scheduling or
 resurfacing policies should prioritize pending threads to improve multi-step
 coordination throughput under capacity limits, for example the share of threads
 that reach depth \(\ge K\) and the incidence of re-entry. In this framing, our
-contribution is a diagnostic decomposition rather than a causal claim: the
+contribution is a diagnostic decomposition: the
 incidence margin identifies capacity-limited coordination failures, while the
 conditional timing margin identifies latency-limited coordination failures.
 
@@ -49,6 +49,14 @@ inference, cross-platform matching, and detailed periodicity machinery as
 primary claims; thread duration is reported only as an ancillary
 descriptive/contextual metric, and matching/periodicity are treated as
 secondary contextual or supplementary analyses.
+
+\paragraph{Identification scope.}
+This paper reports observational measurement targets from archived first-week
+data and does not identify causal intervention effects. Periodicity and
+cross-platform matching are contextual checks rather than primary
+identification strategies. For heartbeat periodicity, ``not detected in this
+snapshot'' denotes finite-window detectability limits rather than evidence of
+absence.
 
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
@@ -72,17 +80,15 @@ agent-level covariates
 (account claim status and follower count) are associated with variation in reply
 incidence and conversational persistence.
 
-We operationalize these hypotheses via the estimands defined in \Cref{sec:model}
+We operationalize these hypotheses via the measurement targets defined in \Cref{sec:model}
 and the estimators in \Cref{sec:methods}, and evaluate them in \Cref{sec:results}.
 To make this mapping explicit, \Cref{tab:intro-roadmap} provides a compact
-hypothesis-to-estimand roadmap with the corresponding empirical readout
-sections.
-For H1b, non-significant evidence at the target frequency is interpreted as
-``not detected in this snapshot'' rather than as evidence of absence.
+hypothesis-to-measurement-target roadmap with the corresponding empirical
+readout sections.
 
 \begin{table}[t]
 \centering
-\caption{Hypothesis roadmap: estimands, empirical readout location, and headline finding.}
+\caption{Hypothesis roadmap: measurement targets, empirical readout location, and headline finding.}
 \label{tab:intro-roadmap}
 \begingroup
 \setlength{\tabcolsep}{3pt}
@@ -90,12 +96,12 @@ For H1b, non-significant evidence at the target frequency is interpreted as
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
 \toprule
-\textbf{Hyp.} & \textbf{Estimand(s)} & \textbf{Section where tested} & \textbf{Key result} \\
+\textbf{Hyp.} & \textbf{Measurement target(s)} & \textbf{Section where tested} & \textbf{Key result} \\
 \midrule
 H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and kernel half-life diagnostic \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
 H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity,sec:results:h1b}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
 H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and overlap-restricted matched baseline contrasts. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
-H3 & Submolt-stratified incidence/timing estimands, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:heterogeneity,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
+H3 & Submolt-stratified incidence/timing measurement targets, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:heterogeneity,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
 H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:agent-covariates,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
 \bottomrule
 \end{tabular}
@@ -136,7 +142,7 @@ retained as contextual or supplementary material rather than core deliverables.
 
 The remainder of this paper is organized as follows. \Cref{sec:background}
 reviews stochastic-process foundations for interaction persistence, then network structure and agent-platform context.
-\Cref{sec:model} presents the minimal model and primary estimands.
+\Cref{sec:model} presents the minimal model and primary measurement targets.
 \Cref{sec:data} describes data construction and preprocessing.
 \Cref{sec:methods} details estimation and empirical procedures.
 \Cref{sec:results} reports empirical findings and model-consistency checks.
