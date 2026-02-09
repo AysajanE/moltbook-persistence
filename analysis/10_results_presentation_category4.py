@@ -23,6 +23,9 @@ from scipy import optimize, special
 DEFAULT_MOLTBOOK_SURVIVAL_PATH = Path(
     "data_features/moltbook_only/run_20260206-145240Z/survival_units.parquet"
 )
+DEFAULT_MOLTBOOK_THREAD_METRICS_PATH = Path(
+    "data_features/moltbook_only/run_20260206-145240Z/thread_metrics.parquet"
+)
 DEFAULT_MOLTBOOK_THREAD_EVENTS_PATH = Path(
     "data_features/moltbook_only/run_20260206-145240Z/thread_events.parquet"
 )
@@ -44,6 +47,9 @@ DEFAULT_MODEL_FIT_OUT_PATH = Path("paper/tables/results_timing_model_fit.csv")
 DEFAULT_PERIODICITY_SUMMARY_OUT_PATH = Path(
     "paper/tables/results_periodicity_detectability_summary.csv"
 )
+DEFAULT_CATEGORY_UNCERTAINTY_OUT_PATH = Path(
+    "paper/tables/moltbook_results_category_uncertainty.csv"
+)
 DEFAULT_ECDF_OUT_PATH = Path("paper/figures/reply_time_ecdf_logscale.png")
 DEFAULT_SEED = 20260208
 DEFAULT_BOOTSTRAP_REPS = 400
@@ -53,11 +59,21 @@ DEFAULT_ALPHA_LEVEL = 0.05
 DEFAULT_NULL_MC_REPS = 200_000
 DEFAULT_POWER_SIM_REPS = 50_000
 DEFAULT_KAPPA_GRID = tuple(np.round(np.arange(0.0, 3.0001, 0.2), 2).tolist())
+DEFAULT_CATEGORY_ORDER = (
+    "Social/Casual",
+    "Philosophy/Meta",
+    "Builder/Technical",
+    "Creative",
+    "Spam/Low-Signal",
+    "Other",
+)
+REQUIRED_KEY_CATEGORIES = ("Social/Casual", "Philosophy/Meta")
 
 
 @dataclass(frozen=True)
 class Config:
     moltbook_survival_path: Path
+    moltbook_thread_metrics_path: Path
     moltbook_thread_events_path: Path
     moltbook_agents_path: Path
     reddit_survival_path: Path
@@ -67,6 +83,7 @@ class Config:
     headline_out_path: Path
     model_fit_out_path: Path
     periodicity_summary_out_path: Path
+    category_uncertainty_out_path: Path
     ecdf_out_path: Path
     seed: int
     bootstrap_reps: int
@@ -82,6 +99,11 @@ def parse_args() -> Config:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--moltbook-survival-path", type=Path, default=DEFAULT_MOLTBOOK_SURVIVAL_PATH
+    )
+    parser.add_argument(
+        "--moltbook-thread-metrics-path",
+        type=Path,
+        default=DEFAULT_MOLTBOOK_THREAD_METRICS_PATH,
     )
     parser.add_argument(
         "--moltbook-thread-events-path", type=Path, default=DEFAULT_MOLTBOOK_THREAD_EVENTS_PATH
@@ -104,6 +126,11 @@ def parse_args() -> Config:
         type=Path,
         default=DEFAULT_PERIODICITY_SUMMARY_OUT_PATH,
     )
+    parser.add_argument(
+        "--category-uncertainty-out-path",
+        type=Path,
+        default=DEFAULT_CATEGORY_UNCERTAINTY_OUT_PATH,
+    )
     parser.add_argument("--ecdf-out-path", type=Path, default=DEFAULT_ECDF_OUT_PATH)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--bootstrap-reps", type=int, default=DEFAULT_BOOTSTRAP_REPS)
@@ -122,6 +149,7 @@ def parse_args() -> Config:
     args = parser.parse_args()
     return Config(
         moltbook_survival_path=args.moltbook_survival_path,
+        moltbook_thread_metrics_path=args.moltbook_thread_metrics_path,
         moltbook_thread_events_path=args.moltbook_thread_events_path,
         moltbook_agents_path=args.moltbook_agents_path,
         reddit_survival_path=args.reddit_survival_path,
@@ -131,6 +159,7 @@ def parse_args() -> Config:
         headline_out_path=args.headline_out_path,
         model_fit_out_path=args.model_fit_out_path,
         periodicity_summary_out_path=args.periodicity_summary_out_path,
+        category_uncertainty_out_path=args.category_uncertainty_out_path,
         ecdf_out_path=args.ecdf_out_path,
         seed=args.seed,
         bootstrap_reps=args.bootstrap_reps,
@@ -169,6 +198,39 @@ def load_primary_survival(path: Path, *, drop_censor_boundary: bool) -> pd.DataF
 
     valid = np.isfinite(df["duration_hours"].to_numpy()) & (df["duration_hours"].to_numpy() > 0)
     return df.loc[valid].reset_index(drop=True)
+
+
+def load_thread_metrics(path: Path) -> pd.DataFrame:
+    df = pd.read_parquet(path).copy()
+    required = [
+        "thread_id",
+        "submolt_category",
+        "reentry_rate",
+        "reciprocal_dyads_thread",
+        "dyads_thread",
+    ]
+    require_columns(df, required, path.name)
+    out = df[required].copy()
+    out["thread_id"] = out["thread_id"].astype(str)
+    out["submolt_category"] = out["submolt_category"].astype("string").fillna("Unknown").astype(str)
+    out["reentry_rate"] = pd.to_numeric(out["reentry_rate"], errors="coerce")
+    out["reciprocal_dyads_thread"] = pd.to_numeric(
+        out["reciprocal_dyads_thread"], errors="coerce"
+    ).fillna(0.0)
+    out["dyads_thread"] = pd.to_numeric(out["dyads_thread"], errors="coerce").fillna(0.0)
+    if out["thread_id"].duplicated().any():
+        raise ValueError(f"{path.name} has duplicate thread_id rows.")
+    return out.reset_index(drop=True)
+
+
+def ordered_category_labels(observed_labels: set[str]) -> list[str]:
+    out: list[str] = []
+    observed = {label for label in observed_labels if isinstance(label, str) and label.strip()}
+    for label in DEFAULT_CATEGORY_ORDER:
+        if label in observed or label in REQUIRED_KEY_CATEGORIES:
+            out.append(label)
+    out.extend(sorted(observed.difference(out)))
+    return out
 
 
 def attach_claimed_group(survival_df: pd.DataFrame, agents_path: Path) -> pd.DataFrame:
@@ -375,6 +437,263 @@ def bootstrap_headline_metrics(
     }
 
 
+def bootstrap_category_uncertainty_metrics(
+    survival_subset: pd.DataFrame,
+    thread_metrics_subset: pd.DataFrame,
+    rng: np.random.Generator,
+    reps: int,
+) -> dict[str, Any]:
+    n_parents = int(len(survival_subset))
+    n_replied = int(np.sum(survival_subset["event_observed"].to_numpy(dtype=int)))
+    n_threads = int(thread_metrics_subset["thread_id"].nunique())
+    if n_parents == 0 or n_threads == 0:
+        return {
+            "n_parents": n_parents,
+            "n_replied": n_replied,
+            "n_threads": n_threads,
+            "reply_incidence": float("nan"),
+            "reply_incidence_ci_low": float("nan"),
+            "reply_incidence_ci_high": float("nan"),
+            "conditional_t50_seconds": float("nan"),
+            "conditional_t50_ci_low_seconds": float("nan"),
+            "conditional_t50_ci_high_seconds": float("nan"),
+            "conditional_t90_seconds": float("nan"),
+            "conditional_t90_ci_low_seconds": float("nan"),
+            "conditional_t90_ci_high_seconds": float("nan"),
+            "pooled_reciprocity": float("nan"),
+            "pooled_reciprocity_ci_low": float("nan"),
+            "pooled_reciprocity_ci_high": float("nan"),
+            "reentry_mean": float("nan"),
+            "reentry_mean_ci_low": float("nan"),
+            "reentry_mean_ci_high": float("nan"),
+            "reentry_median": float("nan"),
+            "reentry_median_ci_low": float("nan"),
+            "reentry_median_ci_high": float("nan"),
+        }
+
+    thread_ids = pd.Index(
+        sorted(
+            set(survival_subset["thread_id"].astype(str).tolist())
+            | set(thread_metrics_subset["thread_id"].astype(str).tolist())
+        )
+    )
+    n_clusters = int(len(thread_ids))
+    if n_clusters == 0:
+        raise ValueError("Bootstrap requires at least one thread cluster.")
+    cluster_map = pd.Series(np.arange(n_clusters), index=thread_ids)
+
+    event_observed = survival_subset["event_observed"].to_numpy(dtype=float)
+    durations_seconds = survival_subset["duration_hours"].to_numpy(dtype=float) * 3600.0
+    survival_cluster_codes_raw = survival_subset["thread_id"].astype(str).map(cluster_map)
+    if survival_cluster_codes_raw.isna().any():
+        raise ValueError("Failed to map survival rows to thread-cluster ids.")
+    survival_cluster_codes = survival_cluster_codes_raw.astype(int).to_numpy()
+
+    event_mask = event_observed > 0
+    conditional_seconds = durations_seconds[event_mask]
+    conditional_cluster_codes = survival_cluster_codes[event_mask]
+    if conditional_seconds.size:
+        cond_order = np.argsort(conditional_seconds, kind="stable")
+        conditional_seconds_sorted = conditional_seconds[cond_order]
+        conditional_cluster_codes_sorted = conditional_cluster_codes[cond_order]
+        conditional_t50_obs, conditional_t90_obs = np.quantile(conditional_seconds, [0.50, 0.90])
+    else:
+        conditional_seconds_sorted = np.array([], dtype=float)
+        conditional_cluster_codes_sorted = np.array([], dtype=int)
+        conditional_t50_obs, conditional_t90_obs = np.nan, np.nan
+
+    reciprocal_dyads = thread_metrics_subset["reciprocal_dyads_thread"].to_numpy(dtype=float)
+    dyads = thread_metrics_subset["dyads_thread"].to_numpy(dtype=float)
+    metric_cluster_codes_raw = thread_metrics_subset["thread_id"].astype(str).map(cluster_map)
+    if metric_cluster_codes_raw.isna().any():
+        raise ValueError("Failed to map thread-metric rows to thread-cluster ids.")
+    metric_cluster_codes = metric_cluster_codes_raw.astype(int).to_numpy()
+    dyads_total = float(np.sum(dyads))
+    pooled_reciprocity_obs = (
+        float(np.sum(reciprocal_dyads) / dyads_total) if dyads_total > 0 else float("nan")
+    )
+
+    reentry_values = thread_metrics_subset["reentry_rate"].to_numpy(dtype=float)
+    reentry_valid = np.isfinite(reentry_values)
+    if np.any(reentry_valid):
+        reentry_values_valid = reentry_values[reentry_valid]
+        reentry_cluster_codes_valid = metric_cluster_codes[reentry_valid]
+        reentry_order = np.argsort(reentry_values_valid, kind="stable")
+        reentry_values_sorted = reentry_values_valid[reentry_order]
+        reentry_cluster_codes_sorted = reentry_cluster_codes_valid[reentry_order]
+        reentry_mean_obs = float(np.mean(reentry_values_valid))
+        reentry_median_obs = float(np.median(reentry_values_valid))
+    else:
+        reentry_values_sorted = np.array([], dtype=float)
+        reentry_cluster_codes_sorted = np.array([], dtype=int)
+        reentry_mean_obs = float("nan")
+        reentry_median_obs = float("nan")
+
+    incidence_obs = float(n_replied / n_parents)
+
+    incidence_boot: list[float] = []
+    t50_boot: list[float] = []
+    t90_boot: list[float] = []
+    reciprocity_boot: list[float] = []
+    reentry_mean_boot: list[float] = []
+    reentry_median_boot: list[float] = []
+
+    for _ in range(reps):
+        sampled_clusters = rng.integers(0, n_clusters, size=n_clusters)
+        sampled_cluster_counts = np.bincount(sampled_clusters, minlength=n_clusters).astype(float)
+
+        surv_weights = sampled_cluster_counts[survival_cluster_codes]
+        surv_weight_sum = float(np.sum(surv_weights))
+        if surv_weight_sum > 0:
+            incidence_boot.append(float(np.sum(surv_weights * event_observed) / surv_weight_sum))
+
+        if conditional_seconds_sorted.size:
+            cond_weights = sampled_cluster_counts[conditional_cluster_codes_sorted]
+            t50, t90 = weighted_quantiles_from_sorted(
+                sorted_values=conditional_seconds_sorted,
+                sorted_weights=cond_weights,
+                probs=(0.50, 0.90),
+            )
+            t50_boot.append(t50)
+            t90_boot.append(t90)
+
+        metric_weights = sampled_cluster_counts[metric_cluster_codes]
+        dyads_weighted = float(np.sum(metric_weights * dyads))
+        if dyads_weighted > 0:
+            reciprocal_weighted = float(np.sum(metric_weights * reciprocal_dyads))
+            reciprocity_boot.append(reciprocal_weighted / dyads_weighted)
+
+        if reentry_values_sorted.size:
+            reentry_weights = sampled_cluster_counts[reentry_cluster_codes_sorted]
+            reentry_weight_sum = float(np.sum(reentry_weights))
+            if reentry_weight_sum > 0:
+                reentry_mean_boot.append(
+                    float(np.sum(reentry_weights * reentry_values_sorted) / reentry_weight_sum)
+                )
+                reentry_median_boot.append(
+                    weighted_quantiles_from_sorted(
+                        sorted_values=reentry_values_sorted,
+                        sorted_weights=reentry_weights,
+                        probs=(0.50,),
+                    )[0]
+                )
+
+    incidence_ci_low, incidence_ci_high = percentile_ci(incidence_boot)
+    t50_ci_low, t50_ci_high = percentile_ci(t50_boot)
+    t90_ci_low, t90_ci_high = percentile_ci(t90_boot)
+    reciprocity_ci_low, reciprocity_ci_high = percentile_ci(reciprocity_boot)
+    reentry_mean_ci_low, reentry_mean_ci_high = percentile_ci(reentry_mean_boot)
+    reentry_median_ci_low, reentry_median_ci_high = percentile_ci(reentry_median_boot)
+
+    return {
+        "n_parents": n_parents,
+        "n_replied": n_replied,
+        "n_threads": n_threads,
+        "reply_incidence": incidence_obs,
+        "reply_incidence_ci_low": incidence_ci_low,
+        "reply_incidence_ci_high": incidence_ci_high,
+        "conditional_t50_seconds": float(conditional_t50_obs),
+        "conditional_t50_ci_low_seconds": t50_ci_low,
+        "conditional_t50_ci_high_seconds": t50_ci_high,
+        "conditional_t90_seconds": float(conditional_t90_obs),
+        "conditional_t90_ci_low_seconds": t90_ci_low,
+        "conditional_t90_ci_high_seconds": t90_ci_high,
+        "pooled_reciprocity": pooled_reciprocity_obs,
+        "pooled_reciprocity_ci_low": reciprocity_ci_low,
+        "pooled_reciprocity_ci_high": reciprocity_ci_high,
+        "reentry_mean": reentry_mean_obs,
+        "reentry_mean_ci_low": reentry_mean_ci_low,
+        "reentry_mean_ci_high": reentry_mean_ci_high,
+        "reentry_median": reentry_median_obs,
+        "reentry_median_ci_low": reentry_median_ci_low,
+        "reentry_median_ci_high": reentry_median_ci_high,
+    }
+
+
+def build_moltbook_category_uncertainty_table(
+    cfg: Config,
+    moltbook_survival: pd.DataFrame,
+    thread_metrics: pd.DataFrame,
+) -> pd.DataFrame:
+    require_columns(
+        moltbook_survival,
+        ["thread_id", "submolt_category", "event_observed", "duration_hours"],
+        "moltbook_survival_for_category_uncertainty",
+    )
+    require_columns(
+        thread_metrics,
+        [
+            "thread_id",
+            "submolt_category",
+            "reentry_rate",
+            "reciprocal_dyads_thread",
+            "dyads_thread",
+        ],
+        "moltbook_thread_metrics_for_category_uncertainty",
+    )
+
+    survival = moltbook_survival.copy()
+    survival["thread_id"] = survival["thread_id"].astype(str)
+    survival["submolt_category"] = (
+        survival["submolt_category"].astype("string").fillna("Unknown").astype(str)
+    )
+
+    metrics = thread_metrics.copy()
+    metrics["thread_id"] = metrics["thread_id"].astype(str)
+    metrics["submolt_category"] = (
+        metrics["submolt_category"].astype("string").fillna("Unknown").astype(str)
+    )
+
+    observed_categories = set(survival["submolt_category"].tolist()) | set(
+        metrics["submolt_category"].tolist()
+    )
+    category_labels = ordered_category_labels(observed_categories)
+
+    group_specs: list[tuple[str, str]] = [("overall", "Overall")]
+    group_specs.extend(("submolt_category", category) for category in category_labels)
+
+    rows: list[dict[str, Any]] = []
+    for i, (group_family, label) in enumerate(group_specs):
+        if group_family == "overall":
+            survival_subset = survival
+            thread_subset = metrics
+        else:
+            survival_subset = survival[survival["submolt_category"] == label].copy()
+            thread_subset = metrics[metrics["submolt_category"] == label].copy()
+
+        bootstrap_seed = int(cfg.seed + 2101 + i)
+        row = bootstrap_category_uncertainty_metrics(
+            survival_subset=survival_subset,
+            thread_metrics_subset=thread_subset,
+            rng=np.random.default_rng(bootstrap_seed),
+            reps=cfg.bootstrap_reps,
+        )
+        row.update(
+            {
+                "group_family": group_family,
+                "submolt_category": label,
+                "bootstrap_reps": int(cfg.bootstrap_reps),
+                "bootstrap_cluster": "thread_id",
+                "ci_alpha": 0.05,
+                "analysis_seed": int(cfg.seed),
+                "bootstrap_seed": bootstrap_seed,
+                "input_survival_path": str(cfg.moltbook_survival_path),
+                "input_thread_metrics_path": str(cfg.moltbook_thread_metrics_path),
+            }
+        )
+        rows.append(row)
+
+    out = pd.DataFrame(rows)
+    out["group_order"] = out["group_family"].map({"overall": 0, "submolt_category": 1}).fillna(2)
+    out["category_order"] = out["submolt_category"].map(
+        {label: i for i, label in enumerate(["Overall", *category_labels])}
+    ).fillna(10_000)
+    out = out.sort_values(["group_order", "category_order"], kind="stable").drop(
+        columns=["group_order", "category_order"]
+    )
+    return out.reset_index(drop=True)
+
+
 def to_minutes(seconds: float) -> float:
     return float(seconds / 60.0) if np.isfinite(seconds) else float("nan")
 
@@ -555,6 +874,7 @@ def main() -> None:
     moltbook_survival = load_primary_survival(
         cfg.moltbook_survival_path, drop_censor_boundary=False
     )
+    moltbook_thread_metrics = load_thread_metrics(cfg.moltbook_thread_metrics_path)
     moltbook_survival = attach_claimed_group(moltbook_survival, cfg.moltbook_agents_path)
     reddit_survival = load_primary_survival(cfg.reddit_survival_path, drop_censor_boundary=True)
 
@@ -773,14 +1093,21 @@ def main() -> None:
     )
 
     model_fit_df = pd.DataFrame(model_fit_rows).sort_values("platform")
+    category_uncertainty_df = build_moltbook_category_uncertainty_table(
+        cfg=cfg,
+        moltbook_survival=moltbook_survival,
+        thread_metrics=moltbook_thread_metrics,
+    )
 
     write_csv(headline_df, cfg.headline_out_path)
     write_csv(model_fit_df, cfg.model_fit_out_path)
     write_csv(periodicity_df, cfg.periodicity_summary_out_path)
+    write_csv(category_uncertainty_df, cfg.category_uncertainty_out_path)
 
     print(f"Wrote {cfg.headline_out_path}")
     print(f"Wrote {cfg.model_fit_out_path}")
     print(f"Wrote {cfg.periodicity_summary_out_path}")
+    print(f"Wrote {cfg.category_uncertainty_out_path}")
     print(f"Wrote {cfg.ecdf_out_path}")
 
 

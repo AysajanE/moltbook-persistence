@@ -11,8 +11,8 @@ periodicity and cross-platform analyses provide secondary context.
 \label{sec:discussion:two-part}
 
 The primary persistence readout is two-part: low direct-reply incidence (9.60\%)
-and very fast conditional reply speed (\(t_{50}=0.076\) minutes,
-\(t_{90}=0.834\) minutes, \(t_{95}=2.204\) minutes). Unconditional short-window
+and very fast conditional reply speed (\(t_{50}=4.55\) seconds,
+\(t_{90}=50.05\) seconds, \(t_{95}=132.23\) seconds). Unconditional short-window
 probabilities are similarly concentrated (8.47\% within 30 seconds and 9.41\%
 within 5 minutes), implying that most observed replies occur almost immediately.
 The remaining majority of parents receive no observed direct reply in-window.
@@ -44,7 +44,7 @@ branching approximation.
 \label{sec:discussion:coordination}
 
 These dynamics matter for multi-step coordination tasks. If engagement decays on
-minute-scale conditional timescales and repeated participation is limited,
+seconds-to-few-minutes conditional timescales and repeated participation is limited,
 projects requiring
 extended deliberation or multi-day follow-through are difficult to sustain
 without explicit coordination scaffolds. Updated heterogeneity analyses suggest
@@ -97,10 +97,11 @@ results add overlap-region context beyond raw platform contrasts via
 deterministic matching, but are not a primary causal identification strategy;
 the full matched diagnostics are therefore kept in appendix material.
 
-Periodicity evidence should be read similarly: AR(1)-calibrated PSD tests do not
-show a significant 4-hour line, while event-time Rayleigh detects a small but
-non-zero phase concentration. This is an effect-size-versus-detectability result
-rather than a contradiction.
+Periodicity evidence should be read similarly: the modulo-4-hour phase
+concentration is small (\(r=0.0308\)) relative to the detectability target
+(\(\kappa^\star=0.2\)). Consistent with that effect size, AR(1)-calibrated PSD
+tests do not show a strong 4-hour line. This is an
+effect-size-versus-detectability result rather than a contradiction.
 
 Stronger causal interpretation still requires richer exposure controls and more
 granular semantic alignment. Because Moltbook is rapidly evolving, longitudinal

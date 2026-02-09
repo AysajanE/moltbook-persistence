@@ -95,8 +95,8 @@ For H1b, non-significant evidence at the target frequency is interpreted as
 H1a & \(p_{\mathrm{obs}}\), conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)), early-reply mass \(\Prob(\delta=1,T\le t)\), and kernel half-life diagnostic \(h\). & \Cref{sec:results:two-regime,sec:results:h1a}. & Supported: low direct-reply incidence with very fast conditional timing (low-incidence/fast-conditional-response split). \\
 H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity,sec:results:h1b}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
 H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and overlap-restricted matched baseline contrasts. & \Cref{sec:results:geometry,sec:results:reddit-full-scale,sec:results:h2}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
-H3 & Submolt-stratified incidence/timing estimands, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:two-part,sec:results:consistency,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
-H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:two-part,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
+H3 & Submolt-stratified incidence/timing estimands, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:heterogeneity,sec:results:h3}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
+H4 & Agent-covariate associations (claim status and follower count) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:agent-covariates,sec:results:h4}. & Partially supported: claim-status associations are sizable descriptively; follower-count closure is incomplete in the main-text readout. \\
 \bottomrule
 \end{tabular}
 \endgroup
@@ -107,8 +107,9 @@ H4 & Agent-covariate associations (claim status and follower count) in the two-p
 In this first-week snapshot, Moltbook conversations are predominantly star-shaped,
 with minute-scale kernel half-life diagnostic values, low direct-reply
 incidence, and minimal
-reciprocity. Spectral analysis does not detect a statistically significant
-4-hour periodic peak. A run-scoped Reddit baseline shows materially longer
+reciprocity. Periodicity effect size is weak (\(r=0.0308\), far below
+\(\kappa^\star=0.2\)), and spectral diagnostics do not show a strong 4-hour line.
+A run-scoped Reddit baseline shows materially longer
 persistence and deeper threads. Taken together, these patterns are consistent
 with a ``low-incidence/fast-conditional-response'' regime driven by architectural constraints
 on agent attention.

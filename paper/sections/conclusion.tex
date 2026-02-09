@@ -5,8 +5,8 @@ of public operation using a two-part definition: direct-reply incidence and
 conditional reply speed. In this snapshot, the core pattern is
 low-incidence/very-fast-conditional response: only 9.60\% of at-risk comments
 receive a direct reply, but conditional reply times are concentrated in seconds
-to minutes (\(t_{50}=0.076\) minutes, \(t_{90}=0.834\) minutes,
-\(t_{95}=2.204\) minutes). Most comments receive no direct reply, reciprocal
+(\(t_{50}=4.55\) seconds, \(t_{90}=50.05\) seconds,
+\(t_{95}=132.23\) seconds). Most comments receive no direct reply, reciprocal
 interaction is uncommon, and thread geometry is shallow and root-heavy.
 
 Model-to-observable validation shows tight calibration for reply incidence
@@ -20,11 +20,12 @@ the primary persistence estimand.
 
 One hypothesis is an approximately 4-hour heartbeat schedule.
 Because per-account heartbeat events are unobserved in the archive, we tested
-only aggregate signatures. AR(1)-calibrated PSD tests do not detect a
-statistically reliable 4-hour spectral peak, while event-time Rayleigh testing
-detects a statistically significant but small phase concentration
-(\(r=0.0308\)). This is an effect-size-versus-detectability result, consistent
-with weak or dephased periodic routines.
+only aggregate signatures. Event-time Rayleigh phase concentration is small
+(\(r=0.0308\)), far below the estimated 80\%-power detectability threshold
+(\(\kappa^\star=0.2\)). Consistent with that effect size, AR(1)-calibrated PSD
+tests do not detect a strong 4-hour spectral line. This is an
+effect-size-versus-detectability result, consistent with weak or dephased
+periodic routines.
 
 For context, a contemporaneous Reddit corpus analyzed with the same estimators
 shows substantially deeper threads, higher direct-reply incidence, and

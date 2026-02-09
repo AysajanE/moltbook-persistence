@@ -5,16 +5,16 @@ We report Moltbook results from the curated Observatory Archive snapshot
 and Reddit full-scale baseline results from the run-scoped curated Reddit
 corpus.
 Reproducibility details are provided in \Cref{sec:reproducibility}.
-We organize Results as a three-step pipeline: (1) persistence decomposition
-into incidence versus conditional timing, (2) structural signatures consistent
-with that decomposition, and (3) heterogeneity by topic and claim status.
-Periodicity tests and Reddit matching are retained only as compressed
-secondary context.
+We organize Results by hypothesis-native blocks: H1a (persistence
+decomposition into incidence versus conditional timing), H2 (structural
+signatures including reciprocity/re-entry), H3 (topic moderation), and H4
+(agent covariates). H1b periodicity tests and Reddit matching are retained only
+as compressed secondary context.
 Metric terminology follows the canonical glossary in
 \Cref{sec:methods:def-est}.
 
 
-\subsection{Result 1: Persistence Decomposition (Incidence vs Conditional Timing)}
+\subsection{H1a: Persistence Decomposition (Incidence vs Conditional Timing)}
 \label{sec:results:decomposition}
 \label{sec:results:two-part}
 
@@ -73,13 +73,13 @@ exponential kernel and reported as secondary.}
 \setlength{\tabcolsep}{3pt}
 \scriptsize
 \resizebox{\linewidth}{!}{%
-\begin{tabular}{@{}lrrrrrr@{}}
+\begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{Kernel half-life (diagnostic; min)} \\
+\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{$\Pr(\text{reply}\le 5\mathrm{m}\mid\text{reply})$ \%} & \textbf{Kernel half-life (diagnostic; min)} \\
 \midrule
-Overall & 223,316 & 9.60 [9.45, 9.76] & 4.55 [4.53, 4.58] & 50.05 & 88.30 & 0.691 \\
-Claimed & 20,667 & 19.23 [18.82, 19.66] & 4.42 [4.38, 4.45] & 6.29 & 94.99 & 0.419 \\
-Unclaimed & 201,743 & 8.65 [8.50, 8.79] & 4.59 [4.57, 4.62] & 63.40 & 86.79 & 0.754 \\
+Overall & 223,316 & 9.60 [9.45, 9.76] & 4.55 [4.53, 4.58] & 50.05 & 88.30 & 98.06 & 0.691 \\
+Claimed & 20,667 & 19.23 [18.82, 19.66] & 4.42 [4.38, 4.45] & 6.29 & 94.99 & 98.52 & 0.419 \\
+Unclaimed & 201,743 & 8.65 [8.50, 8.79] & 4.59 [4.57, 4.62] & 63.40 & 86.79 & 97.95 & 0.754 \\
 \bottomrule
 \end{tabular}
 \par}
@@ -112,6 +112,9 @@ The exponential kernel is close on event probability but substantially misses
 early conditional timing for Moltbook, so we treat the kernel half-life
 diagnostic as secondary and keep incidence plus conditional quantiles as primary
 estimands.
+This mismatch motivates treating (i) incidence and (ii) conditional timing
+quantiles as primary estimands, with the exponential half-life retained as a
+diagnostic timescale only.
 
 \begin{table}[t]
 \centering
@@ -128,17 +131,17 @@ Event probability (\%) & 9.60 & 9.91 & +0.31 \\
 \(p_{50}\) (s) & 4.55 & 39.94 & +35.39 \\
 \(p_{90}\) (s) & 50.05 & 134.98 & +84.93 \\
 \midrule
-\textbf{Reddit (minutes)} & \textbf{Observed} & \textbf{Fitted} & \textbf{Residual (fit - obs)} \\
+\textbf{Reddit (seconds; minutes in parentheses)} & \textbf{Observed} & \textbf{Fitted} & \textbf{Residual (fit - obs)} \\
 \midrule
 Event probability (\%) & 36.20 & 38.70 & +2.50 \\
-\(p_{10}\) (min) & 3.33 & 18.97 & +15.64 \\
-\(p_{50}\) (min) & 39.32 & 130.59 & +91.27 \\
-\(p_{90}\) (min) & 562.21 & 469.02 & -93.19 \\
+\(p_{10}\) (s) & 200.00 (3.33 min) & 1138.35 (18.97 min) & +938.35 (+15.64 min) \\
+\(p_{50}\) (s) & 2359.00 (39.32 min) & 7835.63 (130.59 min) & +5476.63 (+91.27 min) \\
+\(p_{90}\) (s) & 33732.50 (562.21 min) & 28141.25 (469.02 min) & -5591.25 (-93.19 min) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Structural Signatures Consistent with Low Incidence / Fast Conditional Response}
+\subsection{H2: Structural Signatures Consistent with Low Incidence / Fast Conditional Response}
 \label{sec:results:structure}
 \label{sec:results:geometry}
 \label{sec:results:consistency}
@@ -266,8 +269,8 @@ descriptive consistency checks rather than exact structural equalities.
 \textbf{Metric} & \textbf{Primary} & \textbf{One-parent/thread} & \textbf{Abs.\ diff.} & \textbf{Rel.\ diff. \%} \\
 \midrule
 Reply incidence \(\Pr(\delta=1)\) & 0.09596 & 0.07213 & 0.02383 & -24.84 \\
-Conditional \(t_{50}\) (min) & 0.07590 & 0.07519 & 0.00070 & -0.93 \\
-Conditional \(t_{90}\) (min) & 0.83416 & 0.68469 & 0.14947 & -17.92 \\
+Conditional \(t_{50}\) (s) & 4.55 & 4.51 & 0.04 & -0.93 \\
+Conditional \(t_{90}\) (s) & 50.05 & 41.08 & 8.97 & -17.92 \\
 Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \bottomrule
 \end{tabular}
@@ -276,58 +279,77 @@ Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \Cref{tab:dependence-robustness} shows the one-parent-per-thread sensitivity
 readout. Incidence decreases materially (9.60\% to 7.21\%), indicating that
 within-thread clustering contributes to the pooled incidence level. In contrast,
-the conditional median speed is nearly unchanged (0.07590 to 0.07519 minutes),
+the conditional median speed is nearly unchanged (4.55 to 4.51 seconds),
 so the fast conditional-reply regime is robust to this dependence control.
 
-\subsection{Result 3: Heterogeneity in Topic and Claim Moderation}
+\subsection{H3: Topic Moderation in Two-Part Dynamics}
 \label{sec:results:heterogeneity}
 
 \subsubsection{Stratification by Submolt Category}
 
 \begin{table}[t]
 \centering
-\caption{Submolt stratification for reply incidence and conditional reply speed. The kernel half-life diagnostic is included only as a secondary column.}
+\caption{Submolt stratification for reply incidence and conditional reply speed. Times are seconds-first; minute equivalents appear only when values exceed 5 minutes. The kernel half-life diagnostic is included only as a secondary column.}
 \label{tab:submolt-two-part}
+\begingroup
+\setlength{\tabcolsep}{3pt}
 \scriptsize
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
-\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (min)} & \textbf{$t_{90}$ (min)} & \textbf{$t_{95}$ (min)} & \textbf{Kernel half-life (diagnostic; min)} \\
+\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \%} & \textbf{$t_{50}$ (s)} & \textbf{$t_{90}$ (s)} & \textbf{$t_{95}$ (s)} & \textbf{Kernel half-life (diagnostic; min)} \\
 \midrule
-Builder/Technical & 8,396 & 1.72 & 1.731 & 7.248 & 18.332 & 2.979 \\
-Creative & 433 & 1.62 & 0.483 & 1.303 & 1.736 & 0.453 \\
-Other & 16,396 & 2.26 & 1.504 & 5.831 & 12.855 & 2.909 \\
-Philosophy/Meta & 5,831 & 1.80 & 1.717 & 47.813 & 62.683 & 7.768 \\
-Social/Casual & 189,765 & 10.95 & 0.075 & 0.414 & 1.776 & 0.593 \\
-Spam/Low-Signal & 2,495 & 0.88 & 1.315 & 4.220 & 4.341 & 1.313 \\
+Builder/Technical & 8,396 & 1.72 & 103.87 & 434.87 (7.25 min) & 1099.93 (18.33 min) & 2.979 \\
+Creative & 433 & 1.62 & 28.97 & 78.20 & 104.18 & 0.453 \\
+Other & 16,396 & 2.26 & 90.26 & 349.84 (5.83 min) & 771.27 (12.85 min) & 2.909 \\
+Philosophy/Meta & 5,831 & 1.80 & 103.00 & 2868.78 (47.81 min) & 3760.96 (62.68 min) & 7.768 \\
+Social/Casual & 189,765 & 10.95 & 4.52 & 24.83 & 106.58 & 0.593 \\
+Spam/Low-Signal & 2,495 & 0.88 & 78.88 & 253.22 & 260.44 & 1.313 \\
 \midrule
-Overall & 223,316 & 9.60 & 0.076 & 0.834 & 2.204 & 0.691 \\
+Overall & 223,316 & 9.60 & 4.55 & 50.05 & 132.23 & 0.691 \\
 \bottomrule
 \end{tabular}
+\par}
+\endgroup
 \end{table}
 
 The primary stratified pattern is incidence/speed heterogeneity. Social/Casual
 has the highest incidence (10.95\%) and very fast conditional timing
-(\(t_{90}=0.414\) minutes), whereas Builder/Technical and Philosophy/Meta have
-low incidence with materially slower conditional tails.
+(\(t_{90}=24.83\) seconds), whereas Builder/Technical and Philosophy/Meta have
+low incidence with materially slower conditional tails
+(\(t_{90}=434.87\) seconds [7.25 minutes] and \(2868.78\) seconds
+[47.81 minutes], respectively).
+Using category-cluster bootstrap intervals from
+\texttt{paper/tables/moltbook\_results\_category\_uncertainty.csv}, key-category
+uncertainty is: Social/Casual incidence 10.95\% [10.77\%, 11.13\%],
+\(t_{50}=4.52\) [4.50, 4.54] seconds, \(t_{90}=24.83\) [16.77, 36.12] seconds,
+pooled reciprocity 0.87\% [0.77\%, 0.96\%], and mean re-entry
+0.213 [0.211, 0.216], median re-entry 0.200 [0.200, 0.200];
+Philosophy/Meta incidence 1.80\% [1.27\%, 2.42\%],
+\(t_{50}=103.00\) [67.67, 154.04] seconds,
+\(t_{90}=2868.78\) [310.05, 4188.38] seconds
+([5.17, 69.81] minutes), pooled reciprocity 1.44\% [0.92\%, 2.18\%], and mean
+re-entry 0.108 [0.098, 0.119], median re-entry 0.000 [0.000, 0.000].
+Full category-level uncertainty is provided in
+Supplementary Material (S6).
 
-\subsubsection{Agent Heterogeneity in Incidence and Timing}
+\subsection{H4: Agent Covariates in Incidence and Timing}
+\label{sec:results:agent-covariates}
 
 Claim-status heterogeneity is reported directly in
 \Cref{tab:reply-dynamics}: claimed accounts have higher incidence and
 materially faster upper-tail conditional timing than unclaimed accounts.
 
-\subsection{Secondary Context: Periodicity}
+\subsection{Secondary Context for H1b: Periodicity}
 \label{sec:results:periodicity}
 
-Because the canonical timeline contains a 41.7-hour gap, periodicity is
-estimated on the longest contiguous segment only
-(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours). Modulo-4-hour
-Rayleigh concentration on this segment (\(N=220{,}461\) events) gives
-\(r=0.0308\), \(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and circular
-mean phase 153.2 minutes: statistically non-uniform but weak concentration.
-Detectability simulations indicate an 80\%-power threshold
-\(\kappa^\star=0.2\), so the observed concentration is well below a practically
-moderate/strong periodic signal.
+Effect size is weak: modulo-4-hour concentration is \(r=0.0308\)
+(about 3.1\% concentration), far below the estimated 80\%-power detectability
+threshold \(\kappa^\star=0.2\). Because the canonical timeline contains a
+41.7-hour gap, periodicity is estimated on the longest contiguous segment only
+(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours). On this segment
+(\(N=220{,}461\) events), Rayleigh testing gives \(Z=209.57\), Monte Carlo
+\(p=5\times 10^{-6}\), and circular mean phase 153.2 minutes.
 
 PSD/AR(1) and bin-width robustness checks are retained as supplementary
 diagnostics (\Cref{sec:appendix:periodicity-robustness}).
@@ -373,7 +395,12 @@ persistence regime in this early Moltbook window.
 \subsubsection{H1a Readout (Incidence + Conditional Speed)}
 \label{sec:results:h1a}
 H1a is supported by the low-incidence and very-fast-conditional-speed split in
-\Cref{sec:results:decomposition,sec:results:two-regime}.
+\Cref{sec:results:decomposition,sec:results:two-regime}. The H1a readout is:
+\(t_{50}=4.55\) seconds and \(t_{90}=50.05\) seconds; conditional short-window
+mass \(\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})=88.30\%\) and
+\(\Pr(\text{reply}\le 5\mathrm{m}\mid\text{reply})=98.06\%\); and unconditional
+mass \(\Pr(\text{reply}\le 30\mathrm{s})=8.47\%\) and
+\(\Pr(\text{reply}\le 5\mathrm{m})=9.41\%\).
 
 \subsubsection{H1b Readout (4-Hour Periodicity)}
 \label{sec:results:h1b}
@@ -410,7 +437,7 @@ association rather than causal effect.
 \label{sec:results:h4}
 H4 is partially supported in this snapshot. Claim-status covariates are
 associated with large descriptive differences in incidence and conditional timing
-(\Cref{sec:results:heterogeneity,tab:reply-dynamics}) and similar claimed/unclaimed stratified patterns in
+(\Cref{sec:results:agent-covariates,tab:reply-dynamics}) and similar claimed/unclaimed stratified patterns in
 \Cref{tab:model-observable-validation}. However, within-thread and repeated-author
 dependence limits model-based precision for isolating the claim indicator
 (\Cref{sec:results:decomposition}), and

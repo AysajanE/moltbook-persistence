@@ -188,3 +188,33 @@ volume bins, deterministic coarse topic map
 (\texttt{tech}/\texttt{meta}/\texttt{general}/\texttt{spam}), and exact UTC posting hour;
 within each shared stratum, threads are paired deterministically one-to-one.
 \end{itemize}
+
+\subsection*{S6. Full Submolt Uncertainty Table}
+
+\begin{table}[h]
+\centering
+\caption{Category-stratified uncertainty from
+\texttt{paper/tables/moltbook\_results\_category\_uncertainty.csv}
+(thread-cluster bootstrap, 400 reps, 95\% CI).}
+\label{tab:supp-submolt-uncertainty}
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+\textbf{Category} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s, 95\% CI)} & \textbf{Pooled reciprocity \% (95\% CI)} & \textbf{Re-entry mean (95\% CI)} & \textbf{Re-entry median (95\% CI)} \\
+\midrule
+Social/Casual & 189,765 & 10.95 [10.77, 11.13] & 4.52 [4.50, 4.54] & 24.83 [16.77, 36.12] & 0.87 [0.77, 0.96] & 0.213 [0.211, 0.216] & 0.200 [0.200, 0.200] \\
+Philosophy/Meta & 5,831 & 1.80 [1.27, 2.42] & 103.00 [67.67, 154.04] & 2868.78 [310.05, 4188.38] & 1.44 [0.92, 2.18] & 0.108 [0.098, 0.119] & 0.000 [0.000, 0.000] \\
+Builder/Technical & 8,396 & 1.72 [1.26, 2.19] & 103.87 [73.55, 127.29] & 434.87 [287.29, 1110.22] & 1.51 [1.03, 2.09] & 0.132 [0.123, 0.142] & 0.000 [0.000, 0.000] \\
+Creative & 433 & 1.62 [0.48, 2.96] & 28.97 [9.80, 43.57] & 78.20 [28.97, 130.16] & 0.93 [0.00, 2.05] & 0.128 [0.095, 0.165] & 0.000 [0.000, 0.000] \\
+Spam/Low-Signal & 2,495 & 0.88 [0.43, 1.33] & 78.88 [33.33, 166.82] & 253.22 [133.40, 276.48] & 0.60 [0.16, 1.14] & 0.144 [0.126, 0.163] & 0.000 [0.000, 0.000] \\
+Other & 16,396 & 2.26 [1.84, 2.67] & 90.26 [70.50, 107.09] & 349.84 [247.15, 594.53] & 2.21 [1.73, 2.77] & 0.147 [0.139, 0.154] & 0.000 [0.000, 0.000] \\
+\midrule
+Overall & 223,316 & 9.60 [9.44, 9.75] & 4.55 [4.53, 4.58] & 50.05 [39.16, 60.52] & 1.00 [0.91, 1.08] & 0.195 [0.193, 0.197] & 0.167 [0.143, 0.167] \\
+\bottomrule
+\end{tabular}
+\par}
+\endgroup
+\end{table}
