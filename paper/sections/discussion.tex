@@ -55,37 +55,36 @@ causal attribution remains out of scope.
 \label{sec:discussion:design}
 
 We frame platform design as an operations-research decision-support mapping from
-inputs to outputs under explicit trade-offs. The design goal is to increase the
-probability of sustained multi-turn coordination (for example, larger
-\(\Prob(D_j\ge K)\) for \(K\ge3\)). Candidate levers are mechanism-linked:
-memory scaffolding and thread summaries (\(\beta\downarrow\)), resurfacing and
-visibility weighting (\(\alpha\uparrow\)), and scheduled re-entry prompts or
-cadence alignment (\(b(t)\) phase/coherence). Model-aligned outputs are direct
-reply incidence, expected non-root branching
-\((\mu\approx\alpha/\beta)\), and depth-tail probabilities.
+inputs to outputs under explicit trade-offs. A practical template is: (1) set
+inputs \((K,\tau_K,B,L)\), where \(\tau_K\) is a target depth probability
+threshold (\(\Pr(D_j\ge K)\ge\tau_K\)), \(B\) is compute/attention budget, and
+\(L\) is acceptable notification load; (2) compute the required persistence
+multiplier
+\(m_\mu=\tau_K^{1/(K-1)}/\mu_0\) under
+\(\Pr(D_j\ge K)\approx\mu^{K-1}\); (3) allocate that multiplier across
+incidence versus conditional-timing margins, either through an incidence proxy
+\(p_{\mathrm{reply,req}}\approx m_\mu p_{\mathrm{reply},0}\) (holding
+conditional timing shape fixed) or a timing proxy
+\(\beta_{\mathrm{req}}\approx\beta_0/m_\mu\) (holding \(\alpha\) fixed in
+\(\mu\approx\alpha/\beta\)).
 
-A worked sensitivity illustrates the scale of these implications under the
-current approximation. Using existing fitted overall diagnostics, the baseline
-kernel half-life diagnostic is 0.691 minutes (\Cref{tab:reply-dynamics}) and
-predicted non-root branching is 0.104 (\Cref{tab:model-observable-validation}).
-If \(\beta\) is reduced by 50\% (equivalently, the kernel half-life diagnostic
-doubles to
-\(2\times 0.691=1.382\) minutes) while holding \(\alpha\) and \(b(t)\) fixed,
-then \(\mu\) doubles from 0.104 to 0.208 under
-\(\mu\approx\alpha/\beta\). Using the same validation approximation as
-\Cref{tab:model-observable-validation} (\(\Pr(D_j\ge3)\approx\mu^2\),
-\(\Pr(D_j\ge5)\approx\mu^4\)), predicted depth-tail probabilities become
-\(\Pr(D_j\ge3)\approx(0.208)^2\approx 0.0436\) (equivalently
-\(4\times 0.0109\)) and
-\(\Pr(D_j\ge5)\approx(0.208)^4\approx 0.00192\) (equivalently
-\(16\times 0.00012\)). This remains subcritical (\(\mu<1\)) but implies a
-materially thicker deep-tail than the current fitted baseline.
+When instantiated, this template should draw \(\mu_0\) and
+\(p_{\mathrm{reply},0}\) only from already reported baseline estimands
+(\Cref{tab:model-observable-validation,tab:reply-dynamics}). The resulting
+\(m_\mu\), \(p_{\mathrm{reply,req}}\), and \(\beta_{\mathrm{req}}\) are
+planning calculations under the same approximation, not new empirical results.
 
-The same framework also clarifies trade-offs: higher persistence can increase
-notification/computation load, reallocate limited agent attention away from new
-threads, and raise spam or strategic-manipulation risk under aggressive
-resurfacing. These intervention implications are mechanism-consistent
-hypotheses under the fitted model, not experimentally tested causal effects.
+The same estimands provide an explicit A/B evaluation map. Memory-aid arms are
+scored on service continuity (higher incidence among eligible parents and/or
+slower conditional decay as a \(\beta\)-proxy) relative to \((B,L)\)
+constraints. Resurfacing arms are scored as increases in effective arrival rate
+into the service system (incidence/\(\alpha\)-proxy shifts) and associated load
+costs. Re-entry prompt arms are scored on changes in re-entry frequency and
+depth-tail outcomes per incremental notification load. In capacity-allocation
+terms, resurfacing raises effective arrival rates, while memory scaffolding
+improves service continuity and can reduce abandonment from stale threads.
+These intervention implications are mechanism-consistent hypotheses under the
+fitted model, not experimentally tested causal effects.
 
 \subsection{Broader Implications}
 \label{sec:discussion:broader}
