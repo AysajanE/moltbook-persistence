@@ -1,0 +1,150 @@
+\section*{Supplementary Material: Extended Technical Details}
+
+This supplementary file contains extended material that supports the main
+manuscript: full proofs, expanded categorization triggers, periodicity
+robustness artifacts, and detailed cross-platform matching
+diagnostics.
+
+\subsection*{S1. Full Proofs}
+
+\paragraph{S1.1 Proof of influence--persistence trade-off proposition.}
+For fixed \(s\), use
+\[
+\mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
+\]
+with \(b(\cdot)\ge0\). Differentiating under the integral sign gives
+\[
+\frac{\partial \mu_i(s)}{\partial \alpha_i}
+=\int_0^\infty b(s+u)e^{-\beta_i u}\,du>0,
+\]
+and
+\[
+\frac{\partial \mu_i(s)}{\partial \beta_i}
+=\int_0^\infty b(s+u)\,\alpha_i(-u)e^{-\beta_i u}\,du<0.
+\]
+Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
+decreasing in \(\beta_i\).
+
+\paragraph{S1.2 Proof of expected thread-size proposition.}
+Let \(X_0\) denote depth-1 comments from the root, with \(\mathbb{E}[X_0]=\mu_0\).
+Each non-root comment initiates an independent subcritical cascade with mean
+offspring \(\mu<1\). Expected non-root comments in generation \(k\) beyond depth 1
+are \(\mu_0\mu^k\), \(k\ge0\). Therefore
+\[
+\mathbb{E}[N_j]=\sum_{k=0}^{\infty}\mu_0\mu^k=\frac{\mu_0}{1-\mu}.
+\]
+
+\paragraph{S1.3 Proof of periodicity proposition.}
+Under assumptions, mean intensity is
+\[
+m(t):=\mathbb{E}[\lambda(t)]=\mathbb{E}[b(t)g(t)]=b(t)\mathbb{E}[g(t)].
+\]
+If \(\mathbb{E}[g(t)]\) is \(\tau\)-periodic, then \(m(t)\) is \(\tau\)-periodic.
+For binned counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
+\[
+\mathbb{E}[C_r]=\int_{r\Delta}^{(r+1)\Delta} m(s)\,ds,
+\]
+so expected discrete-time counts inherit periodic structure and produce elevated
+periodogram/PSD mass near harmonics \(\ell/\tau\), up to finite-window leakage.
+
+\subsection*{S2. Submolt Keyword Triggers (Expanded)}
+
+\begin{table}[h]
+\centering
+\caption{Representative keyword triggers per submolt category. Categories are
+applied in priority order (Spam first).}
+\small
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Category} & \textbf{Keyword triggers (examples)} \\
+\midrule
+Spam/Low-Signal & crypto, bitcoin, airdrop, nft, defi, token, solana, scam, shitpost \\
+Builder/Technical & programming, coding, build, builders, dev, engineering, tools, automation, research, framework, mcp, tech \\
+Philosophy/Meta & philosophy, consciousness, existential, meta, souls, musings, aithoughts, ponderings \\
+Creative & writing, poetry, music, creative, story, theatre, shakespeare \\
+Social/Casual & general, casual, introductions, jokes, gaming, humanwatching, social, todayilearned, random \\
+Other & (default: no keyword match) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S3. Periodicity Robustness Beyond Main Test}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/periodicity_bin_robustness_moltbook.png}
+\caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
+\end{figure}
+
+On the longest contiguous segment (\(N=220{,}461\) events), event-time
+modulo-4-hour testing gives resultant length \(r=0.0308\),
+\(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and mean phase 153.2 minutes.
+Detectability simulations (50,000 reps) show near-nominal null size at
+\(\kappa=0\) (power \(=0.0496\)) and power \(=1.0\) by \(\kappa=0.2\), with
+80\% power crossing at \(\kappa=0.2\).
+
+Supplementary PSD robustness for the 4-hour target frequency yields AR(1)-
+calibrated \(p\)-values 0.508 (5-minute bins), 0.501 (15-minute bins), and
+0.556 (30-minute bins).
+
+\subsection*{S4. Cross-Platform Matching Diagnostics (Expanded)}
+
+\paragraph{S4.1 Matched-sample flow.}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
+\caption{Matched-sample flow for the coarse cross-platform design.}
+\end{figure}
+
+Input includes 34,730 Moltbook threads and 1,104 Reddit threads. Exact-overlap
+strata on coarse topic, UTC posting hour, and early-engagement bin retain 2,641
+Moltbook threads and 888 Reddit threads across 118 shared strata. Deterministic
+1:1 matching yields 813 pairs (2.34\% of Moltbook threads).
+
+\paragraph{S4.2 Balance summary (before/after matching).}
+\begin{table}[h]
+\centering
+\caption{Covariate balance before and after coarsened exact matching.
+SMD = standardized mean difference (absolute value);
+TVD = total variation distance (categorical covariates only).}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+& \multicolumn{2}{c}{\textbf{Before Matching}} & \multicolumn{2}{c}{\textbf{After Matching}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\textbf{Covariate} & \textbf{$|$SMD$|$} & \textbf{TVD} & \textbf{$|$SMD$|$} & \textbf{TVD} \\
+\midrule
+Post hour (UTC) & 0.158 & --- & 0.000 & --- \\
+Early comments (30 min) & 0.836 & --- & 0.052 & --- \\
+Topic (coarse) & 3.89 & 0.901 & 0.000 & 0.000 \\
+Post hour bin & 0.217 & 0.156 & 0.000 & 0.000 \\
+Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{S4.3 Matched-subset reply-kernel half-life details.}
+Restricting survival units to matched threads gives 0.063 hours on Moltbook
+(3.77 minutes; 95\% CI: [1.19, 7.06] minutes; \(n=1{,}841\), 22 events) and
+2.44 hours on Reddit (95\% CI: [2.13, 2.79] hours; \(n=7{,}979\), 2,882
+Events). These are platform-level contextual contrasts, not paired
+thread-level survival effects.
+
+\subsection*{S5. Operational Estimation Settings}
+
+\begin{itemize}
+\item Coverage and at-risk rules: each non-root comment is one candidate-parent
+survival unit; first-reply durations are right-censored at observation boundary;
+no replies are imputed across the canonical 41.7-hour timeline gap.
+\item Periodicity preprocessing: tests use the longest contiguous segment
+(63.5 hours). Supplementary PSD checks use 15-minute bins with 5- and 30-minute
+robustness repeats.
+\item Bootstrap mechanics: Moltbook-only and Reddit-only confidence intervals
+use thread-cluster bootstrap with \texttt{bootstrap\_reps=400}; matched paired
+effects use \texttt{bootstrap\_reps=1000}; matched-subset half-life intervals use
+\texttt{half\_life\_bootstrap\_reps=400}.
+\item Matching mechanics: coarsened exact matching uses first-30-minute action
+volume bins, deterministic coarse topic map
+(\texttt{tech}/\texttt{meta}/\texttt{general}/\texttt{spam}), and exact UTC posting hour;
+within each shared stratum, threads are paired deterministically one-to-one.
+\end{itemize}

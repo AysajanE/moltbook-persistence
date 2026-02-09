@@ -55,10 +55,18 @@
 % Hyperref configuration
 \hypersetup{
   colorlinks=true,
+  hypertexnames=false,
   linkcolor=blue!70!black,
   urlcolor=blue!70!black,
   citecolor=green!50!black
 }
+
+% Ensure unique hyperlink anchors when float/equation counters are reset (e.g., appendix)
+\makeatletter
+\providecommand*{\theHfigure}{\thefigure}
+\providecommand*{\theHtable}{\thetable}
+\providecommand*{\theHequation}{\theequation}
+\makeatother
 
 \journal{European Journal of Operational Research}
 
@@ -83,5 +91,6 @@ Branching dynamics \sep Coordination limits
 \bibliographystyle{ejor_template/elsarticle-harv}
 \bibliography{references}
 
+\clearpage
 \input{sections/main_appendix}
 \end{document}

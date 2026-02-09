@@ -1,92 +1,26 @@
-\section{Reproducibility and Data Access}
+\section{Data and Code Availability}
 \label{sec:reproducibility}
 
-This appendix provides concrete run-level provenance for the reported
-tables/figures and data-access constraints.
+Code and derived reproducibility artifacts for this manuscript version are
+archived on Zenodo \citep{eziz2026zenodoejorrepro}. The archive contains the
+analysis scripts, manuscript-facing figures/tables, run manifests, checksum
+manifests, and sanitized instance-level derived tables.
 
-\subsection{Immutable Archive and Manifest}
+The Moltbook source dataset is publicly available at Hugging Face
+\citep{simulamet2026observatoryarchive}. Raw Reddit exports are not
+redistributed because of platform terms; only IDs/anonymized derivatives and
+aggregate outputs are shared.
 
-An immutable reproducibility archive is available on Zenodo
-\citep{eziz2026zenodoejorrepro}. It contains:
+\paragraph{Reproducibility recipe (canonical runs).}
 \begin{itemize}
-\item analysis scripts used for the manuscript (\texttt{analysis/06\_moltbook\_only\_analysis.py},
-\texttt{analysis/07\_reddit\_only\_analysis.py},
-\texttt{analysis/08\_cross\_platform\_matched\_analysis.py});
-\item manuscript-facing artifacts under \texttt{paper/figures/} and
-\texttt{paper/tables/};
-\item run manifests and run-scoped outputs under \texttt{outputs/.../run\_*};
-\item sanitized instance-level derived feature tables under
-\texttt{data\_features\_sanitized/};
-\item a complete checksum manifest (\texttt{SHA256SUMS.txt}) and machine-readable
-file manifest (\texttt{RELEASE\_MANIFEST.json}).
+\item Create the Python 3.11 environment with \texttt{make install}.
+\item Use the pinned curated inputs documented in the Zenodo manifest and
+repository \texttt{README.md}.
+\item Re-run the three analysis pipelines with seed \texttt{20260206}.
+\item Verify run manifests for Moltbook-only, Reddit-only, and matched runs.
+\item Confirm manuscript artifact linkage with
+\texttt{MANUSCRIPT\_ARTIFACT\_PROVENANCE.csv}.
+\item Validate release integrity with \texttt{SHA256SUMS.txt}.
+\item Use repository docs for environment and operational details not needed in
+this manuscript appendix.
 \end{itemize}
-The file \texttt{MANUSCRIPT\_ARTIFACT\_PROVENANCE.csv} in the Zenodo archive maps each
-manuscript figure/table file to its run-scoped source artifact.
-
-\subsection{Pinned Analysis Runs (Scripts, Inputs, Outputs)}
-
-All three main pipelines use fixed seed \texttt{20260206} and write
-\texttt{run\_manifest.json} files.
-
-\paragraph{Moltbook-only analysis}
-\begin{itemize}
-\item Script: \texttt{analysis/06\_moltbook\_only\_analysis.py}
-\item Input snapshot: \texttt{data\_curated/hf\_archive/snapshot\_20260204-234429Z/}
-\item Run ID: \texttt{run\_20260206-145240Z}
-\item Derived features: \texttt{data\_features/moltbook\_only/run\_20260206-145240Z/}
-\item Run outputs: \texttt{outputs/moltbook\_only/run\_20260206-145240Z/}
-\item Run manifest:
-\texttt{outputs/moltbook\_only/run\_20260206-145240Z/run\_manifest.json}
-\end{itemize}
-
-\paragraph{Reddit-only analysis}
-\begin{itemize}
-\item Script: \texttt{analysis/07\_reddit\_only\_analysis.py}
-\item Curated input root: \texttt{data\_curated/reddit/}
-\item Run ID: \texttt{attempt\_scaled\_20260206-142651Z}
-\item Derived features:
-\texttt{data\_features/reddit\_only/attempt\_scaled\_20260206-142651Z/}
-\item Run outputs:
-\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/}
-\item Run manifest:
-\texttt{outputs/reddit\_only/attempt\_scaled\_20260206-142651Z/run\_manifest.json}
-\end{itemize}
-
-\paragraph{Cross-platform matched analysis}
-\begin{itemize}
-\item Script: \texttt{analysis/08\_cross\_platform\_matched\_analysis.py}
-\item Inputs (from prior runs):\\
-\texttt{data\_features/moltbook\_only/run\_20260206-145240Z/\{thread\_metrics,thread\_events,survival\_units\}.parquet}\\
-\texttt{data\_features/reddit\_only/attempt\_scaled\_20260206-142651Z/\{thread\_metrics,thread\_events,survival\_units\}.parquet}
-\item Archived run outputs:
-\texttt{outputs/cross\_platform\_matched/run\_20260206-181250Z/},
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182318Z/},
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/}
-\item Run manifests:
-\texttt{outputs/cross\_platform\_matched/run\_20260206-181250Z/run\_manifest.json},
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182318Z/run\_manifest.json},
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/run\_manifest.json}
-\end{itemize}
-
-\subsection{Manuscript Artifact Linkage}
-
-Manuscript-facing figure/table assets in \texttt{paper/figures/} and
-\texttt{paper/tables/} are linked to run outputs via
-\texttt{MANUSCRIPT\_ARTIFACT\_PROVENANCE.csv} (SHA-256 based). For this draft, most files
-match run-scoped outputs exactly; two artifacts are documented as presentation-level
-derivatives from the same runs:
-\begin{itemize}
-\item \texttt{paper/figures/reply\_hazard\_moltbook.png} is linked to
-\texttt{outputs/moltbook\_only/run\_20260206-145240Z/tables/reply\_hazard\_binned.csv};
-\item \texttt{paper/tables/cross\_platform\_matched\_paired\_effects.csv} differs from
-run CSV formatting only and is linked to
-\texttt{outputs/cross\_platform\_matched/run\_20260206-182842Z/tables/paired\_effects.csv}.
-\end{itemize}
-
-\subsection{Data Access and Redistribution Limits}
-
-The primary Moltbook archive is publicly available at Hugging Face
-\citep{simulamet2026observatoryarchive}. Reddit raw exports are not redistributed
-because of platform terms. The Zenodo package therefore provides only
-run-scoped aggregate outputs, run manifests, and sanitized instance-level derived
-tables (IDs/authors pseudonymized; no raw post/comment text fields redistributed).

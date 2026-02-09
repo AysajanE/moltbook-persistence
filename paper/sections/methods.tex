@@ -108,37 +108,25 @@ using fixed deterministic resampling settings (\Cref{sec:appendix:operational-de
 \subsection{Periodicity Detection}
 \label{sec:methods:periodicity}
 
-To test for heartbeat-scale periodicity, we analyze the longest contiguous
-coverage segment and transform binned counts to a detrended series \(Y_t\) using
-log-count stabilization and moving-average detrending.
+Because the canonical timeline contains a 41.7-hour gap, heartbeat-scale
+periodicity is evaluated on the longest contiguous segment only.
 
-We estimate PSD with Welch's method on \(Y_t\). We test the target frequency
-\(f_\tau = 1/\tau \approx 0.25\,\mathrm{hr}^{-1}\) using two statistics:
-Fisher's \(g=\max_f I(f)/\sum_f I(f)\), and target-frequency power
-\(T_\tau=I(f_\tau^\star)\), where \(I(f)\) is the positive-frequency periodogram
-of \(Y_t\) and \(f_\tau^\star\) is the nearest Fourier frequency to 0.25
-hr\(^{-1}\).
+The primary inferential test is event-time modulo-\(\tau\) circular uniformity
+on raw timestamps (with \(\tau=4\) hours). Define
+\(\theta_n := 2\pi((t_n \bmod \tau)/\tau)\), resultant
+\(R=\left|\frac{1}{N}\sum_{n=1}^N e^{i\theta_n}\right|\), and Rayleigh statistic
+\(Z=NR^2\). We report \(R\), \(Z\), Monte Carlo \(p\)-value, and mean phase.
 
-Null calibration uses a first-order autoregressive (AR(1)) process fit directly to \(Y_t\):
-\(Y_t=\phi Y_{t-1}+\varepsilon_t\), with \(\phi\) estimated by least squares and
-innovation scale from residual standard deviation. Monte Carlo exceedance
-\(p\)-values are computed for both statistics, and bin-width robustness checks
-are run on the same contiguous segment. Exact binning and simulation settings
-are reported in \Cref{sec:appendix:operational-details}.
+To address detectability explicitly, we estimate a power curve over phase
+concentration amplitudes \(\kappa\) using the observed sample size \(N\) and the
+same Monte Carlo calibration procedure. We then report
+\(\kappa^\star:=\inf\{\kappa:\widehat{\mathrm{power}}(\kappa)\ge0.8\}\), the
+minimum concentration amplitude detectable with at least 80\% power under this
+window length and event count.
 
-To complement PSD-based tests, we run an event-time modulo-\(\tau\) circular
-uniformity test on raw event timestamps. With
-\(\theta_n := 2\pi\big((t_n \bmod \tau)/\tau\big)\), the Rayleigh resultant
-length is \(R=\left|\frac{1}{N}\sum_{n=1}^N e^{i\theta_n}\right|\) and test
-statistic is \(Z=NR^2\). We calibrate the \(p\)-value by Monte Carlo and report
-the mean phase. Detectability is summarized with a power curve over circular
-concentration amplitudes \(\kappa\), using the observed \(N\), \(\alpha\), and
-critical \(Z\).
-
-At agent level, we compute lagged autocorrelation on 15-minute activity series
-for agents with at least 10 comments in the contiguous segment and report the
-mean lag-4-hour autocorrelation with bootstrap confidence intervals (operational
-settings in \Cref{sec:appendix:operational-details}).
+PSD/AR(1) and bin-width diagnostics are retained as supplementary checks
+(\Cref{sec:appendix:periodicity-robustness}) rather than primary inferential
+tests in the main manuscript.
 
 \subsection{Cross-Platform Comparison}
 \label{sec:methods:comparison}

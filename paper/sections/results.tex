@@ -301,85 +301,36 @@ so the fast conditional-reply regime is robust to this dependence control.
 \subsection{Result 4 (Secondary): Periodicity Tests}
 \label{sec:results:periodicity}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/psd_moltbook.png}
-\caption{Power spectral density of aggregate comment activity in the longest contiguous
-comment-time segment.}
-\label{fig:psd}
-\end{figure}
+Because the canonical timeline contains a 41.7-hour gap, periodicity is
+estimated on the longest contiguous segment only
+(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours).
 
-Because the canonical timeline contains a 41.7-hour gap, periodicity is estimated on the
-longest contiguous segment (2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours).
+The primary test is event-time modulo-4-hour Rayleigh concentration. On this
+segment (\(N=220{,}461\) events), resultant length is \(r=0.0308\), with
+\(Z=209.57\), Monte Carlo \(p=5\times 10^{-6}\), and circular mean phase
+153.2 minutes. Although statistically non-uniform, the concentration magnitude
+is small (\(\approx 3.1\%\) of perfect phase alignment).
 
-At the 4-hour target frequency (\(f=0.25\) hr\(^{-1}\)), the peak-to-background ratio is
-6.41, defined as \(P(f_\tau^\star)/\widetilde{P}_{\mathrm{bg}}\), where
-\(P(f_\tau^\star)\) is Welch power at the nearest frequency bin to
-\(0.25\) hr\(^{-1}\) and \(\widetilde{P}_{\mathrm{bg}}\) is the median Welch
-power across positive frequencies excluding the
-\(\pm 0.03\) hr\(^{-1}\) neighborhood around \(f_\tau^\star\). However, first-order autoregressive (AR(1))-calibrated tests do not support significance
-(Fisher's \(g=0.094\), \(p=0.686\); target-frequency power \(p=0.501\)).
-The dominant spectral component is at 0.156 hr\(^{-1}\) (period 6.4 hours), not 4 hours.
+Detectability simulations (same \(N\), null calibration, and decision rule)
+show near-nominal null size (power \(=0.0496\) at \(\kappa=0\)) and an
+80\%-power threshold of \(\kappa^\star=0.2\). Therefore, this window has high
+power for moderate/strong 4-hour concentration but limited power for weak
+concentration below \(\kappa=0.2\). The observed \(r=0.0308\) is far below this
+detectability scale.
 
-The non-significant 4-hour conclusion is stable across bin widths on the same contiguous
-segment: target-frequency AR(1)-calibrated \(p\)-values are 0.508 (5 min), 0.501 (15 min),
-and 0.556 (30 min). The dominant period shifts from 5.33 to 8.0 hours across these binning
-choices, but none imply a significant 4-hour peak; the corresponding robustness
-plot is provided in \Cref{sec:appendix:periodicity-robustness}.
-
-Event-time modulo-4-hour testing provides a complementary readout. On the same
-contiguous segment (\(N=220{,}461\) events), the Rayleigh resultant length is
-\(r=0.0308\), with \(Z=209.57\) and Monte Carlo
-\(p=5\times 10^{-6}\); the circular mean phase is 153.2 minutes within the
-4-hour cycle. The effect size is small (\(r\approx 3.1\%\) phase concentration)
-despite formal significance. Detectability simulations indicate correct null
-size (power \(=0.0496\) at \(\kappa=0\)). The estimated 80\%-power
-detectability threshold is \(\kappa^\star=0.2\), so this window would detect a
-4-hour phase concentration at or above \(\kappa=0.2\) with at least 80\%
-probability under the simulation design.
-
-These findings are coherent with the non-significant AR(1)-calibrated
-target-frequency PSD result: Rayleigh can detect weak but non-uniform phase
-concentration at very large \(N\), while narrowband spectral tests at exactly
-4 hours remain non-significant when coherence is low and schedules are
-dephased/jittered.
-
-Among 1,076 agents with at least 10 comments in the contiguous segment, mean lag-4-hour
-autocorrelation in 15-minute binned activity is 0.111
-(95\% bootstrap CI: [0.100, 0.122]).
-This does not contradict the non-significant aggregate 4-hour spectral peak:
-lag-4-hour autocorrelation reflects short-lag persistence and does not uniquely identify
-a 4-hour periodic driver, and it is consistent with weak or dephased heartbeat-like
-behavior that is not strong enough to produce a significant aggregate spectral peak
-in this short contiguous window.
+PSD/AR(1) and bin-width robustness checks are retained as supplementary
+diagnostics (\Cref{sec:appendix:periodicity-robustness}).
 
 \subsection{Result 5 (Secondary Context): Reddit Baseline and Overlap-Restricted Matching}
 \label{sec:results:reddit-full-scale}
 
-The Reddit baseline corpus (\Cref{sec:data:reddit}) contains 1,772
-submissions, 9,878 comments, and 1,104 threads with at least one comment. Comment timestamps
-span 2026-01-31T00:03:20Z to 2026-02-04T23:59:34Z. Under the same estimators,
-Reddit is deeper and slower: mean maximum depth 2.17 (vs.\ 1.38 on Moltbook),
-reply incidence 36.2\% (vs.\ 9.60\%), and reply-kernel half-life 2.61 hours
-(95\% CI: [2.29, 2.95], vs.\ 0.011 hours on Moltbook). Reddit periodicity also
-does not show a significant 4-hour target peak under AR(1)-calibrated tests
-(\(p=0.685\)), despite detectable periodic structure at other frequencies
-(Fisher's \(g\), \(p<0.001\)). Full Reddit diagnostics are reported in
-\Cref{sec:appendix:reddit-details}.
-
-\subsubsection{Coarse Matched Cross-Platform Context}
-\label{sec:results:comparison}
-
-The matched comparison is used only as non-causal overlap-region context.
-Under deterministic coarse matching (\Cref{sec:methods:comparison}), 813 pairs
-are formed; paired means are lower for Moltbook across comments per thread,
-depth, unique participants, thread duration, and re-entry
-(\Cref{tab:cross-platform-paired-effects}), and all two-sided Wilcoxon
-signed-rank tests reject at conventional levels (\(p < 10^{-8}\)). Because only
-2.34\% of Moltbook threads appear in the matched sample, this readout should
-not be interpreted as a platform-wide causal effect. Flow accounting, balance
-summary, the paired-effects table, and matched-subset half-life details are
-reported in \Cref{sec:appendix:comparison-details,sec:appendix:match-halflife}.
+Secondary Reddit context is directionally consistent with the Moltbook
+interpretation: deeper threads and slower reply persistence under the same
+estimators. The overlap-restricted matched comparison is retained only as
+non-causal context and represents a small overlap subset (813 matched pairs;
+2.34\% of Moltbook threads). Detailed Reddit diagnostics, paired outcomes, and
+matching diagnostics are provided in supplementary material
+(\Cref{sec:appendix:reddit-details,sec:appendix:comparison-details,sec:appendix:match-halflife}).
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
@@ -398,8 +349,8 @@ Model-to-observable validation shows tight
 incidence calibration but overprediction of deeper non-root branching tails.
 One-parent-per-thread robustness lowers pooled incidence but leaves conditional
 median speed essentially unchanged. Periodicity and cross-platform matching are
-secondary: 4-hour periodicity is not detected under AR(1)-calibrated PSD tests,
-while event-time Rayleigh detects only a small concentration effect, and
+secondary: modulo-4-hour testing detects only weak concentration
+(\(r=0.0308\)) relative to the \(\kappa^\star=0.2\) detectability threshold, and
 matched cross-platform contrasts are overlap-region, non-causal context.
 Taken together, these findings indicate a low-incidence/fast-conditional-response
 persistence regime in this early Moltbook window.
@@ -411,8 +362,8 @@ H1a is supported by the low-incidence and very-fast-conditional-speed split in
 
 \subsubsection{H1b Readout (4-Hour Periodicity)}
 \label{sec:results:h1b}
-H1b is not detected in this snapshot under AR(1)-calibrated target-frequency
-tests (\(p=0.501\) at 15-minute bins; 0.508 and 0.556 at 5- and 30-minute
-bins). Event-time Rayleigh testing indicates statistically detectable but small
-phase concentration (\(r=0.0308\)), consistent with weak/dephased periodicity
-rather than a strong aggregate 4-hour spectral line.
+H1b is not supported as a strong 4-hour coherence claim in this snapshot.
+Modulo-4-hour Rayleigh testing detects statistically non-uniform but weak phase
+concentration (\(r=0.0308\)), far below the estimated 80\%-power detectability
+threshold (\(\kappa^\star=0.2\)); this is consistent with weak/dephased
+periodicity rather than a practically strong aggregate 4-hour rhythm.
