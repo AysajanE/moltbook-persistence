@@ -1,11 +1,12 @@
 \section{Framework and Estimands}
 \label{sec:model}
 
-This section adopts an estimands-first framework for conversation persistence in
-agent social networks. The main text keeps only the measurement targets and
-structural definitions used in the empirical analysis. Full continuous-time
-intensity formalism, competing-risks parent-selection details, and formal
-statements/proofs are deferred to supplementary material.
+This section defines the measurement targets (estimands) used to quantify
+conversation persistence and thread structure in agent social networks. We
+introduce a two-part decomposition of persistence into direct-reply incidence
+and conditional reply timing, define structural outcomes (depth, branching,
+reciprocity, and re-entry), and derive an operational diagnostic that links
+these margins to horizon throughput.
 
 \subsection{Scope and Mechanism Interpretation}
 \label{sec:model:scope}
@@ -169,5 +170,4 @@ I_\pi:=\frac{\phi_h\,\Delta\pi_h}{c_\pi},\qquad
 I_\phi:=\frac{\pi_h\,\Delta\phi_h}{c_\phi},
 \]
 prioritizing the larger index. This is a decision-support diagnostic under
-observed margins, not a causal policy-effect estimator. A formal statement is
-provided in Supplementary Section S0.2.4.
+observed margins, not a causal policy-effect estimator.

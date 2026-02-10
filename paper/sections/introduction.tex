@@ -34,7 +34,7 @@ agent attention. The operational design problem is to allocate limited
 intervention budget across incidence-lift levers (for example resurfacing or
 visibility reminders) versus timing-lift levers (for example memory/context
 support) to maximize downstream coordination throughput, such as
-\(\Prob(D_j\ge K)\) and re-entry incidence.
+conversation depth and repeat participation (re-entry).
 In this framing, our contribution is not only descriptive: the incidence margin
 diagnoses participation bottlenecks, while the conditional timing margin
 diagnoses latency bottlenecks, and the two margins define a policy-priority
@@ -42,15 +42,16 @@ control panel.
 
 Our objective is to formalize and empirically validate a two-part control panel
 for conversational persistence in Moltbook's first week: (i) direct-reply
-incidence and (ii) conditional reply latency, with explicit mapping to
-depth-throughput outcomes. In scope are this decomposition, its structural
-consequences for depth, branching, reciprocity, and re-entry, and heterogeneity
-analyses only when they sharpen interpretation of which margin constrains
-coordination. Out of scope are dedicated thread-duration inference,
-cross-platform baseline-comparison mechanics, and detailed periodicity
-machinery as primary claims; thread duration is reported only as an ancillary
-descriptive/contextual metric, and Reddit baseline context/periodicity are
-treated as secondary contextual or supplementary analyses.
+incidence and (ii) conditional reply latency. We map these two margins to depth
+and related thread-structure outcomes (branching, reciprocity, and re-entry).
+We include heterogeneity analyses only when they clarify which margin constrains
+coordination.
+
+We do not attempt dedicated thread-duration inference, nor do we treat
+cross-platform baseline comparison mechanics or detailed periodicity machinery
+as primary claims. Thread duration is reported only as an ancillary descriptive
+metric, and Reddit baseline context and periodicity are treated as secondary
+contextual checks.
 
 \paragraph{Identification scope}
 This paper reports observational measurement targets from archived first-week
@@ -68,7 +69,7 @@ execution.
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
 
-Guided by the horizon-limited cascade framework (\Cref{sec:model}) and prior
+Guided by the horizon-limited cascade framework in \Cref{sec:model} and prior
 qualitative commentary used for hypothesis motivation
 \citep{willison2026moltbook, alexander2026afterweekend},
 we test four hypotheses. H1a posits short exponential-equivalent kernel half-life
@@ -91,7 +92,6 @@ and the estimators in \Cref{sec:methods}, and evaluate them in \Cref{sec:results
 For compact orientation, H1a/H1b correspond to \Cref{sec:results:decomposition,sec:results:periodicity},
 H2 to \Cref{sec:results:structure,sec:results:reddit-full-scale},
 H3 to \Cref{sec:results:heterogeneity}, and H4 to \Cref{sec:results:agent-covariates}.
-The full hypothesis-to-measurement-target roadmap table is provided in the supplementary material.
 
 \subsection{Preview of Findings}
 
@@ -113,7 +113,7 @@ Aligned to this objective, the paper delivers three contributions. First, we
 formalize an OR diagnostic for horizon throughput \(q_h\): a decomposition into
 incidence and conditional timing on a common risk set, with a derived
 cost-adjusted priority rule for deciding whether to invest in participation
-uplift or latency reduction (\Cref{sec:model:or-diagnostic}). This turns a
+uplift or latency reduction as formalized in \Cref{sec:model:or-diagnostic}. This turns a
 standard survival decomposition into a decision-support control panel. Second,
 using the Moltbook Observatory Archive
 \citep{simulamet2026observatoryarchive}, we provide an analytic
@@ -139,5 +139,4 @@ reviews stochastic-process foundations for interaction persistence, then network
 considerations. \Cref{sec:limitations} addresses limitations and ethical
 considerations. \Cref{sec:conclusion} concludes with key takeaways and future
 work. Reproducibility and data-availability statements are provided in the
-required manuscript statements, and supplementary material provides extended
-derivations and diagnostics.
+required manuscript statements.

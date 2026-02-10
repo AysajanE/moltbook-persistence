@@ -3,8 +3,8 @@
 
 Estimands are defined in \Cref{sec:model:estimands}. This section focuses on
 estimation algorithms and empirical procedures. Low-level operational settings
-(binning, detrending, and bootstrap mechanics) are documented in supplementary
-material.
+(binning, detrending, and bootstrap mechanics) are summarized where they are
+used.
 
 \subsection{Conversation Geometry}
 \label{sec:methods:geometry}
@@ -48,8 +48,7 @@ raw archive tables, contiguous-window recomputation (pre-gap and post-gap),
 gap-overlap exclusions (\(X\in\{6,24\}\) hours before gap start), and
 horizon-standardized \(\Prob(\delta=1,T\le t)\) at
 \(t\in\{30\mathrm{s},5\mathrm{min},1\mathrm{h}\}\) using explicit risk sets.
-Full definitions and provenance-backed outputs are reported in
-Supplementary Section S6.4.
+We report these robustness checks in the Results section.
 
 \paragraph{Part 1: incidence model}
 Primary incidence readouts are horizon-standardized probabilities at fixed
@@ -84,10 +83,8 @@ fit Weibull and lognormal-style alternatives to \(T_m\mid \delta_m=1\).
 
 For kernel diagnostics, we fit an exponential-kernel hazard with \(b(t)=1\) as
 a timescale-separation approximation for identifying \(\beta\), while periodic
-modulation is tested separately at the aggregate level
-(\Cref{sec:methods:periodicity}). The full continuous-time intensity and
-competing-risks parent-selection formalization are deferred to supplementary
-material (Section S0).
+modulation is tested separately at the aggregate level in the periodicity
+analysis below.
 
 \begin{remark}[Estimand interpretation]
 \label{rem:estimand}
@@ -131,20 +128,14 @@ The main-text periodicity readout is event-time modulo-4-hour concentration
 \(\kappa^\star\) (the first tested \(\kappa\) on the coarse grid
 \(0.0, 0.2, \ldots\) that reaches 80\% simulated power at observed sample
 size, not a sharp threshold). Power spectral density (PSD) and first-order autoregressive
-(AR(1)) calibration checks, plus bin-width sensitivity, are retained in
-Supplementary Section S3.
+(AR(1)) calibration checks, plus bin-width sensitivity, are used as additional
+diagnostics.
 
 \subsection{Reddit Baseline Context}
 \label{sec:methods:comparison}
 
 To contextualize Moltbook against a human-platform baseline, we compute the
 same geometry and two-part reply estimands on a run-scoped Reddit corpus.
-Given cross-platform confounding (interface, ranking, moderation, and
-participation incentives) and known Reddit curation losses, baseline
-comparisons are descriptive, non-causal, and secondary.
-Main text reports only high-level directional contrasts; baseline mechanics,
-overlap diagnostics, and matched analyses are deferred to Supplementary
-Sections S3.3 and S4--S4.4.
 
 All analyses are run in Python with fixed seeds and deterministic preprocessing;
 reproducibility and data-availability details are provided in the required

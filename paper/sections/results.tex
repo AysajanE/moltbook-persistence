@@ -9,8 +9,8 @@ manuscript statements.
 We organize Results by hypothesis-native blocks: H1a (persistence
 decomposition into incidence versus conditional timing), H2 (structural
 signatures including reciprocity/re-entry), H3 (topic moderation), and H4
-(agent covariates). H1b periodicity tests and Reddit baseline context are retained only
-as compressed secondary context.
+(agent covariates). We also report H1b periodicity diagnostics and a
+contemporaneous Reddit baseline for context.
 Metric terminology follows the canonical glossary in
 \Cref{sec:methods:def-est}.
 
@@ -103,7 +103,7 @@ cloglog coefficients (from \(-1.62\) to \(-2.56\)). The claimed-group
 coefficient is positive (\(+0.844\)) but has wide two-way-clustered uncertainty
 (95\% CI: [\(-0.39\), 2.08]). Accordingly, claim-status interpretation relies
 on the follow-up-standardized descriptive contrasts in
-\Cref{tab:reply-dynamics} and Supplementary Section S6.5.
+\Cref{tab:reply-dynamics}.
 
 \subsubsection{Timing Shape Diagnostic}
 
@@ -113,8 +113,8 @@ show modest calibration for in-window event probability (Moltbook: 9.60\%
 observed vs.\ 9.91\% fitted; Reddit: 36.20\% observed vs.\ 38.70\% fitted) but
 large early-quantile errors. For Moltbook, fitted \(p_{50}\) is 39.94 seconds
 versus 4.55 seconds observed, and fitted \(p_{90}\) is 134.98 seconds versus
-50.05 seconds observed. Analogous quantile overstatement appears for Reddit in
-Supplementary Section S6.1. We therefore do not treat parametric timing fits as
+50.05 seconds observed. Analogous quantile overstatement appears for Reddit. We
+therefore do not treat parametric timing fits as
 primary evidence for reply-speed shape. Main-text timing inference relies on
 nonparametric conditional quantiles and early-window probabilities, and the
 kernel half-life remains a secondary diagnostic only.
@@ -123,19 +123,18 @@ kernel half-life remains a secondary diagnostic only.
 \label{sec:results:gap-robustness}
 
 Coverage-gap diagnostics indicate a comment-stream interruption in the archive
-rather than complete platform inactivity (Supplementary Section S6.4).
+rather than complete platform inactivity.
 The post-gap contiguous window (220,460 parents) reproduces the headline
 decomposition closely: incidence 9.71\%, \(t_{50}=4.55\) seconds, and
 \(t_{90}=48.66\) seconds versus 9.60\%, 4.55 seconds, and 50.05 seconds in the
-full window (Supplementary Section S6.4). Excluding parents whose
+full window. Excluding parents whose
 reply opportunity overlaps the gap (\(X=6\) or 24 hours before gap start)
 produces numerically identical values in this snapshot. The pre-gap contiguous
 window is only 2.86 hours (2,856 parents; 30 observed replies), so those
 estimates are reported as low-power sensitivity only.
 Horizon-standardized risk-set probabilities remain close at short horizons
 (30 seconds and 5 minutes) and rise modestly at 1 hour, consistent with
-short-follow-up censoring near the observation boundary
-(Supplementary Section S6.4).
+short-follow-up censoring near the observation boundary.
 
 \subsection{H2: Structural Signatures Consistent with Low Incidence / Fast Conditional Response}
 \label{sec:results:structure}
@@ -180,14 +179,14 @@ comments.}
 \Cref{fig:branching-by-depth} shows strong root concentration. The root receives 5.57 direct
 replies on average, while depth-1 and depth-2 nodes receive 0.153 and 0.008 direct replies,
 respectively. This is the expected star-shaped pattern under rapid branching decay.
-We evaluate the corresponding thread-size consistency implication in this same
-structural-signatures block (\Cref{sec:results:consistency}).
+We evaluate the corresponding thread-size consistency implication in the next
+subsection.
 
 \subsubsection{Reciprocity and Re-Entry}
 
 Dyadic reciprocity is low: 1,621 of 162,430 dyads are bidirectional (0.998\%).
 Reciprocal chains are short (median chain length 2; mean 2.09). Thread-level re-entry is also
-limited, with mean 0.195 and median 0.167 (distribution deferred to the supplementary material).
+limited, with mean 0.195 and median 0.167.
 Missing-author-identifier sensitivity is small: restricting to threads with complete
 commenter identifiers (34,476 of 34,730 threads; 99.3\%) leaves re-entry and pooled
 dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
@@ -203,7 +202,7 @@ offspring mean \(\mu_0 \approx 5.57\) and an effective depth-tail slope estimate
 heuristic \(\E[N_j]\approx \mu_0/(1-\mu)\) with the heuristic mapping
 \(\mu \approx \hat{s}_{\mathrm{depth}}\) gives
 \(\E[N_j] \approx \mu_0/(1-\hat{s}_{\mathrm{depth}}) \approx 6.6\) comments per
-thread, close to the observed mean of 6.43 comments per thread (\Cref{sec:data}).
+thread, close to the observed mean of 6.43 comments per thread.
 
 \subsubsection{Model-to-Observable Coherence Check}
 
@@ -269,17 +268,16 @@ has the highest incidence (10.95\%) and very fast conditional timing
 low incidence with materially slower conditional tails
 (\(t_{90}=434.87\) seconds [7.25 minutes] and \(2868.78\) seconds
 [47.81 minutes], respectively).
-Category-cluster bootstrap intervals preserve this ranking (Supplementary
-Section S7): Social/Casual remains high-incidence/fast-tail, while
-Philosophy/Meta remains low-incidence/slow-tail with low median re-entry.
-Follow-up-standardized incidence at fixed horizons yields the same ordering
-(Supplementary Section S6.5): for example, Social/Casual has
+Category-cluster bootstrap intervals preserve this ranking: Social/Casual
+remains high-incidence/fast-tail, while Philosophy/Meta remains
+low-incidence/slow-tail with low median re-entry. Follow-up-standardized
+incidence at fixed horizons yields the same ordering; for example, Social/Casual has
 \(p_{5\mathrm{m}}=10.80\%\) and \(p_{1\mathrm{h}}=11.21\%\), while
 Philosophy/Meta has \(p_{5\mathrm{m}}=1.32\%\) and \(p_{1\mathrm{h}}=1.70\%\).
 Because submolt categories are assigned by deterministic keyword triggers on
-submolt names, we report keyword-mapping sensitivity checks in Supplementary
-Section S2.1; the Social/Casual versus Philosophy/Meta incidence/tail ordering
-is unchanged under alternative trigger lists and exclusion rules.
+submolt names, we assess keyword-mapping sensitivity under alternative trigger
+lists and exclusion rules; the Social/Casual versus Philosophy/Meta
+incidence/tail ordering is unchanged across these variants.
 
 \subsection{H4: Agent Covariates in Incidence and Timing}
 \label{sec:results:agent-covariates}
@@ -301,20 +299,18 @@ a sharp threshold. The corresponding mean resultant length at \(\kappa=0.2\)
 is \(\rho\approx0.0995\), still well above observed \(r=0.0308\). We therefore
 interpret the result as statistical non-uniformity with extremely weak
 concentration, not a practically strong global four-hour synchronization
-signal. Supplementary PSD/AR(1) and bin-width diagnostics similarly show no
-dominant four-hour line.
+signal. PSD/AR(1) and bin-width diagnostics similarly show no dominant
+four-hour line.
 
 \subsection{Secondary Context: Reddit Baseline under Shared Estimators}
 \label{sec:results:reddit-full-scale}
 
-Secondary Reddit context is retained only as descriptive orientation under
-shared estimators. We do not treat these cross-platform contrasts as an
-identification anchor because platforms differ in interface, ranking,
-moderation, and participation incentives, and because curated Reddit data
-include known curation losses. Matched-overlap support is sparse (813 pairs;
+To contextualize Moltbook against a human-platform baseline, we compute the
+same estimators on a contemporaneous run-scoped Reddit corpus. Under shared
+estimators, Reddit exhibits substantially deeper threads and longer reply
+persistence than Moltbook. Matched-overlap support is sparse (813 pairs;
 2.34\% of Moltbook threads), and matched-subset survival on Moltbook has only
-22 events. Accordingly, baseline mechanics, overlap diagnostics, and matched
-analyses are deferred to Supplementary Sections S3.3 and S4--S4.4.
+22 events, so matched cross-platform designs are underpowered in this snapshot.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
