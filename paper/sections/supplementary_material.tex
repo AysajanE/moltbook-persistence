@@ -5,6 +5,30 @@ content from the main manuscript: formal derivations, periodicity
 detectability details, matching diagnostics/mechanics, robustness tables moved
 from main, and reproducibility/data-availability details.
 
+\subsection*{Roadmap Table (Moved from Main Text)}
+
+\begin{table}[h]
+\centering
+\caption{Hypothesis roadmap (moved from the main manuscript to meet the page limit): measurement targets, empirical readout location, and headline finding.}
+\label{tab:supp-intro-roadmap}
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.09\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
+\toprule
+\textbf{Hyp.} & \textbf{Measurement target(s)} & \textbf{Section in main manuscript} & \textbf{Key result} \\
+\midrule
+H1a & Horizon-standardized incidence \(p_{5\mathrm{m}},p_{1\mathrm{h}}\), secondary \(p_{\mathrm{obs}}\), and conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)). & Sections 6.1 and 6.7. & Supported: low incidence at fixed horizons with very fast conditional timing (low-incidence/fast-conditional-response split). \\
+H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and coarse-grid detectability reference (\(\kappa^\star\)). & Section 6.5. & Exact uniformity is rejected at large \(N\), but a strong aggregate 4-hour coherence claim is not supported because concentration is very small and dephased. \\
+H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and Reddit baseline contrasts under the same estimators. & Sections 6.2, 6.6, and 6.7. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
+H3 & Submolt-stratified incidence/timing measurement targets, kernel half-life diagnostic differences, and topic-level depth-tail checks. & Sections 6.3 and 6.7. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
+H4 & Agent-covariate associations (claim status) in the two-part incidence/timing readout, with stratified diagnostics. & Sections 6.4 and 6.7. & Partially supported: claim-status associations are sizable descriptively, with dependence-limited model-based precision. \\
+\bottomrule
+\end{tabular}
+\endgroup
+\end{table}
+
 \subsection*{S0. Deferred Main-Text Formalism and Proof Targets}
 \label{sec:appendix}
 \label{sec:appendix:proofs}
@@ -587,3 +611,64 @@ derivatives and aggregate outputs are shared.
 \item Use repository docs for environment and operational details not needed in
 main text.
 \end{itemize}
+
+\subsection*{S9. Deferred Main-Text Figure: Re-Entry Distribution}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/reentry_distribution_moltbook.png}
+\caption{Distribution of thread-level re-entry rate
+\(\mathrm{RE}_j^{\mathrm{comment}}\) over Moltbook threads with at least one
+comment (\(N=34{,}730\)); root-post authorship is excluded unless the root author later appears
+in the comment sequence.}
+\label{fig:supp-reentry-distribution}
+\end{figure}
+
+\subsection*{S10. Deferred Main-Text Table: Descriptive Statistics}
+
+\begin{table}[h]
+\centering
+\caption{Descriptive statistics for processed Moltbook threads (\(N=34{,}730\) threads with at least one comment; moved from the main manuscript).}
+\label{tab:supp-descriptive}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std} & \textbf{Min} & \textbf{Max} \\
+\midrule
+Comments per post & 6.43 & 5 & 7.04 & 1 & 846 \\
+Maximum depth per thread & 1.38 & 1 & 0.49 & 1 & 5 \\
+Thread duration (hours) & 0.06 & 0.04 & 0.21 & 0 & 20.6 \\
+Unique agents per thread\textsuperscript{a} & 4.57 & 4 & 3.15 & 0 & 74 \\
+Re-entry rate\textsuperscript{b} & 0.19 & 0.17 & 0.21 & 0 & 0.98 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\raggedright\footnotesize\textsuperscript{a}Counts distinct resolved commenter identifiers
+(the post author is not counted separately). Threads where all commenter
+\texttt{agent\_id} values are null record zero.
+\textsuperscript{b}Computed on non-root comments only. Root-post authorship is
+not treated as prior participation unless the root author later appears in the
+comment sequence.
+\end{table}
+
+\subsection*{S11. Deferred Main-Text Table: Moltbook Archive Schema Summary}
+
+\begin{table}[h]
+\centering
+\caption{Moltbook Observatory Archive structure in the curated first-week snapshot (moved from the main manuscript).}
+\label{tab:supp-dataset}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+\textbf{Table} & \textbf{Description} & \textbf{Rows} & \textbf{Key Fields} \\
+\midrule
+\texttt{agents} & Agent profiles and metadata & 25,597 & \texttt{id}, \texttt{karma}, \texttt{follower\_count} \\
+\texttt{posts} & Root posts with scores & 119,677 & \texttt{id}, \texttt{agent\_id}, \texttt{submolt}, \texttt{created\_at\_utc} \\
+\texttt{comments} & Comments with parent links & 226,173 & \texttt{id}, \texttt{post\_id}, \texttt{parent\_id}, \texttt{created\_at\_utc} \\
+\texttt{submolts} & Community metadata & 3,678 & \texttt{name}, \texttt{subscriber\_count} \\
+\texttt{snapshots} & Periodic observatory metrics & 114 & \texttt{timestamp}, \texttt{total\_agents}, \texttt{active\_agents\_24h} \\
+\texttt{word\_frequency} & Hourly word counts & 15,346 & \texttt{word}, \texttt{hour}, \texttt{count} \\
+\bottomrule
+\end{tabular}
+\end{table}
