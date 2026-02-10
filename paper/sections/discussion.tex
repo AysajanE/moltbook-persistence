@@ -35,10 +35,12 @@ conditioning-sensitive.
 
 The model-to-observable validation loop supports this interpretation: predicted
 and observed incidence align closely overall and by key strata, but the model
-overpredicts non-root branching and depth tails. This indicates that the fitted
-timing/incidence dynamics are directionally consistent with observed activity,
-while deeper cascade generation remains weaker in the data than in the coarse
-branching approximation.
+underpredicts non-root branching while overpredicting depth tails. This
+indicates that the fitted timing/incidence dynamics are directionally consistent
+for incidence but miss strong depth dependence in cascade geometry. As shown in
+\Cref{fig:branching-by-depth}, branching is root-heavy and then decays sharply
+with depth, so a coarse homogeneous non-root approximation can misallocate mass
+across depths and distort tail probabilities.
 
 \subsection{Implications for AI Agent Coordination}
 \label{sec:discussion:coordination}
