@@ -1,7 +1,6 @@
 \noindent This supplementary material provides additional mathematical details
-and supporting proofs, robustness and diagnostic analyses, cross-platform
-matching mechanics, and reproducibility information that complement the main
-manuscript.
+and proofs, robustness and diagnostic analyses, cross-platform matching
+mechanics, and reproducibility information that complement the main manuscript.
 
 \section*{Hypothesis Roadmap}
 
@@ -28,7 +27,7 @@ H4 & Agent-covariate associations (claim status) in the two-part incidence/timin
 \endgroup
 \end{table}
 
-\section*{S0. Mathematical Formalism and Supporting Proofs}
+\section*{S0. Mathematical Framework and Proofs}
 \label{sec:appendix}
 \label{sec:appendix:proofs}
 
@@ -52,17 +51,18 @@ Conditional on an event at time \(t\), parent assignment follows competing risks
 This provides the formal construction underlying the main-manuscript section
 ``Framework and Estimands.''
 
-\subsection*{S0.2 Formal statements and proofs}
+\subsection*{S0.2 Propositions and Proofs}
 
 \subsubsection*{S0.2.1 Influence--persistence trade-off}
+\begin{proposition}
 \label{supp:s0-tradeoff}
-\label{app:proof-tradeoff}
 Under nonnegative availability,
 \(\mu_i(s)=\int_0^\infty b(s+u)\alpha_i e^{-\beta_i u}\,du\) is increasing in
 \(\alpha_i\) and decreasing in \(\beta_i\).
+\end{proposition}
 
-\subsubsection*{S1.1 Proof of S0.2.1 (influence--persistence trade-off)}
-\label{supp:s1-tradeoff}
+\begin{proof}
+\label{app:proof-tradeoff}
 For fixed \(s\), use
 \[
 \mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
@@ -79,18 +79,20 @@ and
 \]
 Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
 decreasing in \(\beta_i\).
+\end{proof}
 
 \subsubsection*{S0.2.2 Root-special expected thread size}
+\begin{proposition}
 \label{supp:s0-thread-size}
-\label{app:proof-thread-size}
 With root offspring mean \(\mu_0\),
 non-root offspring mean \(\mu<1\), and standard independence assumptions,
 \[
 \mathbb{E}[N_j]=\frac{\mu_0}{1-\mu}.
 \]
+\end{proposition}
 
-\subsubsection*{S1.2 Proof of S0.2.2 (root-special expected thread size)}
-\label{supp:s1-thread-size}
+\begin{proof}
+\label{app:proof-thread-size}
 Let \(X_0\) denote depth-1 comments from the root, with \(\mathbb{E}[X_0]=\mu_0\).
 Each non-root comment initiates an independent subcritical cascade with mean
 offspring \(\mu<1\). Expected non-root comments in generation \(k\) beyond depth 1
@@ -98,18 +100,20 @@ are \(\mu_0\mu^k\), \(k\ge0\). Therefore
 \[
 \mathbb{E}[N_j]=\sum_{k=0}^{\infty}\mu_0\mu^k=\frac{\mu_0}{1-\mu}.
 \]
+\end{proof}
 
 \subsubsection*{S0.2.3 Periodic mean-intensity detectability}
+\begin{proposition}
 \label{supp:s0-periodicity}
-\label{app:proof-periodicity}
 If
 \(\lambda(t)=b(t)g(t)\), \(b(t)\) is \(\tau\)-periodic, and \(\mathbb{E}[g(t)]\) is
 \(\tau\)-periodic (or approximately constant on the \(\tau\)-scale), then
 \(\mathbb{E}[\lambda(t)]\) is \(\tau\)-periodic and long-window binned-count spectra
 exhibit mass near \(\ell/\tau\), up to finite-window and leakage effects.
+\end{proposition}
 
-\subsubsection*{S1.3 Proof of S0.2.3 (periodic mean-intensity detectability)}
-\label{supp:s1-periodicity}
+\begin{proof}
+\label{app:proof-periodicity}
 Under assumptions, mean intensity is
 \[
 m(t):=\mathbb{E}[\lambda(t)]=\mathbb{E}[b(t)g(t)]=b(t)\mathbb{E}[g(t)].
@@ -122,8 +126,10 @@ For binned counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
 so expected discrete-time counts inherit periodic structure and produce elevated
 periodogram/power spectral density (PSD) mass near harmonics \(\ell/\tau\), up to
 finite-window leakage.
+\end{proof}
 
 \subsubsection*{S0.2.4 Horizon-throughput decomposition and priority rule}
+\begin{proposition}
 \label{supp:s0-or-diagnostic}
 For horizon \(h\), define
 \[
@@ -142,9 +148,9 @@ dG=G'(q_h)\left(\phi_h\,d\pi_h+\pi_h\,d\phi_h\right).
 With per-unit intervention costs \(c_\pi,c_\phi>0\), one-step budget allocation
 prioritizes incidence over timing when
 \(\phi_h\,d\pi_h/c_\pi > \pi_h\,d\phi_h/c_\phi\), and timing otherwise.
+\end{proposition}
 
-\subsubsection*{S1.4 Proof of S0.2.4 (horizon-throughput decomposition and priority rule)}
-\label{supp:s1-or-diagnostic}
+\begin{proof}
 By the law of total probability on \(R_h\),
 \[
 \mathbb{P}(T_m\le h\mid R_h)
@@ -168,6 +174,7 @@ cost-normalized local gains:
 Since \(G'(q_h)\ge0\) for monotone throughput objectives, the preferred margin
 is incidence iff \(\phi_h\,d\pi_h/c_\pi > \pi_h\,d\phi_h/c_\phi\); otherwise
 timing is preferred.
+\end{proof}
 
 \subsection*{S0.3 Model extensions for future estimation}
 \label{sec:model:extensions}
@@ -609,6 +616,12 @@ derivatives and aggregate outputs are shared.
 
 \section*{S9. Re-Entry Distribution}
 
+This section reports the distribution of the thread-level re-entry rate
+\(\mathrm{RE}_j^{\mathrm{comment}}\), which summarizes repeated participation by the
+same agent within a thread. Figure \ref{fig:supp-reentry-distribution} shows the
+empirical distribution across Moltbook threads with at least one comment
+(\(N=34{,}730\)).
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/reentry_distribution_moltbook.png}
@@ -620,6 +633,11 @@ in the comment sequence.}
 \end{figure}
 
 \section*{S10. Descriptive Statistics}
+
+Table \ref{tab:supp-descriptive} reports descriptive statistics for the
+processed Moltbook thread sample used in the empirical analyses
+(\(N=34{,}730\) threads with at least one comment), including thread size, depth,
+duration, distinct participants, and re-entry.
 
 \begin{table}[h]
 \centering
@@ -648,6 +666,10 @@ comment sequence.
 \end{table}
 
 \section*{S11. Moltbook Archive Schema Summary}
+
+Table \ref{tab:supp-dataset} summarizes the curated Moltbook archive tables used
+in this study (row counts and key fields), to help readers map analysis inputs
+to the underlying archive structure.
 
 \begin{table}[h]
 \centering
