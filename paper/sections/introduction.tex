@@ -54,9 +54,10 @@ secondary contextual or supplementary analyses.
 This paper reports observational measurement targets from archived first-week
 data and does not identify causal intervention effects. Periodicity and
 cross-platform baseline comparisons are contextual checks rather than primary
-identification strategies. For heartbeat periodicity, ``not detected in this
-snapshot'' denotes finite-window detectability limits rather than evidence of
-absence.
+identification strategies. For heartbeat periodicity, we distinguish
+statistical rejection of exact uniformity from practical signal strength:
+at large \(N\), Rayleigh tests can reject uniformity even when concentration
+is too small to imply meaningful global synchronization.
 
 \subsection{Hypotheses}
 \label{sec:introduction:hypotheses}
@@ -98,7 +99,7 @@ readout sections.
 \textbf{Hyp.} & \textbf{Measurement target(s)} & \textbf{Section where tested} & \textbf{Key result} \\
 \midrule
 H1a & Horizon-standardized incidence \(p_{5\mathrm{m}},p_{1\mathrm{h}}\), secondary \(p_{\mathrm{obs}}\), and conditional timing \(F_{T\mid\delta=1}\) (for example \(t_{50}, t_{90}\)). & \Cref{sec:results:decomposition,sec:results:summary}. & Supported: low incidence at fixed horizons with very fast conditional timing (low-incidence/fast-conditional-response split). \\
-H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and detectability target (\(\kappa^\star\)). & \Cref{sec:results:periodicity}. & Not supported as a strong aggregate 4-hour coherence claim in this snapshot; evidence is weak/dephased at the aggregate level. \\
+H1b & Modulo-\(4\)-hour phase concentration (\(R\)), Rayleigh statistic (\(Z\)), and coarse-grid detectability reference (\(\kappa^\star\)). & \Cref{sec:results:periodicity}. & Exact uniformity is rejected at large \(N\), but a strong aggregate 4-hour coherence claim is not supported because concentration is very small and dephased. \\
 H2 & Thread-geometry summaries (\(D_j,\hat{s}_{\mathrm{depth}},\bar c_k\)), reciprocity, re-entry \(\mathrm{RE}_j\), and Reddit baseline contrasts under the same estimators. & \Cref{sec:results:structure,sec:results:reddit-full-scale,sec:results:summary}. & Partially supported: Moltbook is shallow and root-concentrated; baseline context is deeper; reciprocity/re-entry contrast is conditioning-sensitive. \\
 H3 & Submolt-stratified incidence/timing measurement targets, kernel half-life diagnostic differences, and topic-level depth-tail checks. & \Cref{sec:results:heterogeneity,sec:results:summary}. & Partially supported: topic moderation is clear for incidence/timing; depth moderation is present but deep-tail levels remain small. \\
 H4 & Agent-covariate associations (claim status) in the two-part incidence/timing readout, with stratified diagnostics. & \Cref{sec:results:agent-covariates,sec:results:summary}. & Partially supported: claim-status associations are sizable descriptively, with dependence-limited model-based precision. \\
@@ -112,8 +113,9 @@ H4 & Agent-covariate associations (claim status) in the two-part incidence/timin
 In this first-week snapshot, Moltbook conversations are predominantly star-shaped,
 with minute-scale kernel half-life diagnostic values, low direct-reply
 incidence, and minimal
-reciprocity. Periodicity effect size is weak (\(r=0.0308\), far below
-\(\kappa^\star=0.2\)), and spectral diagnostics do not show a strong 4-hour line.
+reciprocity. Periodicity effect size is weak (\(r=0.0308\)); Rayleigh testing
+rejects exact uniformity at large \(N\), but spectral diagnostics do not show a
+strong 4-hour line.
 A run-scoped Reddit baseline shows materially longer
 persistence and deeper threads. Taken together, these patterns are consistent
 with a ``low-incidence/fast-conditional-response'' regime driven by architectural constraints

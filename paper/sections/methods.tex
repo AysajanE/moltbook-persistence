@@ -127,9 +127,10 @@ using fixed deterministic resampling settings.
 Because the canonical timeline contains a 41.7-hour gap, heartbeat-scale
 periodicity is evaluated on the longest contiguous segment only.
 The main-text periodicity readout is event-time modulo-4-hour concentration
-\(r\), Rayleigh \(Z\), Monte Carlo \(p\)-value, and the detectability target
-\(\kappa^\star\) (80\%-power phase concentration amplitude at observed
-sample size). Power spectral density (PSD) and first-order autoregressive
+\(r\), Rayleigh \(Z\), Monte Carlo \(p\)-value, and a coarse-grid detectability reference
+\(\kappa^\star\) (the first tested \(\kappa\) on the coarse grid
+\(0.0, 0.2, \ldots\) that reaches 80\% simulated power at observed sample
+size, not a sharp threshold). Power spectral density (PSD) and first-order autoregressive
 (AR(1)) calibration checks, plus bin-width sensitivity, are retained in
 Supplementary Section S3.
 

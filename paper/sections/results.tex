@@ -289,10 +289,15 @@ materially faster upper-tail conditional timing than unclaimed accounts.
 On the longest contiguous segment (63.5 hours; \(N=220{,}461\) events),
 modulo-4-hour concentration is small (\(r=0.0308\)) even though Rayleigh
 testing rejects exact uniformity (\(Z=209.57\), Monte Carlo
-\(p=5\times10^{-6}\)). Because \(r\) is far below the detectability benchmark
-\(\kappa^\star=0.2\), we interpret this as weak aggregate coherence rather than
-a practically strong four-hour synchronization signal. Supplementary PSD/AR(1)
-and bin-width diagnostics are consistent with this interpretation.
+\(p=5\times10^{-6}\)). At this sample size, the detectability simulation
+reports \(\kappa^\star=0.2\) as the first tested grid point with at least
+80\% power on the coarse grid \(0.0,0.2,\ldots\), so it should not be read as
+a sharp threshold. The corresponding mean resultant length at \(\kappa=0.2\)
+is \(\rho\approx0.0995\), still well above observed \(r=0.0308\). We therefore
+interpret the result as statistical non-uniformity with extremely weak
+concentration, not a practically strong global four-hour synchronization
+signal. Supplementary PSD/AR(1) and bin-width diagnostics similarly show no
+dominant four-hour line.
 
 \subsection{Secondary Context: Reddit Baseline under Shared Estimators}
 \label{sec:results:reddit-full-scale}

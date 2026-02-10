@@ -146,8 +146,9 @@ Periodicity is evaluated on the longest contiguous segment only (segment index
 2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; gap-threshold setting 6 hours).
 Event-time modulo-4-hour testing gives resultant length \(r=0.0308\),
 \(Z=209.57\), Monte Carlo \(p=5\times10^{-6}\), and mean phase 153.2 minutes.
-The null calibration uses 200,000 Monte Carlo draws at \(\alpha=0.05\), giving
-critical \(Z=2.9940\).
+This rejects exact phase uniformity statistically, but the concentration effect
+size is extremely small. The null calibration uses 200,000 Monte Carlo draws at
+\(\alpha=0.05\), giving critical \(Z=2.9940\).
 
 \begin{table}[h]
 \centering
@@ -170,7 +171,7 @@ Power simulation method & noncentral\_chi\_square\_monte\_carlo \\
 Power reps per \(\kappa\) & 50,000 \\
 Seed & 20260208 \\
 Estimated null size at \(\kappa=0\) & 0.04964 \\
-Estimated 80\% power threshold \(\kappa^\star\) & 0.2 \\
+First tested \(\kappa\) with estimated power \(\ge 80\%\) (\(\kappa^\star\)) & 0.2 \\
 Estimated power at \(\kappa=0.2\) & 1.0 \\
 \bottomrule
 \end{tabular}
@@ -178,8 +179,10 @@ Estimated power at \(\kappa=0.2\) & 1.0 \\
 
 The simulation stores mean resultant-length mapping
 \(\rho=I_1(\kappa)/I_0(\kappa)\); for example, \(\rho=0.0995\) at
-\(\kappa=0.2\). This section is the detailed detectability record deferred from
-main text.
+\(\kappa=0.2\), which is over three times the observed \(r=0.0308\). Because
+the \(\kappa\) grid is coarse (0.0, 0.2, \ldots), \(\kappa^\star=0.2\) is a
+grid-crossing artifact rather than a sharp detectability threshold. This
+section is the detailed detectability record deferred from main text.
 
 \paragraph{S3.2 PSD robustness.}
 Supplementary PSD robustness for the 4-hour target frequency yields AR(1)-
