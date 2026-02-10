@@ -27,10 +27,10 @@ primary two-part sample includes 223,316 parents.
 All incidence and timing estimands in this section are defined for non-root
 comments as candidate parents (comment-to-comment replies), not for root
 posts. Primary incidence is
-horizon-standardized: \(p_{5\mathrm{m}}=9.42\%\) and
-\(p_{1\mathrm{h}}=9.82\%\). The in-window ever-reply share is 9.60\%
-(95\% bootstrap CI: [9.45\%, 9.76\%]) and is treated as a secondary
-coverage-conditional descriptive metric.
+horizon-standardized: \(p_{5\mathrm{m}}=9.42\%\) and \(p_{1\mathrm{h}}=9.82\%\).
+The in-window ever-reply share is 9.60\% (95\% bootstrap confidence interval
+(CI): [9.45\%, 9.76\%]) and is treated as a secondary coverage-conditional
+descriptive metric.
 The conditional median reply time is 4.55 seconds (95\% bootstrap CI:
 [4.53, 4.58] seconds), with \(t_{90}=50.05\) seconds.
 Claimed-status heterogeneity remains large after follow-up standardization:
@@ -205,21 +205,22 @@ dyadic reciprocity unchanged at reported precision (mean re-entry 0.20;
 pooled reciprocity 1,621/162,430 \(=1.0\%\)). The only visible shift is
 mean unique participants per thread, from 4.57 to 4.60.
 
-\subsubsection{Geometry Consistency: Branching Heuristic vs.\ Observed Thread Size}
+\subsubsection{Geometry Coherence (Back-of-the-Envelope): Branching Heuristic vs.\ Observed Thread Size}
 
-Applying the root-special branching heuristic
-\(\E[N_j]\approx \mu_0/(1-\mu)\) with
-\(\mu_0 \approx 5.57\) (root) and effective depth-tail slope estimate
-\(\hat{s}_{\mathrm{depth}} \approx 0.154\), and using the heuristic mapping
-\(\mu \approx \hat{s}_{\mathrm{depth}}\), gives the heuristic expectation
+As a back-of-the-envelope coherence calculation, we combine two summaries from
+this snapshot: the root
+offspring mean \(\mu_0 \approx 5.57\) and an effective depth-tail slope estimate
+\(\hat{s}_{\mathrm{depth}} \approx 0.154\). Applying the root-special branching
+heuristic \(\E[N_j]\approx \mu_0/(1-\mu)\) with the heuristic mapping
+\(\mu \approx \hat{s}_{\mathrm{depth}}\) gives
 \(\E[N_j] \approx \mu_0/(1-\hat{s}_{\mathrm{depth}}) \approx 6.6\) comments per
-thread, closely
-matching the observed mean of 6.43 (\cref{tab:descriptive}).
+thread, close to the observed mean of 6.43 (\cref{tab:descriptive}).
 
-\subsubsection{Model-to-Observable Validation Loop}
+\subsubsection{Model-to-Observable Coherence Check}
 
-Model-to-observable validation closes the model-to-data loop by mapping fitted
-\((\alpha,\beta)\)-style primitives to observables used in the paper. Incidence
+Model-to-observable coherence checks map fitted \((\alpha,\beta)\)-style
+primitives to observables reported in the paper; this is an in-sample
+calibration diagnostic rather than an independent out-of-sample test. Incidence
 calibration is tight overall (9.91\% predicted vs.\ 9.60\% observed) and remains
 close across claimed/unclaimed and submolt strata. The same coarse fit
 systematically underpredicts non-root branching (for example, overall
@@ -239,7 +240,7 @@ incidence margin. Conditional timing changes are materially smaller: \(t_{50}\)
 shifts from 4.55 to 4.51 seconds and \(t_{90}\) from 50.05 to 41.08 seconds.
 The kernel half-life diagnostic correspondingly decreases from 0.685 to 0.436
 minutes. These checks preserve the main interpretation that persistence limits in
-this snapshot are driven primarily by whether replies occur rather than by slow
+this snapshot are dominated by whether replies occur rather than by slow
 conditional reply speed.
 
 \subsection{H3: Topic Moderation in Two-Part Dynamics}
@@ -286,6 +287,10 @@ Follow-up-standardized incidence at fixed horizons yields the same ordering
 (Supplementary Section S6.5): for example, Social/Casual has
 \(p_{5\mathrm{m}}=10.80\%\) and \(p_{1\mathrm{h}}=11.21\%\), while
 Philosophy/Meta has \(p_{5\mathrm{m}}=1.32\%\) and \(p_{1\mathrm{h}}=1.70\%\).
+Because submolt categories are assigned by deterministic keyword triggers on
+submolt names, we report keyword-mapping sensitivity checks in Supplementary
+Section S2.1; the Social/Casual versus Philosophy/Meta incidence/tail ordering
+is unchanged under alternative trigger lists and exclusion rules.
 
 \subsection{H4: Agent Covariates in Incidence and Timing}
 \label{sec:results:agent-covariates}

@@ -17,10 +17,13 @@ conditional reply speed (\(t_{50}=4.55\) seconds, \(t_{90}=50.05\) seconds,
 Together, these values imply that most parents receive no observed direct reply
 even at a one-hour horizon.
 
-This pattern is consistent with finite context retention, rapid task switching,
-and weak return-to-thread memory support. The kernel half-life diagnostic remains
-useful as a secondary timescale diagnostic, but the incidence/conditional-speed
-split is the operationally informative summary for coordination limits.
+This pattern is compatible with finite context retention, rapid task switching,
+and weak return-to-thread memory support, but it is not uniquely diagnostic.
+Similar incidence/latency signatures could also arise from ranking/visibility
+effects, moderation throttling, or batched/scheduled execution. The kernel
+half-life diagnostic remains useful as a secondary timescale diagnostic, but the
+incidence/conditional-speed split is the operationally informative summary for
+coordination limits.
 
 \subsection{Structural Signatures of Limited Persistence}
 \label{sec:discussion:structure}
@@ -33,7 +36,7 @@ modest re-entry in the overall sample further support a broadcast-dominant
 interaction pattern, while cross-platform re-entry direction remains
 conditioning-sensitive.
 
-The model-to-observable validation loop supports this interpretation: predicted
+The in-sample model-to-observable coherence check is consistent with this interpretation: predicted
 and observed incidence align closely overall and by key strata, but the model
 underpredicts non-root branching while overpredicting depth tails. This
 indicates that the fitted timing/incidence dynamics are directionally consistent

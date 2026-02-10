@@ -125,7 +125,8 @@ For binned counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
 \mathbb{E}[C_r]=\int_{r\Delta}^{(r+1)\Delta} m(s)\,ds,
 \]
 so expected discrete-time counts inherit periodic structure and produce elevated
-periodogram/PSD mass near harmonics \(\ell/\tau\), up to finite-window leakage.
+periodogram/power spectral density (PSD) mass near harmonics \(\ell/\tau\), up to
+finite-window leakage.
 
 \paragraph{S1.4 Proof of S0.2.4 (horizon-throughput decomposition and priority rule).}
 \label{supp:s1-or-diagnostic}
@@ -174,6 +175,27 @@ Social/Casual & general, casual, introductions, jokes, gaming, humanwatching, so
 Other & (default: no keyword match) \\
 \bottomrule
 \end{tabular}
+\end{table}
+
+\paragraph{S2.1 Keyword-mapping sensitivity.}
+\label{sec:appendix:submolts-sensitivity}
+Deterministic keyword triggers are transparent but coarse. To bound the risk
+that H3 heterogeneity is an artifact of this mapping, we recompute the
+Social/Casual versus Philosophy/Meta two-part readout under alternative trigger
+lists and exclusion rules (dropping \emph{Other} and small categories). The
+direction of the key ordering (Social/Casual higher incidence and faster
+conditional tail than Philosophy/Meta) is unchanged across these variants
+(Table \ref{tab:submolt-sensitivity}).
+
+\begin{table}[h]
+\centering
+\caption{Keyword-mapping sensitivity for the Social/Casual versus Philosophy/Meta heterogeneity direction. Source table: \texttt{paper/tables/moltbook\_submolt\_keyword\_sensitivity.csv}.}
+\label{tab:submolt-sensitivity}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\input{tables/moltbook_submolt_keyword_sensitivity_table}
+}
 \end{table}
 
 \subsection*{S3. Periodicity Robustness and Detectability Mechanics}
@@ -231,15 +253,15 @@ grid-crossing artifact rather than a sharp detectability threshold. This
 section is the detailed detectability record deferred from main text.
 
 \paragraph{S3.2 PSD robustness.}
-Supplementary PSD robustness for the 4-hour target frequency yields AR(1)-
-calibrated \(p\)-values 0.508 (5-minute bins), 0.501 (15-minute bins), and
-0.556 (30-minute bins).
+Supplementary PSD robustness for the 4-hour target frequency yields first-order
+autoregressive (AR(1))-calibrated \(p\)-values 0.508 (5-minute bins), 0.501
+(15-minute bins), and 0.556 (30-minute bins).
 
 \paragraph{S3.3 Reddit baseline supplementary diagnostics.}
 \label{sec:appendix:reddit-details}
 Under the same estimators, Reddit shows deeper threads (mean maximum depth
 2.17), higher direct-reply incidence (36.2\%), and longer kernel half-life
-diagnostic values (2.61 hours; 95\% CI: [2.29, 2.95]) than Moltbook.
+diagnostic values (2.61 hours; 95\% confidence interval (CI): [2.29, 2.95]) than Moltbook.
 
 \subsection*{S4. Cross-Platform Matching Diagnostics and Mechanics}
 \label{sec:appendix:comparison-details}
@@ -253,7 +275,7 @@ diagnostic values (2.61 hours; 95\% CI: [2.29, 2.95]) than Moltbook.
 \end{figure}
 
 Input includes 34,730 Moltbook threads and 1,104 Reddit threads. Exact-overlap
-strata on coarse topic, UTC posting hour, and early-engagement bin retain 2,641
+strata on coarse topic, Coordinated Universal Time (UTC) posting hour, and early-engagement bin retain 2,641
 Moltbook threads and 888 Reddit threads across 118 shared strata. Deterministic
 1:1 matching yields 813 pairs (2.34\% of Moltbook threads).
 
@@ -284,12 +306,12 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \begin{table}[h]
 \centering
 \caption{Matched paired-effects diagnostics from
-\texttt{paper/tables/cross\_platform\_matched\_paired\_effects.csv}.}
+\texttt{paper/tables/cross\_platform\_matched\_paired\_effects.csv}. Mean difference is Moltbook minus Reddit (M-R).}
 \label{tab:cross-platform-paired-effects}
 \scriptsize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
-\textbf{Outcome} & \textbf{\(n\) pairs} & \textbf{Mean diff. (M-R)} & \textbf{95\% CI} & \textbf{Wilcoxon \(p\)} \\
+\textbf{Outcome} & \textbf{\(n\) pairs} & \textbf{Mean difference (M-R)} & \textbf{95\% CI} & \textbf{Wilcoxon \(p\)} \\
 \midrule
 Comments per thread & 813 & -7.70 & [-9.43, -6.06] & \(1.43\times10^{-49}\) \\
 Max depth & 813 & -1.19 & [-1.34, -1.04] & \(5.16\times10^{-54}\) \\

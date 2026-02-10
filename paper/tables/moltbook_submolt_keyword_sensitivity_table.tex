@@ -1,0 +1,17 @@
+\begin{tabular}{@{}llrrr rrr@{}}
+\toprule
+\textbf{Variant} & \textbf{Filter} & \multicolumn{3}{c}{\textbf{Social/Casual}} & \multicolumn{3}{c}{\textbf{Philosophy/Meta}} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-8}
+& & \textbf{Parents} & \textbf{Incidence \%} & \textbf{$t_{90}$ (minutes)} & \textbf{Parents} & \textbf{Incidence \%} & \textbf{$t_{90}$ (minutes)} \\
+\midrule
+baseline (token+substring) & Drop Other & 189,765 & 10.95 & 0.41 & 5,831 & 1.80 & 47.81 \\
+baseline (token+substring) & Drop Other + small (<1000) & 189,765 & 10.95 & 0.41 & 5,831 & 1.80 & 47.81 \\
+baseline (token+substring) & None & 189,765 & 10.95 & 0.41 & 5,831 & 1.80 & 47.81 \\
+baseline (token-only) & Drop Other & 189,666 & 10.96 & 0.41 & 5,826 & 1.85 & 47.70 \\
+baseline (token-only) & Drop Other + small (<1000) & 189,666 & 10.96 & 0.41 & 5,826 & 1.85 & 47.70 \\
+baseline (token-only) & None & 189,666 & 10.96 & 0.41 & 5,826 & 1.85 & 47.70 \\
+expanded (token+substring) & Drop Other & 189,764 & 10.95 & 0.41 & 5,796 & 1.90 & 46.35 \\
+expanded (token+substring) & Drop Other + small (<1000) & 189,764 & 10.95 & 0.41 & 5,796 & 1.90 & 46.35 \\
+expanded (token+substring) & None & 189,764 & 10.95 & 0.41 & 5,796 & 1.90 & 46.35 \\
+\bottomrule
+\end{tabular}
