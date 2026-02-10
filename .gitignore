@@ -47,6 +47,15 @@ outputs/tables/*
 !outputs/tables/.gitkeep
 
 # LaTeX build artifacts
+/main*.aux
+/main*.bbl
+/main*.blg
+/main*.fdb_latexmk
+/main*.fls
+/main*.log
+/main*.out
+/main*.spl
+/main*.synctex.gz
 paper/*.aux
 paper/*.bbl
 paper/*.bcf
