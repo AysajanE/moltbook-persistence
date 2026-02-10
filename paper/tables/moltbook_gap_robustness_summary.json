@@ -1,0 +1,14 @@
+{
+  "generated_at_utc": "2026-02-10T00:47:24.598887+00:00",
+  "survival_input_path": "data_features/moltbook_only/run_20260206-145240Z/survival_units.parquet",
+  "raw_archive_root": "data_raw/hf_archive/snapshot_20260204-234429Z",
+  "gap_threshold_hours": 6.0,
+  "detected_comment_gap": {
+    "start_utc": "2026-01-31T10:37:53.768053+00:00",
+    "end_utc": "2026-02-02T04:20:50.311786+00:00",
+    "duration_hours": 41.7157065925
+  },
+  "windows_output_csv": "paper/tables/moltbook_gap_window_robustness.csv",
+  "horizon_output_csv": "paper/tables/moltbook_gap_horizon_standardized.csv",
+  "gap_evidence_output_csv": "paper/tables/moltbook_gap_disambiguation_evidence.csv"
+}

@@ -108,6 +108,24 @@ quantiles. Empirical hazard-shape mismatch diagnostics are documented in
 supplementary analyses. Accordingly, the kernel half-life remains a secondary diagnostic and
 incidence plus conditional quantiles remain the primary measurement targets.
 
+\subsubsection{Coverage-Gap Robustness}
+\label{sec:results:gap-robustness}
+
+Coverage-gap diagnostics indicate a comment-stream interruption in the archive
+rather than complete platform inactivity (Supplementary Section S6.4).
+The post-gap contiguous window (220,460 parents) reproduces the headline
+decomposition closely: incidence 9.71\%, \(t_{50}=4.55\) seconds, and
+\(t_{90}=48.66\) seconds versus 9.60\%, 4.55 seconds, and 50.05 seconds in the
+full window (Supplementary Section S6.4). Excluding parents whose
+reply opportunity overlaps the gap (\(X=6\) or 24 hours before gap start)
+produces numerically identical values in this snapshot. The pre-gap contiguous
+window is only 2.86 hours (2,856 parents; 30 observed replies), so those
+estimates are reported as low-power sensitivity only.
+Horizon-standardized risk-set probabilities remain close at short horizons
+(30 seconds and 5 minutes) and rise modestly at 1 hour, consistent with
+short-follow-up censoring near the observation boundary
+(Supplementary Section S6.4).
+
 \subsection{H2: Structural Signatures Consistent with Low Incidence / Fast Conditional Response}
 \label{sec:results:structure}
 \label{sec:results:geometry}
@@ -245,19 +263,9 @@ has the highest incidence (10.95\%) and very fast conditional timing
 low incidence with materially slower conditional tails
 (\(t_{90}=434.87\) seconds [7.25 minutes] and \(2868.78\) seconds
 [47.81 minutes], respectively).
-Using category-cluster bootstrap intervals from
-\texttt{paper/tables/moltbook\_results\_category\_uncertainty.csv}, key-category
-uncertainty is: Social/Casual incidence 10.95\% [10.77\%, 11.13\%],
-\(t_{50}=4.52\) [4.50, 4.54] seconds, \(t_{90}=24.83\) [16.77, 36.12] seconds,
-pooled reciprocity 0.87\% [0.77\%, 0.96\%], and mean re-entry
-0.213 [0.211, 0.216], median re-entry 0.200 [0.200, 0.200];
-Philosophy/Meta incidence 1.80\% [1.27\%, 2.42\%],
-\(t_{50}=103.00\) [67.67, 154.04] seconds,
-\(t_{90}=2868.78\) [310.05, 4188.38] seconds
-([5.17, 69.81] minutes), pooled reciprocity 1.44\% [0.92\%, 2.18\%], and mean
-re-entry 0.108 [0.098, 0.119], median re-entry 0.000 [0.000, 0.000].
-Full category-level uncertainty is provided in
-Supplementary Material (S6).
+Category-cluster bootstrap intervals preserve this ranking (Supplementary
+Section S7): Social/Casual remains high-incidence/fast-tail, while
+Philosophy/Meta remains low-incidence/slow-tail with low median re-entry.
 
 \subsection{H4: Agent Covariates in Incidence and Timing}
 \label{sec:results:agent-covariates}
@@ -269,86 +277,33 @@ materially faster upper-tail conditional timing than unclaimed accounts.
 \subsection{Secondary Context for H1b: Periodicity}
 \label{sec:results:periodicity}
 
-Effect size is weak: modulo-4-hour concentration is \(r=0.0308\)
-(about 3.1\% concentration), far below the estimated 80\%-power detectability
-threshold \(\kappa^\star=0.2\). Because the canonical timeline contains a
-41.7-hour gap, periodicity is estimated on the longest contiguous segment only
-(2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; 63.5 hours). On this segment
-(\(N=220{,}461\) events), Rayleigh testing gives \(Z=209.57\), Monte Carlo
-\(p=5\times 10^{-6}\), and circular mean phase 153.2 minutes; supplementary
-PSD/AR(1) and bin-width diagnostics are directionally consistent with weak
-aggregate coherence rather than a strong 4-hour line.
+On the longest contiguous segment (63.5 hours; \(N=220{,}461\) events),
+modulo-4-hour concentration is small (\(r=0.0308\)) even though Rayleigh
+testing rejects exact uniformity (\(Z=209.57\), Monte Carlo
+\(p=5\times10^{-6}\)). Because \(r\) is far below the detectability benchmark
+\(\kappa^\star=0.2\), we interpret this as weak aggregate coherence rather than
+a practically strong four-hour synchronization signal. Supplementary PSD/AR(1)
+and bin-width diagnostics are consistent with this interpretation.
 
 \subsection{Secondary Context: Reddit Baseline under Shared Estimators}
 \label{sec:results:reddit-full-scale}
 
 Secondary Reddit context is directionally consistent with the Moltbook
 interpretation: deeper threads and slower reply persistence under the same
-estimators. These baseline contrasts are descriptive and non-causal and are used
-only as contextual evidence for H2 interpretation.
+estimators. These baseline contrasts are descriptive and non-causal and are
+used only as contextual evidence for H2 interpretation; detailed mechanics and
+diagnostics are deferred to supplementary material.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
-The primary decomposition readout is a 9.60\% direct-reply incidence
-(95\% CI: [9.45\%, 9.76\%]) with very fast
-conditional timing (\(t_{50}=4.55\) seconds, 95\% CI: [4.53, 4.58] seconds;
-\(t_{90}=50.05\) seconds),
-plus high short-window mass (8.47\% within 30 seconds and 9.41\% within
-5 minutes unconditionally). The ECDF on a log-time axis
-(\Cref{fig:reply-time-ecdf-logscale}) and observed-vs-fitted quantile
-robustness checks both reinforce the same two-regime pattern.
-Structural signatures are consistent with this regime: Moltbook threads are
-predominantly star-shaped (mean maximum depth 1.38, median maximum depth 1,
-effective depth-tail slope estimate \(\hat{s}_{\mathrm{depth}}=0.154\)), with rare
-bidirectional dyads (0.998\%) and modest re-entry (mean 0.195; median 0.167).
-Model-to-observable validation shows tight incidence calibration but
-overprediction of deeper non-root branching tails, and one-parent-per-thread
-robustness lowers pooled incidence while leaving conditional median speed
-essentially unchanged. Topic and claim heterogeneity is substantial
-(\Cref{tab:submolt-two-part,tab:reply-dynamics}), and cross-platform baseline
-contrasts are descriptive context under shared estimators.
-Taken together, these findings indicate a low-incidence/fast-conditional-response
-persistence regime in this early Moltbook window.
-
-\subsubsection{H1a Readout (Incidence + Conditional Speed)}
-\label{sec:results:h1a}
-H1a is supported by the low-incidence and very-fast-conditional-speed split in
-\Cref{sec:results:decomposition,sec:results:two-regime}. The H1a readout is:
-\(t_{50}=4.55\) seconds and \(t_{90}=50.05\) seconds; conditional short-window
-mass \(\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})=88.30\%\) and
-\(\Pr(\text{reply}\le 5\mathrm{m}\mid\text{reply})=98.06\%\); and unconditional
-mass \(\Pr(\text{reply}\le 30\mathrm{s})=8.47\%\) and
-\(\Pr(\text{reply}\le 5\mathrm{m})=9.41\%\).
-
-\subsubsection{H2 Readout (Structure vs Baseline + Reciprocity/Re-Entry)}
-\label{sec:results:h2}
-H2 is partially supported in this snapshot. Moltbook threads are shallow and
-root-concentrated, with low pooled reciprocity and modest re-entry
-(\Cref{sec:results:structure,fig:branching-by-depth,fig:reentry-distribution}).
-Human-platform context under the same estimators points to deeper baseline
-threads (\Cref{sec:results:reddit-full-scale}). The reciprocity/re-entry
-cross-platform contrast is conditioning-sensitive, so this component is
-interpreted descriptively.
-
-\subsubsection{H3 Readout (Topic Moderation)}
-\label{sec:results:h3}
-H3 is partially supported in this snapshot. Topic moderation is clear for reply
-incidence and conditional timing in
-\Cref{sec:results:heterogeneity,tab:submolt-two-part} (for example,
-Social/Casual versus Philosophy/Meta), with corresponding kernel half-life diagnostic
-differences. Depth-related moderation appears in observed submolt tail
-probabilities in the model-to-observable validation summary, but absolute
-deep-tail levels are very small; we therefore interpret topic heterogeneity as
-descriptive association.
-
-\subsubsection{H4 Readout (Agent Covariates)}
-\label{sec:results:h4}
-H4 is partially supported in this snapshot. Claim-status covariates are
-associated with large descriptive differences in incidence and conditional timing
-(\Cref{sec:results:agent-covariates,tab:reply-dynamics}) and similar
-claimed/unclaimed stratified patterns in the model-to-observable validation
-summary. However, within-thread and repeated-author dependence limits
-model-based precision for isolating the claim indicator
-(\Cref{sec:results:decomposition}), so this readout is interpreted as strong
-descriptive association rather than definitive causal attribution.
+The headline pattern is stable: low direct-reply incidence with very fast
+conditional timing, plus shallow, root-concentrated thread geometry and limited
+reciprocity/re-entry. Coverage-gap sensitivities preserve the post-gap
+decomposition readout, and one-parent-per-thread sensitivity lowers incidence
+levels without changing the qualitative speed-vs-incidence interpretation.
+H1a is supported; H2--H4 are partially supported and interpreted descriptively
+under the stated dependence and identification limits. Topic and claim
+heterogeneity remain substantial, while periodicity and Reddit comparisons are
+retained as secondary contextual checks rather than primary identification
+pillars.

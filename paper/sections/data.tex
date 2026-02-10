@@ -65,6 +65,13 @@ Event-time analyses use UTC timestamps. The canonical timeline contains a
 41.7-hour gap (2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z), so periodicity
 analyses are run on contiguous segments rather than under a continuous-coverage
 assumption.
+Raw-archive diagnostics indicate this break is comment-stream-specific rather
+than a full platform halt: within the same interval the archive still records
+38,166 posts, 39 snapshot rows, and 5,039 word-frequency rows, while comment
+records are absent (Supplementary Section S6.4). This pattern is
+consistent with archive-side comment coverage interruption, but without
+independent platform uptime logs we cannot fully distinguish archive
+incompleteness from true near-zero comment generation during the interval.
 
 \Cref{tab:descriptive} reports descriptive statistics for the analysis sample of
 threads with at least one comment.

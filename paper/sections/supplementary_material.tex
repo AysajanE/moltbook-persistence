@@ -356,6 +356,76 @@ Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \end{tabular}
 \end{table}
 
+\paragraph{S6.4 Coverage-gap disambiguation and robustness package.}
+
+\begin{table}[h]
+\centering
+\caption{Comment-gap disambiguation evidence across raw archive tables. The
+comment interval gap is 2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z. Source:
+\texttt{paper/tables/moltbook\_gap\_disambiguation\_evidence.csv}.}
+\label{tab:supp-gap-disambiguation}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Table} & \textbf{Records} & \textbf{Records in comment-gap interval} & \textbf{Max inter-event gap (h)} \\
+\midrule
+comments & 226,173 & 0 & 41.72 \\
+posts & 119,677 & 38,166 & 11.20 \\
+snapshots & 114 & 39 & 2.28 \\
+word\_frequency & 15,346 & 5,039 & 3.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Two-part decomposition robustness across contiguous windows and
+gap-overlap exclusions. Source:
+\texttt{paper/tables/moltbook\_gap\_window\_robustness.csv}.}
+\label{tab:supp-gap-window-robustness}
+\scriptsize
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+\textbf{Scenario} & \textbf{Parents} & \textbf{Replies} & \textbf{Incidence \%} & \textbf{\(t_{50}\) (s)} & \textbf{\(t_{90}\) (s)} & \textbf{\(\Pr(\mathrm{reply}\le30\mathrm{s})\) \%} & \textbf{\(\Pr(\mathrm{reply}\le5\mathrm{m})\) \%} \\
+\midrule
+Full window & 223,316 & 21,430 & 9.60 & 4.55 & 50.05 & 8.47 & 9.41 \\
+Pre-gap contiguous & 2,856 & 30 & 1.05 & 513.48 & 1699.77 & 0.04 & 0.35 \\
+Post-gap contiguous & 220,460 & 21,400 & 9.71 & 4.55 & 48.66 & 8.58 & 9.53 \\
+Exclude gap overlap (6h) & 220,460 & 21,400 & 9.71 & 4.55 & 48.66 & 8.58 & 9.53 \\
+Exclude gap overlap (24h) & 220,460 & 21,400 & 9.71 & 4.55 & 48.66 & 8.58 & 9.53 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Horizon-standardized reply probabilities using explicit risk sets.
+Source: \texttt{paper/tables/moltbook\_gap\_horizon\_standardized.csv}.}
+\label{tab:supp-gap-horizon-standardized}
+\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+\textbf{Scenario} & \textbf{Horizon} & \textbf{Risk-set \(n\)} & \textbf{\(\Pr(\mathrm{reply}\le t)\) \%} \\
+\midrule
+Full window & 30s & 223,312 & 8.47 \\
+Full window & 5m & 223,102 & 9.42 \\
+Full window & 1h & 217,472 & 9.82 \\
+Pre-gap contiguous & 30s & 2,854 & 0.04 \\
+Pre-gap contiguous & 5m & 2,842 & 0.35 \\
+Pre-gap contiguous & 1h & 2,063 & 1.36 \\
+Post-gap contiguous & 30s & 220,456 & 8.58 \\
+Post-gap contiguous & 5m & 220,244 & 9.54 \\
+Post-gap contiguous & 1h & 214,610 & 9.94 \\
+Exclude gap overlap (6h) & 30s & 220,456 & 8.58 \\
+Exclude gap overlap (6h) & 5m & 220,246 & 9.54 \\
+Exclude gap overlap (6h) & 1h & 214,616 & 9.94 \\
+Exclude gap overlap (24h) & 30s & 220,456 & 8.58 \\
+Exclude gap overlap (24h) & 5m & 220,246 & 9.54 \\
+Exclude gap overlap (24h) & 1h & 214,616 & 9.94 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection*{S7. Full Submolt Uncertainty Table}
 
 \begin{table}[h]

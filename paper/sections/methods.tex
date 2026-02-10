@@ -42,6 +42,14 @@ S_{jm} := \min\{t_{jn} - t_{jm} : p_{jn}=m,\; n>m\}.
 If no direct reply is observed, the unit is right-censored at the observation
 boundary. Because the canonical timeline contains a 41.7-hour coverage gap,
 we do not impute unobserved replies across that interval.
+To assess whether this gap can artifactually inflate fast conditional-response
+signals, we run four robustness checks: gap-disambiguation diagnostics across
+raw archive tables, contiguous-window recomputation (pre-gap and post-gap),
+gap-overlap exclusions (\(X\in\{6,24\}\) hours before gap start), and
+horizon-standardized \(\Prob(\delta=1,T\le t)\) at
+\(t\in\{30\mathrm{s},5\mathrm{min},1\mathrm{h}\}\) using explicit risk sets.
+Full definitions and provenance-backed outputs are reported in
+Supplementary Section S6.4.
 
 \paragraph{Part 1: incidence model.}
 For each parent unit, event indicator \(\delta_m\) is modeled with a
@@ -111,22 +119,12 @@ using fixed deterministic resampling settings.
 
 Because the canonical timeline contains a 41.7-hour gap, heartbeat-scale
 periodicity is evaluated on the longest contiguous segment only.
-
-The primary inferential test is event-time modulo-\(\tau\) circular uniformity
-on raw timestamps (with \(\tau=4\) hours). Define
-\(\theta_n := 2\pi((t_n \bmod \tau)/\tau)\), resultant
-\(R=\left|\frac{1}{N}\sum_{n=1}^N e^{i\theta_n}\right|\), and Rayleigh statistic
-\(Z=NR^2\). We report \(R\), \(Z\), Monte Carlo \(p\)-value, and mean phase.
-
-To address detectability explicitly, we estimate a power curve over phase
-concentration amplitudes \(\kappa\) using the observed sample size \(N\) and the
-same Monte Carlo calibration procedure. We then report
-\(\kappa^\star:=\inf\{\kappa:\widehat{\mathrm{power}}(\kappa)\ge0.8\}\), the
-minimum concentration amplitude detectable with at least 80\% power under this
-window length and event count.
-
-PSD/AR(1) and bin-width diagnostics are retained as supplementary checks rather
-than primary inferential tests in the main manuscript.
+The main-text periodicity readout is event-time modulo-4-hour concentration
+\(r\), Rayleigh \(Z\), Monte Carlo \(p\)-value, and the detectability target
+\(\kappa^\star\) (80\%-power phase concentration amplitude at observed
+sample size). Power spectral density (PSD) and first-order autoregressive
+(AR(1)) calibration checks, plus bin-width sensitivity, are retained in
+Supplementary Section S3.
 
 \subsection{Reddit Baseline Context}
 \label{sec:methods:comparison}
@@ -134,7 +132,8 @@ than primary inferential tests in the main manuscript.
 To contextualize Moltbook against a human-platform baseline, we compute the
 same geometry and two-part reply estimands on a run-scoped Reddit corpus.
 Baseline comparisons are descriptive, non-causal, and reported only as
-secondary context in the main manuscript.
+secondary context in the main manuscript (with mechanics and diagnostics
+deferred to supplementary material).
 
 All analyses are run in Python with fixed seeds and deterministic preprocessing;
 reproducibility and data-availability details are provided in the required
