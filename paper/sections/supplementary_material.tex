@@ -1,15 +1,14 @@
-\section*{Supplementary Material: Deferred Appendices and Extended Technical Details}
+\noindent This supplementary material provides additional mathematical details
+and supporting proofs, robustness and diagnostic analyses, cross-platform
+matching mechanics, and reproducibility information that complement the main
+manuscript.
 
-This supplementary file is the full home for technical/deferred Appendix A/B
-content from the main manuscript: formal derivations, periodicity
-detectability details, matching diagnostics/mechanics, robustness tables moved
-from main, and reproducibility/data-availability details.
-
-\subsection*{Roadmap Table (Moved from Main Text)}
+\section*{Hypothesis Roadmap}
 
 \begin{table}[h]
 \centering
-\caption{Hypothesis roadmap (moved from the main manuscript to meet the page limit): measurement targets, empirical readout location, and headline finding.}
+\caption{Hypothesis roadmap: measurement targets, where each is summarized in
+the main manuscript, and headline finding.}
 \label{tab:supp-intro-roadmap}
 \begingroup
 \setlength{\tabcolsep}{3pt}
@@ -29,11 +28,11 @@ H4 & Agent-covariate associations (claim status) in the two-part incidence/timin
 \endgroup
 \end{table}
 
-\subsection*{S0. Deferred Main-Text Formalism and Proof Targets}
+\section*{S0. Mathematical Formalism and Supporting Proofs}
 \label{sec:appendix}
 \label{sec:appendix:proofs}
 
-\paragraph{S0.1 Full intensity and competing-risks parent selection.}
+\subsection*{S0.1 Full intensity and competing-risks parent selection}
 For thread \(j\), let \(\mathcal{H}_j(t)\) denote history up to \(t\). For an
 existing comment \(m\), direct replies follow
 \[
@@ -50,19 +49,38 @@ Conditional on an event at time \(t\), parent assignment follows competing risks
 \mathbb{P}(p_{jn}=m\mid t_{jn}=t,\mathcal{H}_j(t))
 =\frac{\lambda_{j,m}(t\mid\mathcal{H}_j(t))}{\lambda_j(t\mid\mathcal{H}_j(t))}.
 \]
-This is the formal construction deferred from the main manuscript section
+This provides the formal construction underlying the main-manuscript section
 ``Framework and Estimands.''
 
-\paragraph{S0.2 Deferred formal statements.}
+\subsection*{S0.2 Formal statements and proofs}
 
-\paragraph{S0.2.1 Influence--persistence trade-off (formal statement).}
+\subsubsection*{S0.2.1 Influence--persistence trade-off}
 \label{supp:s0-tradeoff}
 \label{app:proof-tradeoff}
 Under nonnegative availability,
 \(\mu_i(s)=\int_0^\infty b(s+u)\alpha_i e^{-\beta_i u}\,du\) is increasing in
 \(\alpha_i\) and decreasing in \(\beta_i\).
 
-\paragraph{S0.2.2 Root-special expected thread size (formal statement).}
+\subsubsection*{S1.1 Proof of S0.2.1 (influence--persistence trade-off)}
+\label{supp:s1-tradeoff}
+For fixed \(s\), use
+\[
+\mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
+\]
+with \(b(\cdot)\ge0\). Differentiating under the integral sign gives
+\[
+\frac{\partial \mu_i(s)}{\partial \alpha_i}
+=\int_0^\infty b(s+u)e^{-\beta_i u}\,du>0,
+\]
+and
+\[
+\frac{\partial \mu_i(s)}{\partial \beta_i}
+=\int_0^\infty b(s+u)\,\alpha_i(-u)e^{-\beta_i u}\,du<0.
+\]
+Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
+decreasing in \(\beta_i\).
+
+\subsubsection*{S0.2.2 Root-special expected thread size}
 \label{supp:s0-thread-size}
 \label{app:proof-thread-size}
 With root offspring mean \(\mu_0\),
@@ -71,7 +89,17 @@ non-root offspring mean \(\mu<1\), and standard independence assumptions,
 \mathbb{E}[N_j]=\frac{\mu_0}{1-\mu}.
 \]
 
-\paragraph{S0.2.3 Periodic mean-intensity detectability (formal statement).}
+\subsubsection*{S1.2 Proof of S0.2.2 (root-special expected thread size)}
+\label{supp:s1-thread-size}
+Let \(X_0\) denote depth-1 comments from the root, with \(\mathbb{E}[X_0]=\mu_0\).
+Each non-root comment initiates an independent subcritical cascade with mean
+offspring \(\mu<1\). Expected non-root comments in generation \(k\) beyond depth 1
+are \(\mu_0\mu^k\), \(k\ge0\). Therefore
+\[
+\mathbb{E}[N_j]=\sum_{k=0}^{\infty}\mu_0\mu^k=\frac{\mu_0}{1-\mu}.
+\]
+
+\subsubsection*{S0.2.3 Periodic mean-intensity detectability}
 \label{supp:s0-periodicity}
 \label{app:proof-periodicity}
 If
@@ -80,7 +108,22 @@ If
 \(\mathbb{E}[\lambda(t)]\) is \(\tau\)-periodic and long-window binned-count spectra
 exhibit mass near \(\ell/\tau\), up to finite-window and leakage effects.
 
-\paragraph{S0.2.4 Horizon-throughput decomposition and priority rule.}
+\subsubsection*{S1.3 Proof of S0.2.3 (periodic mean-intensity detectability)}
+\label{supp:s1-periodicity}
+Under assumptions, mean intensity is
+\[
+m(t):=\mathbb{E}[\lambda(t)]=\mathbb{E}[b(t)g(t)]=b(t)\mathbb{E}[g(t)].
+\]
+If \(\mathbb{E}[g(t)]\) is \(\tau\)-periodic, then \(m(t)\) is \(\tau\)-periodic.
+For binned counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
+\[
+\mathbb{E}[C_r]=\int_{r\Delta}^{(r+1)\Delta} m(s)\,ds,
+\]
+so expected discrete-time counts inherit periodic structure and produce elevated
+periodogram/power spectral density (PSD) mass near harmonics \(\ell/\tau\), up to
+finite-window leakage.
+
+\subsubsection*{S0.2.4 Horizon-throughput decomposition and priority rule}
 \label{supp:s0-or-diagnostic}
 For horizon \(h\), define
 \[
@@ -100,59 +143,7 @@ With per-unit intervention costs \(c_\pi,c_\phi>0\), one-step budget allocation
 prioritizes incidence over timing when
 \(\phi_h\,d\pi_h/c_\pi > \pi_h\,d\phi_h/c_\phi\), and timing otherwise.
 
-\paragraph{S0.3 Deferred model extensions for future estimation.}
-\label{sec:model:extensions}
-Richer extensions (hierarchical random effects, re-entry self-excitation, and
-visibility-weighted parent assignment) are deferred from the main paper and are
-not used for identification in this first-week snapshot.
-
-\subsection*{S1. Full Proofs}
-
-\paragraph{S1.1 Proof of S0.2.1 (influence--persistence trade-off).}
-\label{supp:s1-tradeoff}
-For fixed \(s\), use
-\[
-\mu_i(s)=\int_0^\infty b(s+u)\,\alpha_i e^{-\beta_i u}\,du,
-\]
-with \(b(\cdot)\ge0\). Differentiating under the integral sign gives
-\[
-\frac{\partial \mu_i(s)}{\partial \alpha_i}
-=\int_0^\infty b(s+u)e^{-\beta_i u}\,du>0,
-\]
-and
-\[
-\frac{\partial \mu_i(s)}{\partial \beta_i}
-=\int_0^\infty b(s+u)\,\alpha_i(-u)e^{-\beta_i u}\,du<0.
-\]
-Hence \(\mu_i(s)\) is strictly increasing in \(\alpha_i\) and strictly
-decreasing in \(\beta_i\).
-
-\paragraph{S1.2 Proof of S0.2.2 (root-special expected thread size).}
-\label{supp:s1-thread-size}
-Let \(X_0\) denote depth-1 comments from the root, with \(\mathbb{E}[X_0]=\mu_0\).
-Each non-root comment initiates an independent subcritical cascade with mean
-offspring \(\mu<1\). Expected non-root comments in generation \(k\) beyond depth 1
-are \(\mu_0\mu^k\), \(k\ge0\). Therefore
-\[
-\mathbb{E}[N_j]=\sum_{k=0}^{\infty}\mu_0\mu^k=\frac{\mu_0}{1-\mu}.
-\]
-
-\paragraph{S1.3 Proof of S0.2.3 (periodic mean-intensity detectability).}
-\label{supp:s1-periodicity}
-Under assumptions, mean intensity is
-\[
-m(t):=\mathbb{E}[\lambda(t)]=\mathbb{E}[b(t)g(t)]=b(t)\mathbb{E}[g(t)].
-\]
-If \(\mathbb{E}[g(t)]\) is \(\tau\)-periodic, then \(m(t)\) is \(\tau\)-periodic.
-For binned counts \(C_r:=N((r\Delta,(r+1)\Delta])\),
-\[
-\mathbb{E}[C_r]=\int_{r\Delta}^{(r+1)\Delta} m(s)\,ds,
-\]
-so expected discrete-time counts inherit periodic structure and produce elevated
-periodogram/power spectral density (PSD) mass near harmonics \(\ell/\tau\), up to
-finite-window leakage.
-
-\paragraph{S1.4 Proof of S0.2.4 (horizon-throughput decomposition and priority rule).}
+\subsubsection*{S1.4 Proof of S0.2.4 (horizon-throughput decomposition and priority rule)}
 \label{supp:s1-or-diagnostic}
 By the law of total probability on \(R_h\),
 \[
@@ -178,7 +169,13 @@ Since \(G'(q_h)\ge0\) for monotone throughput objectives, the preferred margin
 is incidence iff \(\phi_h\,d\pi_h/c_\pi > \pi_h\,d\phi_h/c_\phi\); otherwise
 timing is preferred.
 
-\subsection*{S2. Submolt Keyword Triggers (Expanded)}
+\subsection*{S0.3 Model extensions for future estimation}
+\label{sec:model:extensions}
+Richer extensions (hierarchical random effects, re-entry self-excitation, and
+visibility-weighted parent assignment) are not used for identification in this
+first-week snapshot; we list them as candidate directions for future estimation.
+
+\section*{S2. Submolt Keyword Triggers (Expanded)}
 \label{sec:appendix:submolts}
 
 \begin{table}[h]
@@ -201,7 +198,7 @@ Other & (default: no keyword match) \\
 \end{tabular}
 \end{table}
 
-\paragraph{S2.1 Keyword-mapping sensitivity.}
+\subsection*{S2.1 Keyword-mapping sensitivity}
 \label{sec:appendix:submolts-sensitivity}
 Deterministic keyword triggers are transparent but coarse. To bound the risk
 that H3 heterogeneity is an artifact of this mapping, we recompute the
@@ -222,7 +219,7 @@ conditional tail than Philosophy/Meta) is unchanged across these variants
 }
 \end{table}
 
-\subsection*{S3. Periodicity Robustness and Detectability Mechanics}
+\section*{S3. Periodicity Robustness and Detectability Mechanics}
 \label{sec:appendix:periodicity-robustness}
 
 \begin{figure}[h]
@@ -232,7 +229,7 @@ conditional tail than Philosophy/Meta) is unchanged across these variants
 \label{fig:supp-periodicity-bin-robustness}
 \end{figure}
 
-\paragraph{S3.1 Event-time modulo-\(4\)-hour test and detectability setup.}
+\subsection*{S3.1 Event-time modulo-\(4\)-hour test and detectability setup}
 Periodicity is evaluated on the longest contiguous segment only (segment index
 1; 63.5175 hours; \(N=220{,}461\) events; window
 2026-02-02 04:20:50Z to 2026-02-04 19:51:53Z; gap-threshold setting 6 hours).
@@ -274,23 +271,24 @@ The simulation stores mean resultant-length mapping
 \(\kappa=0.2\), which is over three times the observed \(r=0.0308\). Because
 the \(\kappa\) grid is coarse (0.0, 0.2, \ldots), \(\kappa^\star=0.2\) is a
 grid-crossing artifact rather than a sharp detectability threshold. This
-section is the detailed detectability record deferred from main text.
+section records the detectability simulation setup used for the periodicity
+analysis.
 
-\paragraph{S3.2 PSD robustness.}
+\subsection*{S3.2 PSD robustness}
 Supplementary PSD robustness for the 4-hour target frequency yields first-order
 autoregressive (AR(1))-calibrated \(p\)-values 0.508 (5-minute bins), 0.501
 (15-minute bins), and 0.556 (30-minute bins).
 
-\paragraph{S3.3 Reddit baseline supplementary diagnostics.}
+\subsection*{S3.3 Reddit baseline supplementary diagnostics}
 \label{sec:appendix:reddit-details}
 Under the same estimators, Reddit shows deeper threads (mean maximum depth
 2.17), higher direct-reply incidence (36.2\%), and longer kernel half-life
 diagnostic values (2.61 hours; 95\% confidence interval (CI): [2.29, 2.95]) than Moltbook.
 
-\subsection*{S4. Cross-Platform Matching Diagnostics and Mechanics}
+\section*{S4. Cross-Platform Matching Diagnostics and Mechanics}
 \label{sec:appendix:comparison-details}
 
-\paragraph{S4.1 Matched-sample flow.}
+\subsection*{S4.1 Matched-sample flow}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
@@ -303,7 +301,7 @@ strata on coarse topic, Coordinated Universal Time (UTC) posting hour, and early
 Moltbook threads and 888 Reddit threads across 118 shared strata. Deterministic
 1:1 matching yields 813 pairs (2.34\% of Moltbook threads).
 
-\paragraph{S4.2 Balance summary (before/after matching).}
+\subsection*{S4.2 Balance summary (before/after matching)}
 \begin{table}[h]
 \centering
 \caption{Covariate balance before and after coarsened exact matching.
@@ -326,7 +324,7 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \end{tabular}
 \end{table}
 
-\paragraph{S4.3 Matched paired-effects summary.}
+\subsection*{S4.3 Matched paired-effects summary}
 \begin{table}[h]
 \centering
 \caption{Matched paired-effects diagnostics from
@@ -346,7 +344,7 @@ Re-entry rate & 792 & -0.040 & [-0.054, -0.027] & \(4.77\times10^{-9}\) \\
 \end{tabular}
 \end{table}
 
-\paragraph{S4.4 Matched-subset kernel half-life diagnostic details.}
+\subsection*{S4.4 Matched-subset kernel half-life diagnostic details}
 \label{sec:appendix:match-halflife}
 Restricting survival units to matched threads gives 0.063 hours on Moltbook
 (3.77 minutes; 95\% CI: [1.19, 7.06] minutes; \(n=1{,}841\), 22 events) and
@@ -354,7 +352,7 @@ Restricting survival units to matched threads gives 0.063 hours on Moltbook
 events). These are platform-level contextual contrasts, not paired
 thread-level survival effects.
 
-\subsection*{S5. Operational Estimation Settings}
+\section*{S5. Operational Estimation Settings}
 \label{sec:appendix:operational-details}
 
 \begin{itemize}
@@ -374,13 +372,13 @@ volume bins, deterministic coarse topic map
 within each shared stratum, threads are paired deterministically one-to-one.
 \end{itemize}
 
-\subsection*{S6. Robustness Tables Relocated from Main Text}
+\section*{S6. Robustness and Diagnostic Tables}
 
-\paragraph{S6.1 Timing-model misspecification diagnostics (moved from main).}
+\subsection*{S6.1 Timing-model misspecification diagnostics}
 \begin{table}[h]
 \centering
 \caption{Observed vs.\ fitted timing-model diagnostics for conditional reply
-times and event probability (migrated from main results). Large quantile
+times and event probability. Large quantile
 residuals indicate misspecification of early-time shape under a single-family
 parametric timing fit.}
 \label{tab:timing-model-fit}
@@ -407,17 +405,15 @@ Event probability (\%) & 36.20 & 38.70 & +2.50 \\
 For Moltbook, the fitted median and upper quantile overstate observed values by
 +35.39 and +84.93 seconds despite near-calibration of event probability.
 This pattern is consistent with a spike-plus-tail shape that the single-family
-parametric fit does not capture well in the seconds-to-minutes region used for
-main interpretation. Accordingly, main-text inference uses nonparametric
+parametric fit does not capture well in the seconds-to-minutes region. Accordingly, we use nonparametric
 conditional quantiles and early-mass probabilities as primary timing evidence,
 with parametric half-life summaries retained only as secondary diagnostics.
 
-\paragraph{S6.2 Model-observable validation table (moved from main).}
+\subsection*{S6.2 Model-observable validation table}
 \begin{table}[h]
 \centering
 \caption{Model-to-observable validation: predicted vs.\ observed incidence,
-non-root branching, and depth tails (overall and key stratifications; migrated
-from main results).}
+non-root branching, and depth tails (overall and key stratifications).}
 \label{tab:model-observable-validation}
 \begingroup
 \setlength{\tabcolsep}{4pt}
@@ -442,11 +438,11 @@ Spam/Low-Signal & 0.88 & 0.88 & 0.009 & 0.009 & 0.0001 & 0.0000 & 0.00000 & 0.00
 \endgroup
 \end{table}
 
-\paragraph{S6.3 One-parent-per-thread robustness table (moved from main).}
+\subsection*{S6.3 One-parent-per-thread robustness}
 \begin{table}[h]
 \centering
 \caption{One-parent-per-thread robustness against within-thread clustering
-dependence (migrated from main results).}
+dependence.}
 \label{tab:dependence-robustness}
 \small
 \begin{tabular}{@{}lrrrr@{}}
@@ -461,7 +457,7 @@ Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \end{tabular}
 \end{table}
 
-\paragraph{S6.4 Coverage-gap disambiguation and robustness package.}
+\subsection*{S6.4 Coverage-gap disambiguation and robustness package}
 
 \begin{table}[h]
 \centering
@@ -531,7 +527,7 @@ Exclude gap overlap (24h) & 1h & 214,616 & 9.94 \\
 \end{tabular}
 \end{table}
 
-\paragraph{S6.5 Horizon-standardized incidence by group (C4 robustness).}
+\subsection*{S6.5 Horizon-standardized incidence by group (C4 robustness)}
 \begin{table}[h]
 \centering
 \caption{Follow-up-standardized incidence by group. Primary incidence metrics
@@ -558,7 +554,7 @@ submolt\_category & Creative & 433 & 1.62 & 1.71 & 1.62 \\
 \end{tabular}
 \end{table}
 
-\subsection*{S7. Full Submolt Uncertainty Table}
+\section*{S7. Full Submolt Uncertainty Table}
 
 \begin{table}[h]
 \centering
@@ -586,7 +582,7 @@ Overall & 223,316 & 9.60 [9.44, 9.75] & 4.55 [4.53, 4.58] & 50.05 [39.16, 60.52]
 \endgroup
 \end{table}
 
-\subsection*{S8. Data and Code Availability (migrated from main Appendix A)}
+\section*{S8. Data and Code Availability}
 \label{sec:reproducibility}
 
 Code and derived reproducibility artifacts for this manuscript version are
@@ -598,7 +594,7 @@ The Moltbook source dataset is publicly available on Hugging Face. Raw Reddit
 exports are not redistributed because of platform terms; only IDs/anonymized
 derivatives and aggregate outputs are shared.
 
-\paragraph{Reproducibility recipe (canonical runs).}
+\subsection*{S8.1 Reproducibility recipe (canonical runs)}
 \begin{itemize}
 \item Create the Python 3.11 environment with \texttt{make install}.
 \item Use pinned curated inputs documented in the Zenodo manifest and repository
@@ -608,11 +604,10 @@ derivatives and aggregate outputs are shared.
 \item Confirm manuscript artifact linkage with
 \texttt{MANUSCRIPT\_ARTIFACT\_PROVENANCE.csv}.
 \item Validate release integrity with \texttt{SHA256SUMS.txt}.
-\item Use repository docs for environment and operational details not needed in
-main text.
+\item Use repository docs for environment and operational details.
 \end{itemize}
 
-\subsection*{S9. Deferred Main-Text Figure: Re-Entry Distribution}
+\section*{S9. Re-Entry Distribution}
 
 \begin{figure}[h]
 \centering
@@ -624,11 +619,11 @@ in the comment sequence.}
 \label{fig:supp-reentry-distribution}
 \end{figure}
 
-\subsection*{S10. Deferred Main-Text Table: Descriptive Statistics}
+\section*{S10. Descriptive Statistics}
 
 \begin{table}[h]
 \centering
-\caption{Descriptive statistics for processed Moltbook threads (\(N=34{,}730\) threads with at least one comment; moved from the main manuscript).}
+\caption{Descriptive statistics for processed Moltbook threads (\(N=34{,}730\) threads with at least one comment).}
 \label{tab:supp-descriptive}
 \small
 \begin{tabular}{@{}lrrrrr@{}}
@@ -652,11 +647,11 @@ not treated as prior participation unless the root author later appears in the
 comment sequence.
 \end{table}
 
-\subsection*{S11. Deferred Main-Text Table: Moltbook Archive Schema Summary}
+\section*{S11. Moltbook Archive Schema Summary}
 
 \begin{table}[h]
 \centering
-\caption{Moltbook Observatory Archive structure in the curated first-week snapshot (moved from the main manuscript).}
+\caption{Moltbook Observatory Archive structure in the curated first-week snapshot.}
 \label{tab:supp-dataset}
 \small
 \begin{tabular}{@{}llrl@{}}
