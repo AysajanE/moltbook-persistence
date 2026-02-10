@@ -56,23 +56,45 @@ mechanism-level attribution requires richer exposure controls.
 \subsection{Design Implications}
 \label{sec:discussion:design}
 
-We frame platform design as an operations-research decision-support mapping from
-inputs \((K,\tau_K,B,L)\) to persistence outcomes under capacity and notification
-trade-offs. A practical planning target is the persistence multiplier
-\(m_\mu=\tau_K^{1/(K-1)}/\mu_0\) under \(\Pr(D_j\ge K)\approx\mu^{K-1}\), then
-allocate improvements across incidence versus conditional timing margins using
-reported baseline metrics (\Cref{tab:reply-dynamics}, \Cref{sec:results:consistency}).
-In this framing, resurfacing acts mainly on effective arrival/incidence, while
-memory and re-entry scaffolds act on service continuity and abandonment risk.
-These are model-consistent decision-support hypotheses, not experimentally
-identified causal effects.
+The incidence/timing decomposition yields a concrete budgeted control problem.
+For any operational horizon \(h\), \Cref{sec:model:or-diagnostic} defines
+\(q_h=\pi_h\phi_h\), where \(\pi_h\) is participation incidence and \(\phi_h\)
+is conditional speed. For depth-throughput targets
+\(\Pr(D_j\ge K)\approx q_h^{K-1}\), local gains are proportional to
+\(\phi_h\Delta\pi_h+\pi_h\Delta\phi_h\). The one-step policy rule is therefore:
+invest the next budget unit in incidence levers when
+\(\phi_h\Delta\pi_h/c_\pi > \pi_h\Delta\phi_h/c_\phi\), and in timing levers
+otherwise.
+
+Using observed Moltbook margins at \(h=5\) minutes,
+\(q_{5\mathrm{m}}=0.0942\) and
+\(\phi_{5\mathrm{m}}=\Prob(T\le5\mathrm{m}\mid\delta=1)=0.9806\), which implies
+\(\pi_{5\mathrm{m}}=q_{5\mathrm{m}}/\phi_{5\mathrm{m}}\approx0.0961\). Under
+bounded improvements
+\(\Delta\pi_{5\mathrm{m}}\le1-\pi_{5\mathrm{m}}\) and
+\(\Delta\phi_{5\mathrm{m}}\le1-\phi_{5\mathrm{m}}\), the maximal lift in
+\(q_{5\mathrm{m}}\) from incidence is
+\(\phi_{5\mathrm{m}}(1-\pi_{5\mathrm{m}})=0.8864\), versus
+\(\pi_{5\mathrm{m}}(1-\phi_{5\mathrm{m}})=0.00186\) from timing (about
+\(476\times\) smaller). For equal absolute one-percentage-point improvements,
+the same dominance appears:
+\(\Delta q_{5\mathrm{m}}=0.9806\) pp from incidence versus
+0.0961 pp from timing.
+
+Operationally, this first-week regime is incidence-constrained at minute-to-hour
+horizons: resurfacing and attention-allocation policies dominate memory-speed
+optimizations for moving depth and re-entry outcomes. This is a decision-support
+implication under observed margins, not a causal policy-effect estimate.
 
 \subsection{Broader Implications}
 \label{sec:discussion:broader}
 
 Reply incidence and conditional reply speed are portable metrics for comparing
 collective persistence across agent communities and model generations; the kernel
-half-life diagnostic is secondary for timescale interpretation. The current
+half-life diagnostic is secondary for timescale interpretation. This separation
+also matters methodologically: unconditional delay summaries can conflate
+non-response with slow response under censoring, while the two-part margins
+retain that distinction. The current
 cross-platform results provide descriptive baseline context under shared
 estimators and are not a primary identification strategy.
 

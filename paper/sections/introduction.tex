@@ -29,26 +29,28 @@ thread depth corresponds to branching stability versus subcriticality
 used in this study.
 
 From an OR/MS decision-support perspective, the platform is a distributed
-service system in which agents allocate limited attention across competing
-thread ``jobs.'' The design question is operational: how scheduling or
-resurfacing policies should prioritize pending threads to improve multi-step
-coordination throughput under capacity limits, for example the share of threads
-that reach depth \(\ge K\) and the incidence of re-entry. In this framing, our
-contribution is a diagnostic decomposition: the
-incidence margin identifies capacity-limited coordination failures, while the
-conditional timing margin identifies latency-limited coordination failures.
+service system in which pending parent comments are competing jobs for limited
+agent attention. The operational design problem is to allocate limited
+intervention budget across incidence-lift levers (for example resurfacing or
+visibility reminders) versus timing-lift levers (for example memory/context
+support) to maximize downstream coordination throughput, such as
+\(\Prob(D_j\ge K)\) and re-entry incidence.
+In this framing, our contribution is not only descriptive: the incidence margin
+diagnoses participation bottlenecks, while the conditional timing margin
+diagnoses latency bottlenecks, and the two margins define a policy-priority
+control panel.
 
-Our objective is to develop and empirically validate a two-part decomposition
-of conversational persistence in Moltbook's first week into (i) direct-reply
-incidence and (ii) conditional reply latency, and to show that this
-decomposition explains the observed shallow, root-heavy thread structure. In
-scope are this decomposition, its structural consequences for depth, branching,
-reciprocity, and re-entry, and heterogeneity analyses only when they sharpen
-interpretation of the decomposition. Out of scope are dedicated thread-duration
-inference, cross-platform baseline-comparison mechanics, and detailed periodicity machinery as
-primary claims; thread duration is reported only as an ancillary
-descriptive/contextual metric, and Reddit baseline context/periodicity are treated as
-secondary contextual or supplementary analyses.
+Our objective is to formalize and empirically validate a two-part control panel
+for conversational persistence in Moltbook's first week: (i) direct-reply
+incidence and (ii) conditional reply latency, with explicit mapping to
+depth-throughput outcomes. In scope are this decomposition, its structural
+consequences for depth, branching, reciprocity, and re-entry, and heterogeneity
+analyses only when they sharpen interpretation of which margin constrains
+coordination. Out of scope are dedicated thread-duration inference,
+cross-platform baseline-comparison mechanics, and detailed periodicity
+machinery as primary claims; thread duration is reported only as an ancillary
+descriptive/contextual metric, and Reddit baseline context/periodicity are
+treated as secondary contextual or supplementary analyses.
 
 \paragraph{Identification scope.}
 This paper reports observational measurement targets from archived first-week
@@ -117,27 +119,30 @@ reciprocity. Periodicity effect size is weak (\(r=0.0308\)); Rayleigh testing
 rejects exact uniformity at large \(N\), but spectral diagnostics do not show a
 strong 4-hour line.
 A run-scoped Reddit baseline shows materially longer
-persistence and deeper threads. Taken together, these patterns are consistent
-with a ``low-incidence/fast-conditional-response'' regime driven by architectural constraints
-on agent attention.
+persistence and deeper threads. Taken together, these patterns are compatible
+with a ``low-incidence/fast-conditional-response'' regime and indicate that
+incidence, not conditional latency, is the dominant operational bottleneck at
+minute-to-hour horizons in this snapshot.
 
 \subsection{Approach and Contributions}
 
 Aligned to this objective, the paper delivers three contributions. First, we
-define a two-component persistence metric that separates reply incidence from
-conditional reply timing. In OR terms, reply incidence corresponds to
-completion probability/throughput, while conditional reply timing corresponds
-to service time/latency, enabling diagnosis of whether coordination failure is
-due to scarce engagement vs slow engagement, with the kernel half-life
-diagnostic used only as a secondary timescale summary. Second, using the
-Moltbook Observatory Archive
-\citep{simulamet2026observatoryarchive}, we test whether low incidence and fast
-conditional timing jointly account for shallow depth, root-heavy branching, low
-reciprocity, and limited re-entry in first-week threads. Third, we quantify
-topic- and agent-level heterogeneity only insofar as it clarifies which margin
-of the decomposition drives those structural outcomes; thread-duration
-summaries, Reddit baseline context, and detailed periodicity analyses are
-retained as contextual or supplementary material rather than core deliverables.
+formalize an OR diagnostic for horizon throughput \(q_h\): a decomposition into
+incidence and conditional timing on a common risk set, with a derived
+cost-adjusted priority rule for deciding whether to invest in participation
+uplift or latency reduction (\Cref{sec:model:or-diagnostic}). This turns a
+standard survival decomposition into a decision-support control panel. Second,
+using the Moltbook Observatory Archive
+\citep{simulamet2026observatoryarchive}, we provide an analytic
+decision-support evaluation of that control panel using observed margins: we
+quantify how incidence versus conditional timing changes propagate to depth and
+re-entry-relevant coordination pressure under budgeted interventions. Third, we
+differentiate this contribution from conversation-cascade studies that
+typically emphasize unconditional delay or geometry summaries
+\citep{crane2008robust,rizoiu2017expecting,gomez2013structure,aragon2017thread,meital2024branch}:
+by separating incidence from conditional speed under right-censoring and then
+mapping both to OR targets, we identify which margin is operationally binding
+rather than treating persistence as a single aggregate statistic.
 
 \subsection{Paper Organization}
 

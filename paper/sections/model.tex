@@ -129,3 +129,43 @@ reciprocity \(\mathrm{R}_j\), and re-entry \(\mathrm{RE}_j\).
 kernel half-life diagnostic \(h=\ln 2/\beta\), interpreted as secondary to
 incidence and conditional timing.
 \end{itemize}
+
+\subsection{Operational Diagnostic: Horizon Throughput Control Panel}
+\label{sec:model:or-diagnostic}
+
+For decision support at horizon \(h\), define the risk set
+\[
+R_h:=\{C_m\ge h\ \text{or}\ T_m\le h\},
+\]
+and horizon throughput
+\[
+q_h:=\Prob(T_m\le h\mid R_h).
+\]
+Define two margins on the same risk set:
+\[
+\pi_h:=\Prob(\delta_m=1\mid R_h),\qquad
+\phi_h:=\Prob(T_m\le h\mid \delta_m=1,R_h).
+\]
+By the law of total probability,
+\begin{equation}
+\label{eq:horizon-throughput-factorization}
+q_h=\pi_h\phi_h.
+\end{equation}
+Hence, for local intervention-induced changes,
+\begin{equation}
+\label{eq:horizon-throughput-delta}
+\Delta q_h \approx \phi_h\,\Delta\pi_h+\pi_h\,\Delta\phi_h.
+\end{equation}
+
+Using the branching-style depth proxy
+\(\Prob(D_j\ge K)\approx q_h^{K-1}\), first-order gains in depth-\(K\)
+throughput are proportional to the same weighted sum in
+\Cref{eq:horizon-throughput-delta}. Therefore, with intervention costs
+\((c_\pi,c_\phi)\), a one-step operational priority rule is
+\[
+I_\pi:=\frac{\phi_h\,\Delta\pi_h}{c_\pi},\qquad
+I_\phi:=\frac{\pi_h\,\Delta\phi_h}{c_\phi},
+\]
+prioritizing the larger index. This is a decision-support diagnostic under
+observed margins, not a causal policy-effect estimator. A formal statement is
+provided in Supplementary Section S0.2.4 with proof in S1.4.
