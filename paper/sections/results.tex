@@ -99,19 +99,17 @@ on the follow-up-standardized descriptive contrasts in
 
 \subsubsection{Timing Shape Diagnostic}
 
-The Weibull conditional-time fit succeeds for the overall sample and most
-strata. The overall shape estimate is \(\hat{\gamma}=0.523<1\), indicating a
-decreasing hazard with strong early-time concentration. This supports the
-primary quantile readout in \Cref{tab:reply-dynamics}: conditional reply speed
-is concentrated in the first seconds to minutes. Observed-versus-fitted
-diagnostics show close event-probability calibration (Moltbook: 9.60\% observed
-vs.\ 9.91\% fitted; Reddit: 36.20\% observed vs.\ 38.70\% fitted) but large
-early-quantile misspecification. For Moltbook, fitted \(p_{50}\) is 39.94
-seconds versus 4.55 seconds observed, and fitted \(p_{90}\) is 134.98 seconds
-versus 50.05 seconds observed; analogous overstatement appears in Reddit upper
-quantiles. Empirical hazard-shape mismatch diagnostics are documented in
-supplementary analyses. Accordingly, the kernel half-life remains a secondary diagnostic and
-incidence plus conditional quantiles remain the primary measurement targets.
+Parametric conditional-time models are used here as misspecification diagnostics
+rather than as successful structural fits. Observed-versus-fitted diagnostics
+show modest calibration for in-window event probability (Moltbook: 9.60\%
+observed vs.\ 9.91\% fitted; Reddit: 36.20\% observed vs.\ 38.70\% fitted) but
+large early-quantile errors. For Moltbook, fitted \(p_{50}\) is 39.94 seconds
+versus 4.55 seconds observed, and fitted \(p_{90}\) is 134.98 seconds versus
+50.05 seconds observed. Analogous quantile overstatement appears for Reddit in
+Supplementary Section S6.1. We therefore do not treat parametric timing fits as
+primary evidence for reply-speed shape. Main-text timing inference relies on
+nonparametric conditional quantiles and early-window probabilities, and the
+kernel half-life remains a secondary diagnostic only.
 
 \subsubsection{Coverage-Gap Robustness}
 \label{sec:results:gap-robustness}

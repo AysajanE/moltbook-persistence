@@ -284,11 +284,13 @@ within each shared stratum, threads are paired deterministically one-to-one.
 
 \subsection*{S6. Robustness Tables Relocated from Main Text}
 
-\paragraph{S6.1 Timing fit diagnostic table (moved from main).}
+\paragraph{S6.1 Timing-model misspecification diagnostics (moved from main).}
 \begin{table}[h]
 \centering
 \caption{Observed vs.\ fitted timing-model diagnostics for conditional reply
-times and event probability (migrated from main results).}
+times and event probability (migrated from main results). Large quantile
+residuals indicate misspecification of early-time shape under a single-family
+parametric timing fit.}
 \label{tab:timing-model-fit}
 \scriptsize
 \begin{tabular}{@{}lrrr@{}}
@@ -309,6 +311,14 @@ Event probability (\%) & 36.20 & 38.70 & +2.50 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+For Moltbook, the fitted median and upper quantile overstate observed values by
++35.39 and +84.93 seconds despite near-calibration of event probability.
+This pattern is consistent with a spike-plus-tail shape that the single-family
+parametric fit does not capture well in the seconds-to-minutes region used for
+main interpretation. Accordingly, main-text inference uses nonparametric
+conditional quantiles and early-mass probabilities as primary timing evidence,
+with parametric half-life summaries retained only as secondary diagnostics.
 
 \paragraph{S6.2 Model-observable validation table (moved from main).}
 \begin{table}[h]
