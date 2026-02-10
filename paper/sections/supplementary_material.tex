@@ -4,6 +4,11 @@ mechanics, and reproducibility information that complement the main manuscript.
 
 \section*{Hypothesis Roadmap}
 
+Table \ref{tab:supp-intro-roadmap} provides a compact map from each hypothesis
+to its measurement targets, the main-manuscript section(s) where each readout is
+reported, and the headline empirical finding. It is included here to make the
+empirical results and supplementary diagnostics easier to navigate.
+
 \begin{table}[h]
 \centering
 \caption{Hypothesis roadmap: measurement targets, where each is summarized in
@@ -30,6 +35,10 @@ H4 & Agent-covariate associations (claim status) in the two-part incidence/timin
 \section*{S0. Mathematical Framework and Proofs}
 \label{sec:appendix}
 \label{sec:appendix:proofs}
+
+This section records the mathematical framework underlying the intensity model
+and auxiliary results used to interpret the estimands and diagnostics. Each
+result is stated formally as a proposition and proved immediately.
 
 \subsection*{S0.1 Full intensity and competing-risks parent selection}
 For thread \(j\), let \(\mathcal{H}_j(t)\) denote history up to \(t\). For an
@@ -185,6 +194,12 @@ first-week snapshot; we list them as candidate directions for future estimation.
 \section*{S2. Submolt Keyword Triggers (Expanded)}
 \label{sec:appendix:submolts}
 
+This section documents the deterministic keyword triggers used to assign
+threads to coarse submolt categories for the heterogeneity analyses. Table
+\ref{tab:submolt-examples} lists representative triggers for each category, and
+Section S2.1 reports sensitivity checks under alternative trigger lists and
+exclusion rules.
+
 \begin{table}[h]
 \centering
 \caption{Representative keyword triggers per submolt category. Categories are
@@ -228,6 +243,11 @@ conditional tail than Philosophy/Meta) is unchanged across these variants
 
 \section*{S3. Periodicity Robustness and Detectability Mechanics}
 \label{sec:appendix:periodicity-robustness}
+
+This section provides supplementary diagnostics for the periodicity analysis,
+including bin-width robustness, the detectability simulation setup used to
+interpret concentration magnitudes, and baseline comparisons under the same
+estimators.
 
 \begin{figure}[h]
 \centering
@@ -295,6 +315,11 @@ diagnostic values (2.61 hours; 95\% confidence interval (CI): [2.29, 2.95]) than
 \section*{S4. Cross-Platform Matching Diagnostics and Mechanics}
 \label{sec:appendix:comparison-details}
 
+This section reports supplementary details for the coarse cross-platform
+matching design used for contextual comparisons between Moltbook and a Reddit
+baseline. We describe the matched-sample flow, show covariate balance before and
+after matching, and summarize paired outcome contrasts.
+
 \subsection*{S4.1 Matched-sample flow}
 \begin{figure}[h]
 \centering
@@ -309,6 +334,11 @@ Moltbook threads and 888 Reddit threads across 118 shared strata. Deterministic
 1:1 matching yields 813 pairs (2.34\% of Moltbook threads).
 
 \subsection*{S4.2 Balance summary (before/after matching)}
+Table \ref{tab:supp-matching-balance} summarizes covariate balance before and
+after coarsened exact matching. We report standardized mean differences (SMDs)
+for numeric covariates and total variation distance (TVD) for categorical
+covariates, where smaller values indicate improved balance.
+
 \begin{table}[h]
 \centering
 \caption{Covariate balance before and after coarsened exact matching.
@@ -332,6 +362,11 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \end{table}
 
 \subsection*{S4.3 Matched paired-effects summary}
+Table \ref{tab:cross-platform-paired-effects} reports paired contrasts on key
+thread outcomes in the matched sample. Differences are computed as Moltbook minus
+Reddit (M-R); uncertainty is summarized using bootstrap 95\% confidence
+intervals (CIs) and Wilcoxon signed-rank \(p\)-values.
+
 \begin{table}[h]
 \centering
 \caption{Matched paired-effects diagnostics from
@@ -362,6 +397,10 @@ thread-level survival effects.
 \section*{S5. Operational Estimation Settings}
 \label{sec:appendix:operational-details}
 
+This section summarizes operational choices used across the empirical analyses,
+including risk-set construction, periodicity preprocessing, bootstrap settings,
+and matching mechanics.
+
 \begin{itemize}
 \item Coverage and at-risk rules: each non-root comment is one candidate-parent
 survival unit; first-reply durations are right-censored at observation boundary;
@@ -381,7 +420,17 @@ within each shared stratum, threads are paired deterministically one-to-one.
 
 \section*{S6. Robustness and Diagnostic Tables}
 
+This section provides supplementary robustness and diagnostic tables used to
+validate modeling choices and key measurement steps. The tables cover timing-fit
+diagnostics, model-to-observable checks, sensitivity to within-thread dependence,
+coverage-gap disambiguation, and horizon-standardized incidence by group.
+
 \subsection*{S6.1 Timing-model misspecification diagnostics}
+\noindent Table \ref{tab:timing-model-fit} compares observed timing summaries and
+event probabilities against fitted values from the parametric timing model.
+Residuals (fitted minus observed) provide a compact diagnostic of
+misspecification in the early-time region.
+
 \begin{table}[h]
 \centering
 \caption{Observed vs.\ fitted timing-model diagnostics for conditional reply
@@ -417,6 +466,11 @@ conditional quantiles and early-mass probabilities as primary timing evidence,
 with parametric half-life summaries retained only as secondary diagnostics.
 
 \subsection*{S6.2 Model-observable validation table}
+Table \ref{tab:model-observable-validation} evaluates whether the fitted model
+reproduces key observables: reply incidence, non-root branching, and depth-tail
+probabilities. We report predicted and observed values overall and for key
+stratifications used in the main analyses.
+
 \begin{table}[h]
 \centering
 \caption{Model-to-observable validation: predicted vs.\ observed incidence,
@@ -446,6 +500,11 @@ Spam/Low-Signal & 0.88 & 0.88 & 0.009 & 0.009 & 0.0001 & 0.0000 & 0.00000 & 0.00
 \end{table}
 
 \subsection*{S6.3 One-parent-per-thread robustness}
+Table \ref{tab:dependence-robustness} reports a sensitivity check for within-thread
+dependence by restricting the estimation sample to one parent survival unit per
+thread. We compare the primary estimates to the one-parent-per-thread estimates
+and report absolute and relative differences.
+
 \begin{table}[h]
 \centering
 \caption{One-parent-per-thread robustness against within-thread clustering
@@ -465,6 +524,14 @@ Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \end{table}
 
 \subsection*{S6.4 Coverage-gap disambiguation and robustness package}
+\noindent This subsection documents evidence used to disambiguate a data-coverage
+gap in the comment archive and to assess robustness of the two-part decomposition
+to windowing and risk-set definitions. Table \ref{tab:supp-gap-disambiguation}
+summarizes gap evidence across raw archive tables; Table
+\ref{tab:supp-gap-window-robustness} reports two-part decomposition robustness
+across contiguous windows and gap-overlap exclusions; and Table
+\ref{tab:supp-gap-horizon-standardized} reports horizon-standardized reply
+probabilities using explicit risk sets.
 
 \begin{table}[h]
 \centering
@@ -535,6 +602,11 @@ Exclude gap overlap (24h) & 1h & 214,616 & 9.94 \\
 \end{table}
 
 \subsection*{S6.5 Horizon-standardized incidence by group (C4 robustness)}
+Table \ref{tab:supp-horizon-incidence-groups} reports follow-up-standardized
+incidence metrics overall and by group, computed using horizon-specific risk
+sets. These quantities support comparisons across heterogeneity strata when
+observation windows differ across threads.
+
 \begin{table}[h]
 \centering
 \caption{Follow-up-standardized incidence by group. Primary incidence metrics
@@ -562,6 +634,11 @@ submolt\_category & Creative & 433 & 1.62 & 1.71 & 1.62 \\
 \end{table}
 
 \section*{S7. Full Submolt Uncertainty Table}
+
+Table \ref{tab:supp-submolt-uncertainty} provides bootstrap uncertainty
+intervals for category-stratified estimates, including reply incidence,
+conditional reply-time quantiles, reciprocity, and re-entry. It is included to
+make the heterogeneity comparisons transparent at the submolt level.
 
 \begin{table}[h]
 \centering
@@ -602,6 +679,8 @@ exports are not redistributed because of platform terms; only IDs/anonymized
 derivatives and aggregate outputs are shared.
 
 \subsection*{S8.1 Reproducibility recipe (canonical runs)}
+The following steps summarize a canonical end-to-end run that reproduces the
+analysis outputs and manuscript-facing artifacts reported in this version.
 \begin{itemize}
 \item Create the Python 3.11 environment with \texttt{make install}.
 \item Use pinned curated inputs documented in the Zenodo manifest and repository
