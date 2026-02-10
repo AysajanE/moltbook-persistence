@@ -22,8 +22,11 @@ Metric terminology follows the canonical glossary in
 \subsubsection{Overall Two-Part Readout}
 \label{sec:results:two-regime}
 
-Using one survival unit per at-risk comment (candidate parent), the primary
-two-part sample includes 223,316 parents. Primary incidence is
+Using one survival unit per at-risk non-root comment (candidate parent), the
+primary two-part sample includes 223,316 parents.
+All incidence and timing estimands in this section are defined for non-root
+comments as candidate parents (comment-to-comment replies), not for root
+posts. Primary incidence is
 horizon-standardized: \(p_{5\mathrm{m}}=9.42\%\) and
 \(p_{1\mathrm{h}}=9.82\%\). The in-window ever-reply share is 9.60\%
 (95\% bootstrap CI: [9.45\%, 9.76\%]) and is treated as a secondary
@@ -39,9 +42,12 @@ Conditional medians are similar (4.42 [4.38, 4.45] seconds for claimed vs.\
 much faster for claimed accounts (\(t_{90}=6.29\) seconds, 95\% bootstrap CI:
 [6.06, 6.83], vs.\ 63.40 seconds, 95\% bootstrap CI: [52.95, 77.31];
 \(\approx 10.1\times\)).
+Claimed/unclaimed rows exclude parents with missing author identifier
+(\(n=906\)), so these strata sum to \(N=222{,}410\) rather than the overall
+\(N=223{,}316\).
 Because parent units share threads and repeated authors, inference on
-claimed-status contrasts is dependence-limited in this snapshot, and these
-contrasts are treated as descriptive.
+claimed-status contrasts is dependence-limited in this snapshot; we treat these
+contrasts as exploratory descriptive evidence.
 Conditional on a reply occurring, 88.30\% arrive within 30 seconds and 98.06\%
 within 5 minutes. This is the core low-incidence / very-fast-conditional-speed
 pattern.
@@ -76,6 +82,8 @@ descriptive diagnostics.}
 Overall & 223,316 & 9.42 & 9.82 & 9.60 & 4.55 [4.53, 4.58] & 50.05 & 0.691 \\
 Claimed & 20,667 & 18.95 & 19.56 & 19.23 & 4.42 [4.38, 4.45] & 6.29 & 0.419 \\
 Unclaimed & 201,743 & 8.48 & 8.86 & 8.65 & 4.59 [4.57, 4.62] & 63.40 & 0.754 \\
+\addlinespace[2pt]
+\multicolumn{8}{@{}l@{}}{\footnotesize Note: Claimed/unclaimed excludes parents with missing author identifier (\(n=906\)).} \\
 \bottomrule
 \end{tabular}
 \par}
@@ -89,7 +97,8 @@ calibration/sensitivity diagnostic for part-1 incidence rather than as a
 standalone inferential test for claim status. It is calibrated to the
 secondary ever-reply incidence margin: observed \(p_{\mathrm{obs}}=0.096304\)
 and mean fitted incidence 0.096319 (absolute error \(1.52\times 10^{-5}\),
-\(N=222{,}410\)).
+\(N=222{,}410\), where claim-status rows exclude missing-author parents
+(\(n=906\))).
 Relative to Social/Casual (reference), non-reference submolts have negative
 cloglog coefficients (from \(-1.62\) to \(-2.56\)). The claimed-group
 coefficient is positive (\(+0.844\)) but has wide two-way-clustered uncertainty
@@ -304,11 +313,14 @@ dominant four-hour line.
 \subsection{Secondary Context: Reddit Baseline under Shared Estimators}
 \label{sec:results:reddit-full-scale}
 
-Secondary Reddit context is directionally consistent with the Moltbook
-interpretation: deeper threads and slower reply persistence under the same
-estimators. These baseline contrasts are descriptive and non-causal and are
-used only as contextual evidence for H2 interpretation; detailed mechanics and
-diagnostics are deferred to supplementary material.
+Secondary Reddit context is retained only as descriptive orientation under
+shared estimators. We do not treat these cross-platform contrasts as an
+identification anchor because platforms differ in interface, ranking,
+moderation, and participation incentives, and because curated Reddit data
+include known curation losses. Matched-overlap support is sparse (813 pairs;
+2.34\% of Moltbook threads), and matched-subset survival on Moltbook has only
+22 events. Accordingly, baseline mechanics, overlap diagnostics, and matched
+analyses are deferred to Supplementary Sections S3.3 and S4--S4.4.
 
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
