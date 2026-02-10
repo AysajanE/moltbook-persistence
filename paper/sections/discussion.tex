@@ -10,12 +10,12 @@ cross-platform baseline analyses provide secondary context.
 \subsection{Interpreting Incidence and Conditional Reply Speed}
 \label{sec:discussion:two-part}
 
-The primary persistence readout is two-part: low direct-reply incidence (9.60\%)
-and very fast conditional reply speed (\(t_{50}=4.55\) seconds,
-\(t_{90}=50.05\) seconds, \(t_{95}=132.23\) seconds). Unconditional short-window
-probabilities are similarly concentrated (8.47\% within 30 seconds and 9.41\%
-within 5 minutes), implying that most observed replies occur almost immediately.
-The remaining majority of parents receive no observed direct reply in-window.
+The primary persistence readout is two-part: low horizon-standardized incidence
+(\(p_{5\mathrm{m}}=9.42\%\), \(p_{1\mathrm{h}}=9.82\%\)) and very fast
+conditional reply speed (\(t_{50}=4.55\) seconds, \(t_{90}=50.05\) seconds,
+\(t_{95}=132.23\) seconds). Secondary ever-reply incidence is 9.60\% in-window.
+Together, these values imply that most parents receive no observed direct reply
+even at a one-hour horizon.
 
 This pattern is consistent with finite context retention, rapid task switching,
 and weak return-to-thread memory support. The kernel half-life diagnostic remains
@@ -48,44 +48,22 @@ seconds-to-few-minutes conditional timescales and repeated participation is limi
 projects requiring
 extended deliberation or multi-day follow-through are difficult to sustain
 without explicit coordination scaffolds. Updated heterogeneity analyses suggest
-meaningful differences by account status in observed reply incidence, but
+meaningful differences by account status in horizon-standardized incidence, but
 mechanism-level attribution requires richer exposure controls.
 
 \subsection{Design Implications}
 \label{sec:discussion:design}
 
 We frame platform design as an operations-research decision-support mapping from
-inputs to outputs under explicit trade-offs. A practical template is: (1) set
-inputs \((K,\tau_K,B,L)\), where \(\tau_K\) is a target depth probability
-threshold (\(\Pr(D_j\ge K)\ge\tau_K\)), \(B\) is compute/attention budget, and
-\(L\) is acceptable notification load; (2) compute the required persistence
-multiplier
-\(m_\mu=\tau_K^{1/(K-1)}/\mu_0\) under
-\(\Pr(D_j\ge K)\approx\mu^{K-1}\); (3) allocate that multiplier across
-incidence versus conditional-timing margins, either through an incidence proxy
-\(p_{\mathrm{reply,req}}\approx m_\mu p_{\mathrm{reply},0}\) (holding
-conditional timing shape fixed) or a timing proxy
-\(\beta_{\mathrm{req}}\approx\beta_0/m_\mu\) (holding \(\alpha\) fixed in
-\(\mu\approx\alpha/\beta\)).
-
-When instantiated, this template should draw \(\mu_0\) and
-\(p_{\mathrm{reply},0}\) only from already reported baseline metrics
-(\Cref{tab:reply-dynamics} and the model-to-observable validation summary in
-\Cref{sec:results:consistency}). The resulting
-\(m_\mu\), \(p_{\mathrm{reply,req}}\), and \(\beta_{\mathrm{req}}\) are
-planning calculations under the same approximation, not new empirical results.
-
-The same metrics provide an explicit A/B evaluation map. Memory-aid arms are
-scored on service continuity (higher incidence among eligible parents and/or
-slower conditional decay as a \(\beta\)-proxy) relative to \((B,L)\)
-constraints. Resurfacing arms are scored as increases in effective arrival rate
-into the service system (incidence/\(\alpha\)-proxy shifts) and associated load
-costs. Re-entry prompt arms are scored on changes in re-entry frequency and
-depth-tail outcomes per incremental notification load. In capacity-allocation
-terms, resurfacing raises effective arrival rates, while memory scaffolding
-improves service continuity and can reduce abandonment from stale threads.
-These intervention implications are mechanism-consistent decision-support
-hypotheses under the fitted model.
+inputs \((K,\tau_K,B,L)\) to persistence outcomes under capacity and notification
+trade-offs. A practical planning target is the persistence multiplier
+\(m_\mu=\tau_K^{1/(K-1)}/\mu_0\) under \(\Pr(D_j\ge K)\approx\mu^{K-1}\), then
+allocate improvements across incidence versus conditional timing margins using
+reported baseline metrics (\Cref{tab:reply-dynamics}, \Cref{sec:results:consistency}).
+In this framing, resurfacing acts mainly on effective arrival/incidence, while
+memory and re-entry scaffolds act on service continuity and abandonment risk.
+These are model-consistent decision-support hypotheses, not experimentally
+identified causal effects.
 
 \subsection{Broader Implications}
 \label{sec:discussion:broader}

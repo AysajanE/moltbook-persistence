@@ -23,14 +23,17 @@ Metric terminology follows the canonical glossary in
 \label{sec:results:two-regime}
 
 Using one survival unit per at-risk comment (candidate parent), the primary
-two-part sample includes 223,316 parents with 21,430 observed direct replies
-(reply incidence \(9.60\%\), 95\% bootstrap CI: [9.45\%, 9.76\%]).
+two-part sample includes 223,316 parents. Primary incidence is
+horizon-standardized: \(p_{5\mathrm{m}}=9.42\%\) and
+\(p_{1\mathrm{h}}=9.82\%\). The in-window ever-reply share is 9.60\%
+(95\% bootstrap CI: [9.45\%, 9.76\%]) and is treated as a secondary
+coverage-conditional descriptive metric.
 The conditional median reply time is 4.55 seconds (95\% bootstrap CI:
 [4.53, 4.58] seconds), with \(t_{90}=50.05\) seconds.
-Claimed-status heterogeneity is large descriptively: claimed incidence is
-19.23\% (95\% bootstrap CI: [18.82\%, 19.66\%]) versus 8.65\%
-(95\% bootstrap CI: [8.50\%, 8.79\%]) for unclaimed, an absolute gap of
-10.58 percentage points (\(\approx 2.22\times\)).
+Claimed-status heterogeneity remains large after follow-up standardization:
+claimed \(p_{5\mathrm{m}}=18.95\%\), \(p_{1\mathrm{h}}=19.56\%\), versus
+unclaimed \(p_{5\mathrm{m}}=8.48\%\), \(p_{1\mathrm{h}}=8.86\%\)
+(\(\approx 2.2\times\)).
 Conditional medians are similar (4.42 [4.38, 4.45] seconds for claimed vs.\
 4.59 [4.57, 4.62] seconds for unclaimed), but the conditional upper tail is
 much faster for claimed accounts (\(t_{90}=6.29\) seconds, 95\% bootstrap CI:
@@ -39,10 +42,9 @@ much faster for claimed accounts (\(t_{90}=6.29\) seconds, 95\% bootstrap CI:
 Because parent units share threads and repeated authors, inference on
 claimed-status contrasts is dependence-limited in this snapshot, and these
 contrasts are treated as descriptive.
-Unconditionally, 8.47\% of at-risk parents receive a direct reply within
-30 seconds and 9.41\% within 5 minutes; conditional on a reply occurring,
-these become 88.30\% and 98.06\%. This is the core low-incidence /
-very-fast-conditional-speed pattern.
+Conditional on a reply occurring, 88.30\% arrive within 30 seconds and 98.06\%
+within 5 minutes. This is the core low-incidence / very-fast-conditional-speed
+pattern.
 
 \begin{figure}[t]
 \centering
@@ -58,9 +60,10 @@ substantially shifted to longer delays.
 
 \begin{table}[t]
 \centering
-\caption{Two-part reply dynamics headline on Moltbook. Incidence and conditional
-timing are primary; the kernel half-life diagnostic is model-implied under the
-exponential kernel and reported as secondary.}
+\caption{Two-part reply dynamics headline on Moltbook. Horizon-standardized
+incidence (\(p_{5\mathrm{m}},p_{1\mathrm{h}}\)) is primary; in-window
+ever-reply share (\(p_{\mathrm{obs}}\)) and kernel half-life are secondary
+descriptive diagnostics.}
 \label{tab:reply-dynamics}
 \begingroup
 \setlength{\tabcolsep}{3pt}
@@ -68,11 +71,11 @@ exponential kernel and reported as secondary.}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-\textbf{Group} & \textbf{Parents} & \textbf{Reply incidence \% (95\% CI)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{$\Pr(\text{reply}\le 30\mathrm{s}\mid\text{reply})$ \%} & \textbf{$\Pr(\text{reply}\le 5\mathrm{m}\mid\text{reply})$ \%} & \textbf{Kernel half-life (diagnostic; min)} \\
+\textbf{Group} & \textbf{Parents} & \textbf{\(p_{5\mathrm{m}}\) \%} & \textbf{\(p_{1\mathrm{h}}\) \%} & \textbf{\(p_{\mathrm{obs}}\) \% (secondary)} & \textbf{$t_{50}$ (s, 95\% CI)} & \textbf{$t_{90}$ (s)} & \textbf{Kernel half-life (diagnostic; min)} \\
 \midrule
-Overall & 223,316 & 9.60 [9.45, 9.76] & 4.55 [4.53, 4.58] & 50.05 & 88.30 & 98.06 & 0.691 \\
-Claimed & 20,667 & 19.23 [18.82, 19.66] & 4.42 [4.38, 4.45] & 6.29 & 94.99 & 98.52 & 0.419 \\
-Unclaimed & 201,743 & 8.65 [8.50, 8.79] & 4.59 [4.57, 4.62] & 63.40 & 86.79 & 97.95 & 0.754 \\
+Overall & 223,316 & 9.42 & 9.82 & 9.60 & 4.55 [4.53, 4.58] & 50.05 & 0.691 \\
+Claimed & 20,667 & 18.95 & 19.56 & 19.23 & 4.42 [4.38, 4.45] & 6.29 & 0.419 \\
+Unclaimed & 201,743 & 8.48 & 8.86 & 8.65 & 4.59 [4.57, 4.62] & 63.40 & 0.754 \\
 \bottomrule
 \end{tabular}
 \par}
@@ -83,14 +86,16 @@ Unclaimed & 201,743 & 8.65 [8.50, 8.79] & 4.59 [4.57, 4.62] & 63.40 & 86.79 & 97
 
 The incidence model (\cref{eq:methods-incidence-cloglog}) is used here as a
 calibration/sensitivity diagnostic for part-1 incidence rather than as a
-standalone inferential test for claim status. Calibration at the sample mean is
-tight: observed incidence is 0.096304 and mean fitted incidence is 0.096319
-(absolute error \(1.52\times 10^{-5}\), \(N=222{,}410\)).
+standalone inferential test for claim status. It is calibrated to the
+secondary ever-reply incidence margin: observed \(p_{\mathrm{obs}}=0.096304\)
+and mean fitted incidence 0.096319 (absolute error \(1.52\times 10^{-5}\),
+\(N=222{,}410\)).
 Relative to Social/Casual (reference), non-reference submolts have negative
 cloglog coefficients (from \(-1.62\) to \(-2.56\)). The claimed-group
 coefficient is positive (\(+0.844\)) but has wide two-way-clustered uncertainty
 (95\% CI: [\(-0.39\), 2.08]). Accordingly, claim-status interpretation relies
-on the bootstrap descriptive contrasts in \Cref{tab:reply-dynamics}.
+on the follow-up-standardized descriptive contrasts in
+\Cref{tab:reply-dynamics} and Supplementary Section S6.5.
 
 \subsubsection{Timing Shape Diagnostic}
 
@@ -266,6 +271,10 @@ low incidence with materially slower conditional tails
 Category-cluster bootstrap intervals preserve this ranking (Supplementary
 Section S7): Social/Casual remains high-incidence/fast-tail, while
 Philosophy/Meta remains low-incidence/slow-tail with low median re-entry.
+Follow-up-standardized incidence at fixed horizons yields the same ordering
+(Supplementary Section S6.5): for example, Social/Casual has
+\(p_{5\mathrm{m}}=10.80\%\) and \(p_{1\mathrm{h}}=11.21\%\), while
+Philosophy/Meta has \(p_{5\mathrm{m}}=1.32\%\) and \(p_{1\mathrm{h}}=1.70\%\).
 
 \subsection{H4: Agent Covariates in Incidence and Timing}
 \label{sec:results:agent-covariates}
@@ -297,11 +306,13 @@ diagnostics are deferred to supplementary material.
 \subsection{Summary of Key Findings}
 \label{sec:results:summary}
 
-The headline pattern is stable: low direct-reply incidence with very fast
+The headline pattern is stable: low horizon-standardized incidence
+(\(p_{5\mathrm{m}}=9.42\%\), \(p_{1\mathrm{h}}=9.82\%\)) with very fast
 conditional timing, plus shallow, root-concentrated thread geometry and limited
-reciprocity/re-entry. Coverage-gap sensitivities preserve the post-gap
-decomposition readout, and one-parent-per-thread sensitivity lowers incidence
-levels without changing the qualitative speed-vs-incidence interpretation.
+reciprocity/re-entry. Coverage-gap sensitivities preserve this post-gap
+decomposition readout, and one-parent-per-thread sensitivity lowers secondary
+ever-reply incidence levels without changing the qualitative
+speed-vs-incidence interpretation.
 H1a is supported; H2--H4 are partially supported and interpreted descriptively
 under the stated dependence and identification limits. Topic and claim
 heterogeneity remain substantial, while periodicity and Reddit comparisons are

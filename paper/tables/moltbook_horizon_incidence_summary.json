@@ -1,0 +1,10 @@
+{
+  "generated_at_utc": "2026-02-10T00:58:33.009076+00:00",
+  "survival_input_path": "data_features/moltbook_only/run_20260206-145240Z/survival_units.parquet",
+  "raw_agents_input_path": "data_raw/hf_archive/snapshot_20260204-234429Z/agents/archive.parquet",
+  "horizons_seconds": [
+    300,
+    3600
+  ],
+  "output_table_csv": "paper/tables/moltbook_horizon_incidence_by_group.csv"
+}

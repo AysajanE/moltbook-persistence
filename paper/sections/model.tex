@@ -109,16 +109,19 @@ occurs).
 
 Primary estimands are:
 \begin{itemize}
-\item \textbf{Direct-reply incidence:}
-\(p_{\mathrm{obs}}:=\Prob(\delta_m=1)\), estimated as
-\(N_{\mathrm{reply}}/N_{\mathrm{risk}}\).
+\item \textbf{Horizon-standardized incidence (primary):}
+for horizon \(h\in\{5\text{ min},1\text{ h}\}\),
+\[
+p_h:=\Prob\!\left(T_m\le h \,\middle|\, C_m\ge h \ \text{or}\ T_m\le h\right),
+\]
+with empirical estimation by the corresponding horizon-specific risk set.
+\item \textbf{Ever-reply incidence (secondary descriptive):}
+\(p_{\mathrm{obs}}:=\Prob(\delta_m=1)\), reported as the in-window
+ever-replied share and interpreted as coverage-conditional.
 \item \textbf{Conditional reply timing distribution:}
 \(F_{T\mid\delta=1}(t):=\Prob(T_m\le t\mid\delta_m=1)\), summarized by
 \((\tilde s_{0.5},\tilde s_{0.9},\tilde s_{0.95})\) and short-window
 probabilities.
-\item \textbf{Unconditional early-reply probability:}
-\(\Prob(\delta_m=1,T_m\le t)\) for operational windows
-\(t\in\{30\text{ s},5\text{ min}\}\).
 \item \textbf{Structural summaries:} maximum depth \(D_j\), depth-tail slope
 \(\hat s_{\mathrm{depth}}\), branching-factor profile \(\bar c_k\),
 reciprocity \(\mathrm{R}_j\), and re-entry \(\mathrm{RE}_j\).
