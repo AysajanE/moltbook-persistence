@@ -70,13 +70,25 @@
 
 \journal{European Journal of Operational Research}
 
+% APA-style DOI rendering (Elsevier .bst defaults to "doi:10...").
+% Define these before the .bbl is read so \providecommand in the .bbl does not override.
+\makeatletter
+\@ifundefined{DOIprefix}{\newcommand{\DOIprefix}{}}{\renewcommand{\DOIprefix}{}}
+\@ifundefined{doi}{%
+  \newcommand{\doi}[1]{\href{https://doi.org/#1}{https://doi.org/#1}}%
+}{%
+  \renewcommand{\doi}[1]{\href{https://doi.org/#1}{https://doi.org/#1}}%
+}
+\makeatother
+
 \begin{document}
 
 \begin{frontmatter}
 \title{Fast Response or Silence: Conversation Persistence in an AI-Agent Social Network}
-\author[ivey]{Aysajan Eziz}
+\author[ivey]{Aysajan Eziz\corref{cor1}}
+\cortext[cor1]{Corresponding author.}
 \ead{aeziz@ivey.ca}
-\address[ivey]{Ivey Business School, Western University, Canada}
+\address[ivey]{Ivey Business School, Western University, 1255 Western Road, London, ON N6G 0N1, Canada}
 
 \input{sections/abstract}
 

@@ -189,7 +189,7 @@ conditional tail than Philosophy/Meta) is unchanged across these variants
 
 \begin{table}[h]
 \centering
-\caption{Keyword-mapping sensitivity for the Social/Casual versus Philosophy/Meta heterogeneity direction. Source table: \texttt{paper/tables/moltbook\_submolt\_keyword\_sensitivity.csv}.}
+\caption{Keyword-mapping sensitivity for the Social/Casual versus Philosophy/Meta heterogeneity direction. Source: \texttt{moltbook\_submolt\_keyword\_sensitivity.csv}.}
 \label{tab:submolt-sensitivity}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -204,7 +204,7 @@ conditional tail than Philosophy/Meta) is unchanged across these variants
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/periodicity_bin_robustness_moltbook.png}
-\caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes).}
+\caption{Bin-width robustness for Moltbook periodicity tests (5, 15, 30 minutes) on the longest contiguous segment (\(N=220{,}461\) events; 63.5 hours).}
 \label{fig:supp-periodicity-bin-robustness}
 \end{figure}
 
@@ -222,8 +222,8 @@ size is extremely small. The null calibration uses 200,000 Monte Carlo draws at
 \centering
 \caption{Detectability simulation mechanics and provenance for the Moltbook
 periodicity test. Source tables:
-\texttt{paper/tables/moltbook\_periodicity\_event\_time\_test.csv} and
-\texttt{paper/tables/moltbook\_periodicity\_detectability\_power.csv}.}
+\texttt{moltbook\_periodicity\_event\_time\_test.csv} and
+\texttt{moltbook\_periodicity\_detectability\_power.csv}.}
 \label{tab:supp-periodicity-detectability}
 \small
 \begin{tabular}{@{}ll@{}}
@@ -270,7 +270,7 @@ diagnostic values (2.61 hours; 95\% confidence interval (CI): [2.29, 2.95]) than
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/cross_platform_matched_sample_flow.png}
-\caption{Matched-sample flow for the coarse cross-platform design.}
+\caption{Matched-sample flow for the coarse cross-platform design (input threads: Moltbook \(N=34{,}730\), Reddit \(N=1{,}104\); matched \(n=813\) pairs).}
 \label{fig:supp-matched-sample-flow}
 \end{figure}
 
@@ -306,7 +306,7 @@ Early engagement bin & 0.873 & 0.586 & 0.000 & 0.000 \\
 \begin{table}[h]
 \centering
 \caption{Matched paired-effects diagnostics from
-\texttt{paper/tables/cross\_platform\_matched\_paired\_effects.csv}. Mean difference is Moltbook minus Reddit (M-R).}
+\texttt{cross\_platform\_matched\_paired\_effects.csv}. Mean difference is Moltbook minus Reddit (M-R).}
 \label{tab:cross-platform-paired-effects}
 \scriptsize
 \begin{tabular}{@{}lrrrr@{}}
@@ -443,7 +443,7 @@ Kernel half-life (diagnostic; min) & 0.68451 & 0.43601 & 0.24850 & -36.30 \\
 \centering
 \caption{Comment-gap disambiguation evidence across raw archive tables. The
 comment interval gap is 2026-01-31 10:37:53Z to 2026-02-02 04:20:50Z. Source:
-\texttt{paper/tables/moltbook\_gap\_disambiguation\_evidence.csv}.}
+\texttt{moltbook\_gap\_disambiguation\_evidence.csv}.}
 \label{tab:supp-gap-disambiguation}
 \small
 \begin{tabular}{@{}lrrr@{}}
@@ -462,7 +462,7 @@ word\_frequency & 15,346 & 5,039 & 3.00 \\
 \centering
 \caption{Two-part decomposition robustness across contiguous windows and
 gap-overlap exclusions. Source:
-\texttt{paper/tables/moltbook\_gap\_window\_robustness.csv}.}
+\texttt{moltbook\_gap\_window\_robustness.csv}.}
 \label{tab:supp-gap-window-robustness}
 \scriptsize
 \begin{tabular}{@{}lrrrrrrr@{}}
@@ -481,7 +481,7 @@ Exclude gap overlap (24h) & 220,460 & 21,400 & 9.71 & 4.55 & 48.66 & 8.58 & 9.53
 \begin{table}[h]
 \centering
 \caption{Horizon-standardized reply probabilities using explicit risk sets.
-Source: \texttt{paper/tables/moltbook\_gap\_horizon\_standardized.csv}.}
+Source: \texttt{moltbook\_gap\_horizon\_standardized.csv}.}
 \label{tab:supp-gap-horizon-standardized}
 \small
 \begin{tabular}{@{}llrr@{}}
@@ -514,7 +514,7 @@ Exclude gap overlap (24h) & 1h & 214,616 & 9.94 \\
 are \(p_{5\mathrm{m}}\) and \(p_{1\mathrm{h}}\) computed with horizon-specific
 risk sets; \(p_{\mathrm{obs}}\) is the secondary in-window ever-reply share.
 Claimed/unclaimed excludes parents with missing author identifier (\(n=906\)).
-Source: \texttt{paper/tables/moltbook\_horizon\_incidence\_by\_group.csv}.}
+Source: \texttt{moltbook\_horizon\_incidence\_by\_group.csv}.}
 \label{tab:supp-horizon-incidence-groups}
 \small
 \begin{tabular}{@{}llrrrr@{}}
@@ -538,9 +538,7 @@ submolt\_category & Creative & 433 & 1.62 & 1.71 & 1.62 \\
 
 \begin{table}[h]
 \centering
-\caption{Category-stratified uncertainty from
-\texttt{paper/tables/moltbook\_results\_category\_uncertainty.csv}
-(thread-cluster bootstrap, 400 reps, 95\% CI).}
+\caption{Category-stratified uncertainty (thread-cluster bootstrap; 400 reps; 95\% CI). Source: \texttt{moltbook\_results\_category\_uncertainty.csv}.}
 \label{tab:supp-submolt-uncertainty}
 \begingroup
 \setlength{\tabcolsep}{3pt}
