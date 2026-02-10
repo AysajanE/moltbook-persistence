@@ -4,9 +4,9 @@ This repository contains the manuscript and reproducible analysis pipeline for s
 
 ## What Is In This Repo
 
-- `paper/`: LaTeX manuscript source (`paper/main.tex`) and committed manuscript PDF (`paper/main.pdf`).
+- `paper/`: LaTeX manuscript sources, plus committed figures/tables used by the manuscript.
 - `analysis/`: reproducible Python entrypoints for curation, platform-specific analysis, and cross-platform matched comparison.
-- `scripts/`: helper CLIs for data export and arXiv packaging.
+- `scripts/`: helper CLIs for data export and submission/source packaging.
 - `docs/`: background notes, data-source notes, and decision log.
 - `data/`, `data_raw/`, `data_curated/`, `data_features/`: local data workspaces (raw data is not committed).
 - `outputs/`: run-scoped derived artifacts, diagnostics, and manuscript-facing tables/figures.
@@ -26,7 +26,6 @@ make lint
 make format
 make clean-paper
 make paper
-make paper-ejor
 ```
 
 ## Build The Manuscript
@@ -36,7 +35,7 @@ make clean-paper && make paper
 ```
 
 This builds `paper/main.pdf` from `paper/main.tex`.
-For the EJOR-oriented build target, use `make paper-ejor` (outputs `paper/main_ejor.pdf`).
+Additional manuscript build targets are available; see `Makefile` and `paper/README.md`.
 
 ## Analysis Entrypoints
 
@@ -70,25 +69,6 @@ See:
 - `data/README.md`
 - `docs/data_sources.md`
 - `docs/decisions.md`
-
-## arXiv Source Packaging
-
-Preferred arXiv bundle command:
-
-```bash
-python scripts/build_arxiv_submission.py \
-  --paper-dir paper \
-  --bundle-dir arxiv \
-  --tar-path arxiv_source.tar.gz \
-  --check-compile
-```
-
-This creates:
-- `arxiv/` (clean source bundle)
-- `arxiv_source.tar.gz` (upload-ready tarball)
-
-Legacy timestamped bundling script is also available:
-- `scripts/build_arxiv_bundle.py`
 
 ## Repository Guide
 
