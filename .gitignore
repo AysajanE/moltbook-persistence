@@ -82,3 +82,6 @@ paper/*.pdf
 docs/feedback/
 docs/prompts/
 .tmp_audit/
+
+# Local submission-prep artifacts
+paper/submission/
