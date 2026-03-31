@@ -1,51 +1,58 @@
 # Fast Response or Silence: Conversation Persistence in an AI-Agent Social Network
 
-This repository contains the manuscript and reproducible analysis pipeline for studying conversation persistence and coordination limits on Moltbook (an AI-agent social network), with Reddit as a contextual baseline.
+Manuscript and reproducible analysis pipeline for studying conversation persistence and coordination limits on Moltbook, an AI-agent social network, with Reddit used as a contextual comparison baseline.
 
-## What Is In This Repo
+This repo is structured as an academic research project rather than a loose notebook dump: manuscript sources, analysis scripts, data-workspace conventions, and decision records are all kept together so the claims can be traced back to code and inputs.
 
-- `paper/`: LaTeX manuscript sources, plus committed figures/tables used by the manuscript.
-- `analysis/`: reproducible Python entrypoints for curation, platform-specific analysis, and cross-platform matched comparison.
-- `scripts/`: helper CLIs for data export and submission/source packaging.
-- `docs/`: background notes, data-source notes, and decision log.
-- `data/`, `data_raw/`, `data_curated/`, `data_features/`: local data workspaces (raw data is not committed).
-- `outputs/`: run-scoped derived artifacts, diagnostics, and manuscript-facing tables/figures.
+## Research question
 
-## Environment Setup
+The project asks a simple but nontrivial question:
+
+When do conversations in an AI-agent social network persist, and when do they collapse into silence?
+
+The empirical framing is comparative:
+
+- Moltbook is the primary setting
+- Reddit provides a contextual baseline
+- matched and platform-specific analyses are both included
+
+## Repository map
+
+- `paper/`: LaTeX manuscript sources and paper-facing assets
+- `analysis/`: reproducible Python scripts for collection, curation, validation, and analysis
+- `scripts/`: helper CLIs for export and submission/source packaging
+- `docs/`: background notes, data-source notes, and decision log
+- `data/`, `data_raw/`, `data_curated/`, `data_features/`: local data workspaces
+- `outputs/`: derived run artifacts, diagnostics, tables, and figures
+
+## Reproducibility workflow
 
 Target Python version is 3.11.
 
 ```bash
 make install
-```
-
-Useful developer commands:
-
-```bash
 make lint
 make format
+```
+
+To build the manuscript:
+
+```bash
 make clean-paper
 make paper
 ```
 
-## Build The Manuscript
+That builds `paper/main.pdf` from `paper/main.tex`.
 
-```bash
-make clean-paper && make paper
-```
+## Main analysis entrypoints
 
-This builds `paper/main.pdf` from `paper/main.tex`.
-Additional manuscript build targets are available; see `Makefile` and `paper/README.md`.
-
-## Analysis Entrypoints
-
-Primary analysis scripts:
+Primary scripts:
 
 - `analysis/06_moltbook_only_analysis.py`
 - `analysis/07_reddit_only_analysis.py`
 - `analysis/08_cross_platform_matched_analysis.py`
 
-Example commands:
+Example usage:
 
 ```bash
 python analysis/06_moltbook_only_analysis.py
@@ -53,28 +60,24 @@ python analysis/07_reddit_only_analysis.py --run-id attempt_scaled_20260206-1426
 python analysis/08_cross_platform_matched_analysis.py
 ```
 
-For script-specific options, run `--help` on each script.
+Run `--help` on each script for options.
 
-## Data Sources And Handling
+## Data handling and ethics
 
-Primary upstream source (Moltbook):
-- https://huggingface.co/datasets/SimulaMet/moltbook-observatory-archive
+- Raw data is not committed.
+- Redistribution constraints matter, especially for third-party Reddit data.
+- Reproducibility depends on preserving run manifests, seeds, and intermediate provenance.
 
-Data and ethics constraints:
-- Do not commit raw data.
-- Keep redistributable constraints in mind for third-party data (especially Reddit).
-- Preserve run manifests and seed settings for reproducibility/provenance.
+For data norms and project decisions, see:
 
-See:
 - `data/README.md`
 - `docs/data_sources.md`
 - `docs/decisions.md`
 
-## Repository Guide
+## Why this repo matters
 
-- `analysis/README.md`: analysis workflow notes and scope.
-- `scripts/README.md`: helper script usage.
-- `docs/background.md`: background pointers and related references.
-- `docs/attention_dynamics_model.md`: modeling notes.
-- `docs/feedback/`: reviewer feedback and revision materials.
-- `docs/decisions.md`: project decision log.
+This repository signals:
+
+- original empirical research on AI-agent social behavior
+- manuscript-first reproducibility discipline
+- comfort working across data collection, cleaning, statistical analysis, and scholarly writing
